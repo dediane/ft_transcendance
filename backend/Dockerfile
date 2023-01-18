@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:17
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -13,7 +13,11 @@ RUN npm install
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY . .
+COPY src src
+COPY tsconfig.json tsconfig.json
+COPY tsconfig.build.json tsconfig.build.json
 
-EXPOSE 3000
-CMD [ "npm", "start" ]
+RUN npm run build
+
+EXPOSE 8000
+CMD [ "npm", "run", "start:dev" ]
