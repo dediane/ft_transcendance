@@ -15,6 +15,7 @@ RUN npm install
 # Bundle app source
 COPY src src
 COPY tsconfig.json tsconfig.json
+COPY .env .env
 COPY tsconfig.build.json tsconfig.build.json
 
 RUN npm run build
