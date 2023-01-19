@@ -4,8 +4,10 @@
 
 ```cd ./frontend
 npm i
-npm run dev````
-
-```cd ./backend
+npm run dev
+````
+```
+cd ./backend
 npm i
-npm run start:dev````
+npm run start:dev
+````
