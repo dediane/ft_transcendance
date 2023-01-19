@@ -1,6 +1,6 @@
 # ft_transcendance
 
-##Démarrer les projets sans Docker:
+## Démarrer les projets sans Docker:
 
 cd ./frontend
 npm i
