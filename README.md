@@ -2,10 +2,10 @@
 
 ## Démarrer les projets sans Docker:
 
-cd ./frontend
+```cd ./frontend
 npm i
-npm run dev
+npm run dev````
 
-cd ./backend
+```cd ./backend
 npm i
-npm run start:dev
+npm run start:dev````
