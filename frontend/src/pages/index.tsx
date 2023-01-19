@@ -1,11 +1,27 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
+import { Inter } from '@next/font/google'
+import { io } from 'socket.io-client'
+import React, { useState, useEffect } from 'react';
+
+
+const socket = io('http://localhost:8000');
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  useEffect(() => {        
+      socket.on('connect', () => {
+        console.log('Connected to websocket server');
+      });
+      
+      socket.on('message', (message) => {
+        console.log(message);
+      });
+      socket.emit('message', 'Hello from the client');
+  })
+
   return (
     <>
       <Head>

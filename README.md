@@ -12,3 +12,7 @@ cd ./backend
 npm i
 npm run start:dev
 ````
+
+Swagger:
+
+http://localhost:8000/api
