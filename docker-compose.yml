@@ -5,12 +5,12 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
+      - postgres
   frontend:
     build: ./frontend
     ports:
       - 3000:3000
-  db:
+  postgres:
     image: postgres:12
     environment:
       POSTGRES_USER: user
