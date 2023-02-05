@@ -11,10 +11,10 @@ services:
     ports:
       - 3000:3000
   postgres:
-    image: postgres:12
+    image: postgres:13
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: app_database
+      POSTGRES_DB: db_transcendance
     ports:
       - 5432:5432

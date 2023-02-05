@@ -6,6 +6,8 @@ import { EventsGateway } from './gateways/socket';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database.module';
+// import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { DatabaseModule } from './database.module';
       })
     }),
     DatabaseModule,
+    // AuthModule,
+    UserModule,
   ],
   controllers: [AppController, ProfileController],
   providers: [AppService, EventsGateway],
