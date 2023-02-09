@@ -11,8 +11,8 @@ async function bootstrap() {
   // app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
-  .setTitle('Transcendance')
-  .setDescription('Transcendance API description')
+  .setTitle('Transcendence')
+  .setDescription('Transcendence API description')
   .setVersion('1.0')
   .addTag('cats')
   .build();

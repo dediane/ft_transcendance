@@ -4,6 +4,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UserService {
@@ -12,7 +14,8 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const newUser = await this.userRepository.create(createUserDto);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
+    const newUser = await this.userRepository.create({...createUserDto, password: hashedPassword, });
     await this.userRepository.save(newUser);
     return newUser;
   }
@@ -33,4 +36,14 @@ export class UserService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  async findPassword(email: string): Promise<User> | null {
+    const user = await this.userRepository
+    .createQueryBuilder('user')
+    .select('user.password')
+    .where('user.email = :email', { email })
+    .getOne()
+    return user;
+  }
+
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Next } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController, ProfileController } from './controllers';
 import { AppService } from './services/app.service';
@@ -8,6 +8,7 @@ import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database.module';
 // import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
         POSTGRES_DB: Joi.string().required(),
       })
     }),
+    TypeOrmModule.forFeature([User]),
     DatabaseModule,
     // AuthModule,
     UserModule,
