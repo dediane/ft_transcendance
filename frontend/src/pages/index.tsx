@@ -5,7 +5,11 @@ import { Inter } from '@next/font/google'
 import { io } from 'socket.io-client'
 import React, { useState, useEffect } from 'react';
 
-
+const HomePage = () => {
+  return <h1> Hello World! </h1>
+}
+export default HomePage;
+/*
 const socket = io('http://localhost:8000');
 
 const inter = Inter({ subsets: ['latin'] })
@@ -136,4 +140,4 @@ export default function Home() {
       </main>
     </>
   )
-}
+}*/
