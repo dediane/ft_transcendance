@@ -1,26 +1,34 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UserService,
-        private readonly jwtService: JwtService,
-    ){}
+        private readonly jwtService: JwtService){}
 
-    async validate(email: string, password: string): Promise<any> {
-        const user = this.usersService.findPassword(email);
-        if (!user) {
-            throw new BadRequestException('invalid credentials')
+    async validateUser(email: string, password: string): Promise<any> {
+        const user = await this.usersService.findPassword(email);
+        console.log(password);
+        console.log(user.password);
+        if (user && await bcrypt.compare(password, user.password)) {
+            return user;
         }
-        if (!await bcrypt.compare(password, (await user).password)) {
-            throw new BadRequestException('Invalid credentials')
-        }
-        //const jwt = await this.jwtService.signAsync(id: user.id)
-        return user;
+        return null;
+    }
+
+    async login(userId: number) {
+        const payload = {sub: userId}
+        // const access_token = this.jwtService.sign(payload, { secret: process.env.SECRET_JWT, expiresIn: "1d"})
+        return {
+            access_token: this.jwtService.sign(payload)
+        };
     }
 }
+// //const jwt = await this.jwtService.signAsync({id: user.id});
+// const jwt = this.jwtService.sign({id: user.id})
+// console.log(jwt)
+// //return jwt;
