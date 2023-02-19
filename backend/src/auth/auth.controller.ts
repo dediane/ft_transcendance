@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -15,5 +15,8 @@ constructor(
     @Body('password') password: string,
   ){
       const user = this.authService.validateUser(email, password)
+      if (!user)
+        return {status: false}
+      return {status: true};
   }
 }
