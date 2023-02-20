@@ -42,6 +42,7 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
             return;
         }
         const result = await userService.register(username, email, password)
+        //send success
     }
     return (
         <div>
@@ -59,11 +60,10 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
             <InputBox1 setEmail={setEmail}/>
             <InputBox2 setPassword={setPassword}/>
             <InputBox4 setPasswordCheck={setPasswordCheck}/>
-            <button
-            onClick={() => handleRegister()}
+            <button onClick={() => handleRegister()} 
             className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
             Register
-        </button>
+            </button>
             <Button data={'Connect with 42'} />
          
     
