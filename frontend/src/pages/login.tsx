@@ -16,7 +16,7 @@ export const Authentication = () => {
     const [register, setRegister] = useState(false)
     return (
 
-        <div className="mx-auto px-4 py-16 m-6 sm:px-6 lg:px-8 md:flex flex-wrap border-solid border-2">
+        <div className="bg-white rounded-3xl mx-auto px-4 py-16 m-6 sm:px-6 lg:px-8 md:flex flex-wrap">
             <div className='mx-auto max-w-lg flex-1 '>
             <h1 className='bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl text-center md:text-left px-8'>Our Transcendence from 42 school Paris</h1>
             </div>
@@ -46,10 +46,10 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
     }
     return (
         <div>
-        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">
+        <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl p-4">
         Welcome to Pong game!
         </h1>
-        <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
+        <p className="mx-auto mt-4 max-w-md text-center text-gray-500 px-8">
         We’re looking for amazing Pong player just like you! Become a part of our rockstar gaming team !
         </p>
         <div
@@ -89,10 +89,10 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
     }
     return (
     <div>
-    <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl">
+    <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl pt-4">
     Join our team!
     </h1>
-    <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
+    <p className="mx-auto mt-4 max-w-md text-center text-gray-500 px-8">
     We’re looking for amazing Pong player just like you! Become a part of our rockstar gaming team !
     </p>
 
