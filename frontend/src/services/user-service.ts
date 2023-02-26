@@ -2,13 +2,16 @@ import axiosService from "./axios-service"
 const axiosInstance = axiosService.getInstance()
 export default {
   login (email :string, password :string) { 
-	  return axiosInstance.post("/login", { email, password }).then((res: { data: any }) => res.data)
+	  return axiosInstance.post("/auth/login", { email, password }).then((res: { data: any }) => res.data)
   },
     
-  register (username :string, email :string ,password :string,) {
+  register (username :string, email :string ,password :string) {
 	  return axiosInstance.post("/user", { username, email, password }).then((res: { data: any }) => res.data)
   },
   
+  finduser () {
+	  return axiosInstance.get("/user", {}).then((res: { data: any }) => res.data)
+  },
 //   ({setRegister} : {setRegister :any})
 //   confirm_email (token) {
 //     return axiosInstance.post("/user/confirm", { token }).then(res => res.data)

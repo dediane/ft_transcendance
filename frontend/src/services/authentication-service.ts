@@ -2,11 +2,13 @@ import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
 
 class AuthService {
+    key : any
+
     constructor() {
         this.key = 'auth_token';
     }
 
-    verifyToken(token){
+    verifyToken(token : string){
         return this.decode(token)
     }
     
@@ -14,11 +16,11 @@ class AuthService {
         return localStorage.getItem(this.key);
     }
 
-    decode(token){
+    decode(token : string){
         return jwt.decode(token);
     }
 
-    saveToken(token) {
+    saveToken(token : string) {
         return localStorage.setItem(this.key, token);
     }
 
@@ -26,7 +28,7 @@ class AuthService {
         return localStorage.removeItem(this.key);
     }
 
-    getExpiration(token){
+    getExpiration(token : string){
         const exp = this.decode(token).exp;
         return moment.unix(exp);
     }
@@ -43,7 +45,7 @@ class AuthService {
         return this.decode(this.getToken()).local;
     }
 
-    isValid(token){
+    isValid(token : string){
         return moment().isBefore(this.getExpiration(token));
     }
 

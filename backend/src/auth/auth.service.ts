@@ -20,11 +20,23 @@ export class AuthService {
 
     async login(userId: number) {
         const payload = {sub: userId}
-        // const access_token = this.jwtService.sign(payload, { secret: process.env.SECRET_JWT, expiresIn: "1d"})
         return {
             access_token: this.jwtService.sign(payload)
         };
     }
+
+    async login42(req) {
+        if (!req.user) {
+          return 'No user from 42';
+        }
+    
+        return {
+          message: 'User information from 42',
+          user: req.user,
+          access_token: this.jwtService.sign(req.user)
+        };
+      }
+
 }
 // //const jwt = await this.jwtService.signAsync({id: user.id});
 // const jwt = this.jwtService.sign({id: user.id})

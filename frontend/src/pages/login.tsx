@@ -5,6 +5,7 @@ import  axios  from 'axios'
 import { useState } from 'react'
 import userService from '@/services/user-service'
 import authenticationService from '@/services/authentication-service'
+import axiosService from '@/services/axios-service'
 
 export default function Login () {
     return <>
@@ -82,10 +83,12 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
     const [password, setPassword] = useState('')
 
     const handleLogin = async () => {
-        const result = await userService.login(email, password)
-        if(result.access_token ) {
-            authenticationService.saveToken(result.access_token)
-        }
+      const result = await userService.login(email, password)
+      if(result.access_token ) {
+        console.log("Success")
+        console.log(result.access_token)
+        authenticationService.saveToken(result.access_token)
+      }
     }
     return (
     <div>
@@ -107,7 +110,7 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
             className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
             Log in
         </button>
-        <Button data={'Connect with 42'} />
+        <button onClick={() => userService.finduser()}>Connect with 42</button>
      
 
       <p className="text-center text-sm text-gray-500">

@@ -20,7 +20,7 @@ export const Navbar = () => {
             Stats</a>
         </li>
         <li>
-          <a href="#" className={styles.link}>
+          <a href="/login" className={styles.link}>
             Login</a>
         </li>
       </ul>
