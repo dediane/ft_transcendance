@@ -13,6 +13,7 @@ function MessageInput({send}: {send : (val: string) => void}) {
     const handleInputKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         send(prompt);
+        setPrompt("");
       }
     };
   
