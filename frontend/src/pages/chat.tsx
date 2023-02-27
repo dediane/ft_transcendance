@@ -20,14 +20,14 @@ function Chat(){
     socket?.on("message", messageListener)
     return () => socket?.off("message", messageListener)
   }, [messageListener])
+
   return(
-    <>
-    {""}
-    <MessageInput send ={send}/>
-    <Messages messages={messages}/>
-    </>
-  ) 
+    <div>
+      <MessageInput send ={send}/>
+      <Messages messages={messages}/>
+    </div>
+  );
   }
 
 
-export default Chat
+export default Chat;

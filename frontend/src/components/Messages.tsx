@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Messages({messages}: {messages: string[]}) {
+function Messages({messages}: {messages: string[]}) {
     return (
         <div>
             {messages.map((message, index) => (
@@ -9,3 +9,5 @@ export default function Messages({messages}: {messages: string[]}) {
         </div>
     )
 }
+
+export default Messages;
