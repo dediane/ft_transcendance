@@ -12,6 +12,13 @@ export default {
   finduser () {
 	  return axiosInstance.get("/user", {}).then((res: { data: any }) => res.data)
   },
+  profile () {
+	  return axiosInstance.get("/user/profile", {}).then((res: { data: any }) => res.data)
+  },
+
+
+
+
 //   ({setRegister} : {setRegister :any})
 //   confirm_email (token) {
 //     return axiosInstance.post("/user/confirm", { token }).then(res => res.data)

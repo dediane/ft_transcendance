@@ -2,8 +2,9 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Login.module.css'
 import  axios  from 'axios'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import userService from '@/services/user-service'
+import { useRouter } from 'next/router' 
 import authenticationService from '@/services/authentication-service'
 import axiosService from '@/services/axios-service'
 
@@ -17,11 +18,19 @@ export const Authentication = () => {
     const [register, setRegister] = useState(false)
     return (
 
-        <div className="bg-white rounded-3xl mx-auto px-4 py-16 m-6 sm:px-6 lg:px-8 md:flex flex-wrap">
-            <div className='mx-auto max-w-lg flex-1 '>
-            <h1 className='bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl text-center md:text-left px-8'>Our Transcendence from 42 school Paris</h1>
+        <div className=" rounded-3xl mx-auto px-4 py-16 sm:px-6 lg:px-8 md:flex flex-wrap bg-white/20 m-10 ml-10 mr-10">
+            <div className='mx-auto max-w-lg flex-1'>
+            <h1 className='bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl text-center md:text-left p-8'>
+              Our Transcendence from 42 school Paris</h1>
+              <div className={styles.field}>
+              <div className={styles.net}></div>
+              <div className={styles.ping}></div>
+              <div className={styles.pong}></div>
+              <div className={styles.ball}></div>
+              </div>
             </div>
-            <div className='mx-auto max-w-lg flex-1 rounded-2xl shadow-2xl border-gray-100 border-solid border-2'>
+            <div className={styles.card}>
+            {/* // ' max-w-lg flex-1 rounded-2xl shadow-2xl'> */}
             {register && <Registration setRegister={setRegister} />}
             {!register && <LoginForm setRegister={setRegister} />}
             </div>
@@ -61,11 +70,16 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
             <InputBox1 setEmail={setEmail}/>
             <InputBox2 setPassword={setPassword}/>
             <InputBox4 setPasswordCheck={setPasswordCheck}/>
-            <button onClick={() => handleRegister()} 
-            className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
-            Register
+            <button 
+              onClick={() => handleRegister()} 
+              className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+              Register
             </button>
-            <Button data={'Connect with 42'} />
+            <button 
+              onClick={() => userService.finduser()} 
+              className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+              Connect with 42
+            </button>
          
     
           <p className="text-center text-sm text-gray-500">
@@ -81,28 +95,36 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const router = useRouter()
 
+
+    useEffect(() => {
+      if(authenticationService.isAuthentificated()) {
+        router.push("/profile");
+      }
+    }, [])
     const handleLogin = async () => {
       const result = await userService.login(email, password)
       if(result.access_token ) {
         console.log("Success")
         console.log(result.access_token)
         authenticationService.saveToken(result.access_token)
+        router.push("/profile");
       }
     }
     return (
     <div>
-    <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl pt-4">
-    Join our team!
+    <h1 className={styles.title2}>
+    Log in
     </h1>
-    <p className="mx-auto mt-4 max-w-md text-center text-gray-500 px-8">
-    We’re looking for amazing Pong player just like you! Become a part of our rockstar gaming team !
+
+    <p className={styles.description}>
+    We’re looking for amazing Pong player!<br/>Become a part of our rockstar gaming team!
     </p>
 
     <div
-      className="mt-6 mb-0 space-y-4 rounded-lg p-4 sm:p-6 lg:p-8"
+      className=" mb-0 space-y-4 rounded-lg p-4 sm:p-6 lg:p-8"
     >
-      <p className="text-center text-lg font-medium">Log in to your account</p>
         <InputBox1 setEmail={setEmail}/>
         <InputBox2 setPassword={setPassword}/>
         <button
@@ -110,24 +132,17 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
             className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
             Log in
         </button>
-        <button onClick={() => userService.finduser()}>Connect with 42</button>
-     
-
+        <button 
+          onClick={() => userService.finduser()} 
+          className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+          Connect with 42
+        </button>
       <p className="text-center text-sm text-gray-500">
         No account? 
         <a className="underline" onClick={() => setRegister(true)}> Sign up</a>
       </p>
     </div>
     </div>
-    )
-}
-
-export const Button = ({data} : {data: string}) => {
-    return (
-        <button
-        className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
-        {data}
-      </button>
     )
 }
 
@@ -139,7 +154,7 @@ export const InputBox1 = ({setEmail} : {setEmail :any}) => {
           <input
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-lg "
+            className={styles.input}
             placeholder="Enter email"
           />
           <span className="absolute inset-y-0 right-0 grid place-content-center px-4">
@@ -157,7 +172,7 @@ export const InputBox2 = ({setPassword} : {setPassword :any}) => {
           <input
             onChange={(e) => setPassword(e.target.value)}
             type="password"
-            className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-lg"
+            className={styles.input}
             placeholder="Enter password"
           />
           <span className="absolute inset-y-0 right-0 grid place-content-center px-4">
@@ -176,7 +191,7 @@ export const InputBox3 = ({setUsername} : {setUsername :any}) => {
           <input
             onChange={(e) => setUsername(e.target.value)}
             type="username"
-            className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-lg"
+            className={styles.input}
             placeholder="Choose a username"
           />
           <span className="absolute inset-y-0 right-0 grid place-content-center px-4">
@@ -195,7 +210,7 @@ export const InputBox4 = ({setPasswordCheck} : {setPasswordCheck :any}) => {
           <input
             onChange={(e) => setPasswordCheck(e.target.value)}
             type="password"
-            className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-lg"
+            className={styles.input}
             placeholder="Confirm your password"
           />
           <span className="absolute inset-y-0 right-0 grid place-content-center px-4">

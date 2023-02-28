@@ -5,7 +5,8 @@ function Auth() {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const fortyTwoApiCode = searchParams.get("code");
-    authenticationService.saveToken(fortyTwoApiCode)
+    if (fortyTwoApiCode != null)
+      authenticationService.saveToken(fortyTwoApiCode)
   }) 
   return (
     <div>

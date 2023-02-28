@@ -15,7 +15,6 @@ constructor(
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    console.log(process.env)
       return await this.authService.login(req.user);
   }
 
@@ -25,7 +24,7 @@ constructor(
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  // @Redirect("http://localhost:3000", 302)
+  @Redirect("http://localhost:3000", 302)
   callback42(@Request() req) {
     return this.authService.login42(req);
     //Send tokent to front end

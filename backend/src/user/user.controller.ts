@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { prependOnceListener } from 'process';
 
 @Controller('user')
 export class UserController {
@@ -10,8 +11,13 @@ export class UserController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    
     return this.userService.create(createUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -20,6 +26,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @UseGuards (JwtAuthGuard)
   @Get()
   findOne(@Param() params: string) {
     return this.userService.findOne(params);

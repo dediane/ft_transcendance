@@ -18,14 +18,10 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     accessToken: string,
     refreshToken: string,
     profile: any,
-    done
+    done: any,
   ): Promise<any> {
     const {first_name, last_name, email, img_url, id } = profile._json;
     const user = { first_name, last_name, email, img_url, id }
-    
-    //Save user here 
-
-    console.log(user)
     done(null, user);
   }
 }
