@@ -25,8 +25,8 @@ export default function sketch(p5: P5CanvasInstance,) {
   else 
     console.log("ENCORE le seum haha")
     //console.log("Sketch width de canvas %d", canvas.style.width);
-  let width = 1600;
-  let height = 1200;
+  let width = p5.windowWidth;
+  let height = p5.windowHeight - 69;
   
   let puck = new Puck(p5, width, height);
   let paddle_left = new Paddle(p5, width, height, true);
