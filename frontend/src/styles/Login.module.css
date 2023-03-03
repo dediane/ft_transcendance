@@ -30,7 +30,7 @@ padding: 1rem;
     text-align: center;
     font-size: x-large;
     font-weight: 700;
-    color: rgba(0, 0, 0, 0.60);
+    color: #f32a92;
 }
 
 /* "mx-auto mt-4 max-w-md text-center text-gray-500 px-8"> */
@@ -44,6 +44,13 @@ padding: 1rem;
 
 }
 
+.h2 {
+	padding: 14px;
+	color: #000;
+	font-size: x-large;
+	text-align: center;
+}
+
 .field {
 	margin: auto auto;
 	width: 400px;
@@ -52,7 +59,7 @@ padding: 1rem;
 	border-width: 6px;
 	border-radius: 4px;
 	border-style: solid;
-	border-color: #fff;
+	border-color: #7f4dff;
 }
 .field .net {
 	width: 0;
@@ -64,14 +71,14 @@ padding: 1rem;
 	border-width: 3px;
 	border-radius: 2px;
 	border-style: dotted;
-	border-color: #fff;
+	border-color: #7f4dff;
 }
 .field .ping, .field .pong {
 	border-radius: 4px;
 	width: 6px;
 	height: 28px;
 	position: absolute;
-	background: #fff;
+	background: #38d1ff;
 }
 .field .ping {
 	left: 6%;
@@ -86,7 +93,7 @@ padding: 1rem;
 	width: 8px;
 	height: 8px;
 	position: absolute;
-	background: #fff;
+	background: #ff3ec2;
 	animation: ball 8s infinite linear;
 }
 @keyframes ball {

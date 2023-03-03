@@ -18,10 +18,11 @@ export const Authentication = () => {
     const [register, setRegister] = useState(false)
     return (
 
-        <div className=" rounded-3xl mx-auto px-4 py-16 sm:px-6 lg:px-8 md:flex flex-wrap bg-white/20 m-10 ml-10 mr-10">
-            <div className='mx-auto max-w-lg flex-1'>
-            <h1 className='bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl text-center md:text-left p-8'>
-              Our Transcendence from 42 school Paris</h1>
+        <div className=" rounded-3xl mx-auto px-4 py-16 sm:px-6 lg:px-8 md:flex flex-wrap m-10 ml-10 mr-10">
+            <div className='mx-auto max-w-lg flex-1 p-8'>
+            <h1 className='bg-gradient-to-r from-violet-600 via-purple-400 to-pink-400 bg-clip-text text-transparent text-3xl font-extrabold sm:text-5xl text-center '>
+              Transcendence</h1>
+              <h2 className={styles.h2}>Come and play Pong!</h2>
               <div className={styles.field}>
               <div className={styles.net}></div>
               <div className={styles.ping}></div>
@@ -72,12 +73,12 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
             <InputBox4 setPasswordCheck={setPasswordCheck}/>
             <button 
               onClick={() => handleRegister()} 
-              className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+              className="block w-full rounded-lg bg-gradient-to-r from-violet-700 to-pink-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-violet-500 hover:to-pink-300">
               Register
             </button>
             <button 
               onClick={() => userService.finduser()} 
-              className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+              className="block w-full rounded-lg bg-gradient-to-r from-violet-700 to-pink-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-violet-500 hover:to-pink-300">
               Connect with 42
             </button>
          
@@ -129,14 +130,18 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
         <InputBox2 setPassword={setPassword}/>
         <button
             onClick={() => handleLogin()}
-            className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+            className="block w-full rounded-lg bg-gradient-to-r from-violet-700 to-blue-300 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-violet-400 hover:to-blue-200">
             Log in
         </button>
+        <div>
+        <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-5753bb274e59271c67234cf035d516277439caa594f17226ed3e6d40266050cc&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fcallback&response_type=code">
         <button 
-          onClick={() => userService.finduser()} 
-          className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
+          // onClick={() => userService.login42()} 
+          className="block w-full rounded-lg bg-gradient-to-r from-violet-700 to-blue-300 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-violet-400 hover:to-re-200">
           Connect with 42
         </button>
+        </a>
+        </div>
       <p className="text-center text-sm text-gray-500">
         No account? 
         <a className="underline" onClick={() => setRegister(true)}> Sign up</a>

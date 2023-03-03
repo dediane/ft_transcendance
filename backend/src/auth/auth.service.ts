@@ -25,12 +25,13 @@ export class AuthService {
         };
     }
 
-    async login42(req) {
+    login42(req) {
         if (!req.user) {
-          return 'No user from 42';
+          return {status: false};
         }
     
         return {
+          status:true,
           message: 'User information from 42',
           user: req.user,
           access_token: this.jwtService.sign(req.user)

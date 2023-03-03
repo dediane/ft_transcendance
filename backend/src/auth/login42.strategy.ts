@@ -20,8 +20,11 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<any> {
-    const {first_name, last_name, email, img_url, id } = profile._json;
-    const user = { first_name, last_name, email, img_url, id }
+    console.log(profile._json);
+    const {first_name, last_name, email, img_url, id, login } = profile._json;
+    const user = { first_name, last_name, email, img_url, id, login }
+
+    
     done(null, user);
   }
 }

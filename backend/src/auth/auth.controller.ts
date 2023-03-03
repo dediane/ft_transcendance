@@ -26,7 +26,10 @@ constructor(
   @Get('callback')
   @Redirect("http://localhost:3000", 302)
   callback42(@Request() req) {
-    return this.authService.login42(req);
+    const {status, access_token} = this.authService.login42(req);
+    if(!status)
+      return { url: 'http://localhost:3000/login' };
+    return { url: 'http://localhost:3000/auth?code=' + access_token };
     //Send tokent to front end
   }
 }

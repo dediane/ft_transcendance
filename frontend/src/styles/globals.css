@@ -21,10 +21,10 @@ body {
     z-index: -10000;
     top: 0;
     left: 0;
-    --gradient-color-1: #94a6ff;
-    --gradient-color-2: #9ae1ff;
-    --gradient-color-3: #dd80ff;
-    --gradient-color-4: #9cbdff;
+    --gradient-color-1: #c2ccff;
+    --gradient-color-2: #a6e4ff;
+    --gradient-color-3: #edbcff;
+    --gradient-color-4: #ffffff;
     display: flex;
     height: 100vh;
     box-sizing: border-box;

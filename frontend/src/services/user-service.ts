@@ -1,4 +1,6 @@
 import axiosService from "./axios-service"
+import axios from "axios"
+
 const axiosInstance = axiosService.getInstance()
 export default {
   login (email :string, password :string) { 
@@ -15,7 +17,12 @@ export default {
   profile () {
 	  return axiosInstance.get("/user/profile", {}).then((res: { data: any }) => res.data)
   },
-
+  
+  login42 () {
+    return axios.get("http://localhost:8000/auth/42", {})
+  }
+  //Create42 route GET /auth/42 
+  //here ->
 
 
 
