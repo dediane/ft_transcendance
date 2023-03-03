@@ -1,0 +1,27 @@
+.profilecard {
+    max-width: 300px;
+    padding: 1rem;
+    border-radius: 20px;
+    --smooth-corners: 4;
+    margin-left: auto;
+    margin-right: 20px;
+    margin-top: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.30);
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+}
+
+.profilepicture {
+    border-radius: 150px;
+    max-width: 90px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.h1{
+    font-size: large;
+    font-weight: 700;
+    text-align: center;
+}

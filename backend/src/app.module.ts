@@ -1,6 +1,6 @@
 import { Module, Next } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppController, ProfileController } from './controllers';
+import { AppController } from './controllers';
 import { AppService } from './services/app.service';
 import { EventsGateway } from './gateways/socket';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,11 +9,14 @@ import { DatabaseModule } from './database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule,
     ConfigModule.forRoot({ 
       envFilePath: ['.env'] ,
@@ -23,19 +26,15 @@ import { AuthService } from './auth/auth.service';
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
-        SECRET_JWT: Joi.string().required() 
+        SECRET_JWT: Joi.string().required(),
+        isGlobal: true 
       })
     }),
     TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: process.env.SECRET_JWT,
-      signOptions: {expiresIn: '1d'}
-    }),
     DatabaseModule,
     UserModule,
-    AuthModule,
   ],
-  controllers: [AppController, ProfileController],
-  providers: [AppService, EventsGateway, AuthService],
+  controllers: [AppController],
+  providers: [AppService, EventsGateway],
 })
 export class AppModule {}
