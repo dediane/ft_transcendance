@@ -1,12 +1,8 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import Layout from '@/components/Layout';
-<<<<<<< HEAD
-=======
 import Home from '.';
 import { BackgroundAnimation } from '@/components/BackgroundAnimation';
-
->>>>>>> origin
 
 function App({ Component, pageProps }: AppProps) {
   return (

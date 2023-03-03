@@ -71,11 +71,6 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
             <InputBox1 setEmail={setEmail}/>
             <InputBox2 setPassword={setPassword}/>
             <InputBox4 setPasswordCheck={setPasswordCheck}/>
-<<<<<<< HEAD
-            <button onClick={() => handleRegister()}
-            className="block w-full rounded-lg bg-gradient-to-r from-blue-700 to-blue-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300">
-            Register
-=======
             <button 
               onClick={() => handleRegister()} 
               className="block w-full rounded-lg bg-gradient-to-r from-violet-700 to-pink-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-violet-500 hover:to-pink-300">
@@ -85,7 +80,6 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
               onClick={() => userService.finduser()} 
               className="block w-full rounded-lg bg-gradient-to-r from-violet-700 to-pink-400 px-5 py-3 text-sm font-medium text-white hover:bg-gradient-to-r hover:from-violet-500 hover:to-pink-300">
               Connect with 42
->>>>>>> origin
             </button>
          
     
