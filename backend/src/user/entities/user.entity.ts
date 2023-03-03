@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Game } from 'src/game/entities/game.entity';
+import { Message } from 'src/message/entities/message.entity';
 
 @Entity('users')
 export class User {
@@ -26,4 +28,12 @@ export class User {
   @Column({default: 0})
   losses: number;
 
+  // @OneToMany(() => Game, (game) => game.player1)
+  // gamePlayer1: Game[];
+
+  // @OneToMany(() => Game, (game) => game.player2)
+  // gamePlayer2: Game[];
+
+  // @OneToMany(() => Message, (message) => message.sender)
+  // message: Message[];
 }
