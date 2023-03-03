@@ -12,7 +12,7 @@ const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper')
 
 export default function Game() {
   return (
-    <div className="ba">
+    <div className={styles.ba}>
       <ReactP5Wrapper sketch={sketch} />
     </div>
   )
