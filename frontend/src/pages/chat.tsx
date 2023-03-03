@@ -10,13 +10,13 @@ function Chat(){
     socket?.emit("message", value)
   }
   useEffect(() => {
-    const newSocket = io("http://localhost:8001")
+    const newSocket = io("http://localhost:8000")
     setSocket(newSocket)
   }, [setSocket])
   const messageListener = (message: string) => {
     setMessages([...messages, message])
   }
-  useEffect(() =>{
+  useEffect(() => {
     socket?.on("message", messageListener)
     return () => socket?.off("message", messageListener)
   }, [messageListener])
@@ -28,7 +28,6 @@ function Chat(){
   const [selectedUser, setSelectedUser] = useState(null);
 
   const chatRooms = [    { id: 1, name: "Room 1" },    { id: 2, name: "Room 2" },    { id: 3, name: "Room 3" },  ];
-
   const users = [    { id: 1, name: "User 1" },    { id: 2, name: "User 2" },    { id: 3, name: "User 3" },  ];
 
   return (

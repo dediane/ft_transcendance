@@ -42,15 +42,6 @@ export class UserService {
     return user;
   }
 
-  async findPassword(email: string): Promise<User> | null {
-    const user = await this.userRepository
-    .createQueryBuilder('user')
-    .select('user.password')
-    .where('user.email = :email', { email })
-    .getOne()
-    return user;
-  }
-
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
