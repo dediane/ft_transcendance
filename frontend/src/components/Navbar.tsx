@@ -3,6 +3,7 @@ import styles from "../styles/Navbar.module.css"
 
 export const Navbar = () => {
     return (
+    
     <nav className={styles.navbar}>
     <div className="container flex flex-wrap items-center justify-between mx-auto">
     <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Ft_Transcendence</span>
@@ -12,7 +13,7 @@ export const Navbar = () => {
           <a href="." className={styles.link}>Home</a>
         </li>
         <li>
-          <a href="#" className={styles.link}>
+          <a href="pong" className={styles.link}>
             Play</a>
         </li>
         <li>

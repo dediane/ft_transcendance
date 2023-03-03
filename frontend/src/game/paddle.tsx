@@ -17,7 +17,7 @@ export default class Paddle {
     // constructor
     constructor(pfive: P5CanvasInstance, width: number, height: number, left: boolean) {
         this.p = pfive;
-        this.w = 10;
+        this.w = 20;
         this.h = 100;
         this.width = width;
         this.height = height;
