@@ -19,6 +19,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/pong.tsx", "src/components/Game.tsx", "src/sketch.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/pong.tsx", "src/components/Game.tsx", "src/sketch.ts", "src/components/Gradient.tsx"],
   "exclude": ["node_modules"]
 }

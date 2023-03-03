@@ -1,0 +1,222 @@
+.card {
+margin-right: auto;
+margin-left: auto;
+background-color: rgba(255, 255, 255, 0.15);
+box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.20);
+border-radius: 20px;
+border: 1px solid rgba(255, 255, 255, 0.25);
+padding: 1rem;
+}
+
+/* w-full rounded-lg bg-white/5 shadow-lg border-gray-400 p-4 pr-12 text-sm  */
+.input {
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.input:focus {
+    outline: none !important;
+    border:1px solid rgba(117, 117, 117, 0.5);
+}
+
+/* "text-center text-2xl font-bold text-blue-600 sm:text-3xl pt-4" */
+.title2 {
+    text-align: center;
+    font-size: x-large;
+    font-weight: 700;
+    color: #f32a92;
+}
+
+/* "mx-auto mt-4 max-w-md text-center text-gray-500 px-8"> */
+.description {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 10px;
+    max-width: 28rem;
+    color: rgb(29, 29, 29);
+
+}
+
+.h2 {
+	padding: 14px;
+	color: #000;
+	font-size: x-large;
+	text-align: center;
+}
+
+.field {
+	margin: auto auto;
+	width: 400px;
+	height: 220px;
+	position: relative;
+	border-width: 6px;
+	border-radius: 4px;
+	border-style: solid;
+	border-color: #7f4dff;
+}
+.field .net {
+	width: 0;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 3px;
+	border-radius: 2px;
+	border-style: dotted;
+	border-color: #7f4dff;
+}
+.field .ping, .field .pong {
+	border-radius: 4px;
+	width: 6px;
+	height: 28px;
+	position: absolute;
+	background: #38d1ff;
+}
+.field .ping {
+	left: 6%;
+	animation: ping 8s infinite linear;
+}
+.field .pong {
+	right: 6%;
+	animation: pong 8s infinite linear;
+}
+.field .ball {
+	border-radius: 4px;
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	background: #ff3ec2;
+	animation: ball 8s infinite linear;
+}
+@keyframes ball {
+	0% {
+		top: 34%;
+		left: 52%;
+   }
+	8.3% {
+		top: 52%;
+		left: 90%;
+   }
+	24.9% {
+		top: 85%;
+		left: 8%;
+   }
+	30% {
+		top: 98%;
+		left: 27%;
+   }
+	41.5% {
+		top: 70%;
+		left: 90%;
+   }
+	58.1% {
+		top: 55%;
+		left: 8%;
+   }
+	74.7% {
+		top: 13%;
+		left: 90%;
+   }
+	79% {
+		top: 1%;
+		left: 70%;
+   }
+	91.3% {
+		top: 22%;
+		left: 8%;
+   }
+	100% {
+		top: 34%;
+		left: 52%;
+   }
+}
+@keyframes ping {
+	0% {
+		top: 10%;
+   }
+	5% {
+		top: 10%;
+   }
+	9% {
+		top: 24%;
+   }
+	13% {
+		top: 17%;
+   }
+	24.9% {
+		top: 82%;
+   }
+	47% {
+		top: 37%;
+   }
+	52% {
+		top: 41%;
+   }
+	56% {
+		top: 64%;
+   }
+	58.1% {
+		top: 54%;
+   }
+	70% {
+		top: 74%;
+   }
+	84% {
+		top: 12%;
+   }
+	91.3% {
+		top: 18%;
+   }
+	100% {
+		top: 10%;
+   }
+}
+@keyframes pong {
+	0% {
+		top: 90%;
+   }
+	8.3% {
+		top: 51%;
+   }
+	20% {
+		top: 60%;
+   }
+	25% {
+		top: 34%;
+   }
+	41.5% {
+		top: 68%;
+   }
+	46% {
+		top: 36%;
+   }
+	52% {
+		top: 18%;
+   }
+	58.1% {
+		top: 53%;
+   }
+	66% {
+		top: 14%;
+   }
+	70% {
+		top: 20%;
+   }
+	74.7% {
+		top: 10%;
+   }
+	91.3% {
+		top: 10%;
+   }
+	100% {
+		top: 90%;
+   }
+}

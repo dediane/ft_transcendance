@@ -2,6 +2,7 @@ import axios from 'axios';
 import authService from './authentication-service';
 
 class AxiosService {
+    axiosInstance : any
     constructor() {
         this.axiosInstance = {};
         this.initInstance();
@@ -12,7 +13,7 @@ class AxiosService {
             timeout: 5000
         })
     this.axiosInstance.interceptors.request.use(
-        (config) => {
+        (config : any) => {
             const token = authService.getToken();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;

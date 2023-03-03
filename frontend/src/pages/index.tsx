@@ -9,13 +9,13 @@ import Modal from '@/components/Modal'
 import React, { useState, useEffect } from 'react';
 import { Authentication } from './login'
 import { Navbar } from '@/components/Navbar'
+import { BackgroundAnimation } from '@/components/BackgroundAnimation'
 
 
 function Home() {
   const [showModal, setShowModal] = useState(false);
   return (
-    <div>
-    </div>
+    Authentication
   )
 }
 export default Home

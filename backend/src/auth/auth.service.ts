@@ -11,20 +11,33 @@ export class AuthService {
         private readonly jwtService: JwtService){}
 
     async validateUser(email: string, password: string): Promise<any> {
-        const user = await this.usersService.findPassword(email);
+        const user = await this.usersService.findOne(email);
         if (user && await bcrypt.compare(password, user.password)) {
+            delete user.password
             return user;
         }
         return null;
     }
 
-    async login(userId: number) {
-        const payload = {sub: userId}
-        // const access_token = this.jwtService.sign(payload, { secret: process.env.SECRET_JWT, expiresIn: "1d"})
+    async login(user: any) {
         return {
-            access_token: this.jwtService.sign(payload)
+            access_token: this.jwtService.sign({...user})
         };
     }
+
+    login42(req) {
+        if (!req.user) {
+          return {status: false};
+        }
+    
+        return {
+          status:true,
+          message: 'User information from 42',
+          user: req.user,
+          access_token: this.jwtService.sign(req.user)
+        };
+      }
+
 }
 // //const jwt = await this.jwtService.signAsync({id: user.id});
 // const jwt = this.jwtService.sign({id: user.id})

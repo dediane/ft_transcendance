@@ -12,8 +12,24 @@
 
 html,
 body {
-  background-color: whitesmoke;
-max-width: 100vw;}
+  max-width: 100vw;}
+
+  #gradient-canvas {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: -10000;
+    top: 0;
+    left: 0;
+    --gradient-color-1: #c2ccff;
+    --gradient-color-2: #a6e4ff;
+    --gradient-color-3: #edbcff;
+    --gradient-color-4: #ffffff;
+    display: flex;
+    height: 100vh;
+    box-sizing: border-box;
+    background: #000;
+}
 /* overflow-x: hidden;} */
 
 
