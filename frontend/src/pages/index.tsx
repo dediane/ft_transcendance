@@ -15,7 +15,7 @@ import { BackgroundAnimation } from '@/components/BackgroundAnimation'
 function Home() {
   const [showModal, setShowModal] = useState(false);
   return (
-    Authentication
+    <Authentication />
   )
 }
 export default Home
