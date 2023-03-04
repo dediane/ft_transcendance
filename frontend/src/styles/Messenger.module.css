@@ -1,0 +1,38 @@
+.messenger{
+    height: calc(1000vh - 70px);
+    display: flex;
+}
+
+.chatMenu{
+    flex: 3.5;
+}
+
+.chatBox{
+    flex: 5.5;
+}
+
+.chatBoxBottom{
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: ;
+}
+
+
+.chatOnline{
+    flex: 3.5;
+}
+
+.chatMenuInput{
+    width: 90%;
+    padding: 10px 0;
+    /* border: gray; */
+    background-color: transparent;
+    /* border-bottom: 1px solid gray; */
+}
+
+.chatMenuWrapper, .chatBoxWrapper, .chatOnlineWrapper{
+    padding: 10px;
+    /* background-color:aqua; */
+    height:100%;
+}
