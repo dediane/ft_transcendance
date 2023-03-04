@@ -28,12 +28,15 @@ export class User {
   @Column({default: 0})
   losses: number;
 
-  // @OneToMany(() => Game, (game) => game.player1)
-  // gamePlayer1: Game[];
+  @Column({default: 0})
+  games: number;
 
-  // @OneToMany(() => Game, (game) => game.player2)
-  // gamePlayer2: Game[];
+  @OneToMany(() => Game, (game) => game.player1)
+  gamePlayer1: Game[];
 
-  // @OneToMany(() => Message, (message) => message.sender)
-  // message: Message[];
+  @OneToMany(() => Game, (game) => game.player2)
+  gamePlayer2: Game[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  message: Message[];
 }

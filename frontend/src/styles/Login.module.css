@@ -1,12 +1,70 @@
 .card {
-margin-right: auto;
-margin-left: auto;
-background-color: rgba(255, 255, 255, 0.15);
-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.20);
-border-radius: 20px;
-border: 1px solid rgba(255, 255, 255, 0.25);
-padding: 1rem;
+	margin-right: auto;
+	margin-left: auto;
+	background-color: rgba(255, 255, 255, 0.15);
+	box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.20);
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	padding: 1rem;
 }
+
+.wrapper {
+	margin-left: auto;
+    margin-right: auto;
+	flex-wrap: wrap;
+	@media (min-width: 768px) {
+	  display: flex;
+	  margin: 2.5rem;
+	  padding-left: 2rem/* 32px */;
+	  padding-right: 2rem/* 32px */;
+	}
+}
+
+.wrapper2 {
+	margin-left: auto;
+    margin-right: auto;
+	margin-top: 1rem/* 16px */;
+    margin-bottom: 1rem/* 16px */;
+	max-width: 32rem;
+	flex: 1 1 0%;
+	@media (min-width: 1024px) {
+		padding-right: 2rem/* 32px */;
+	}
+}
+
+.button { 
+	display: block;
+	width: 100%;
+	border-radius: 0.5rem;
+	background-image: linear-gradient(to right, #7f00ff, #87cefa);
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #fff;
+}
+
+.title {
+	background-image: linear-gradient(to right, #7c3aed, #c084fc, #f472b6);
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: 3rem;
+	font-weight: 800;
+	text-align: center;
+	
+	@media (min-width: 640px) {
+	  font-size: 5rem;
+	}
+}
+	
+.button:hover {
+background-image: linear-gradient(to right, #a78bfa, #bfdbfe);
+}
+
 
 /* w-full rounded-lg bg-white/5 shadow-lg border-gray-400 p-4 pr-12 text-sm  */
 .input {
@@ -22,7 +80,7 @@ padding: 1rem;
 
 .input:focus {
     outline: none !important;
-    border:1px solid rgba(117, 117, 117, 0.5);
+    border:1px solid rgba(153, 153, 153, 0.28);
 }
 
 /* "text-center text-2xl font-bold text-blue-600 sm:text-3xl pt-4" */
@@ -61,6 +119,7 @@ padding: 1rem;
 	border-style: solid;
 	border-color: #7f4dff;
 }
+
 .field .net {
 	width: 0;
 	height: 100%;

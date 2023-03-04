@@ -15,6 +15,6 @@ export class Channel {
     @Column({default: false})
     dm: boolean;
 
-    // @OneToMany(() => Message, message => message.channel)
-    // message: Message;
+    @OneToMany(() => Message, message => message.channel)
+    message: Message;
 }
