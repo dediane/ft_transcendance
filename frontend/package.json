@@ -30,6 +30,7 @@
     "react": "18.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
+    "react-dom-confetti": "^0.2.0",
     "react-p5-wrapper": "^4.1.0",
     "reactjs-toastr": "^1.1.0",
     "socket.io-client": "^4.5.4",

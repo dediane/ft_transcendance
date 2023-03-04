@@ -28,9 +28,6 @@ export class User {
   @Column({default: 0})
   losses: number;
 
-  @Column({default: 0})
-  games: number;
-
   @OneToMany(() => Game, (game) => game.player1)
   gamePlayer1: Game[];
 
