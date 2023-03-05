@@ -48,13 +48,13 @@ export default function sketch(p5: P5CanvasInstance,) {
           {
             p5.text("FINISH", width / 2 - 100, height / 2 - 50);
             p5.text("LEFT PLAYER WIN", width / 2 - 225, height / 2 + 50)
-            return (<Confetti width={1440} height={150}/>)
+            return (<Confetti width={1440} height={150} run={true} recycle={true}/>)
           }
           if (right_score == 10)
           {
             p5.text("FINISH", width / 2 - 100, height / 2 - 50);
             p5.text("RIGHT PLAYER WIN", width / 2 - 200, height / 2 + 50)
-            return (<Confetti width={1440} height={150}/>)
+            return (<Confetti width={1440} height={150} run={true} recycle={true}/>)
           }
         }
         else {
