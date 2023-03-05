@@ -10,21 +10,24 @@ export default function Game () {
   const PADDLE_WIDTH = 10;
   const PADDLE_HEIGHT = 80;
   const BALL_RADIUS = 8;
-  const BALL_SPEED = 4;
+  const BALL_SPEED = 1;
   const [data, setData] = useState({CANVAS_WIDTH: WIDTH, CANVAS_HEIGHT: HEIGHT, PADDLE_HEIGHT, PADDLE_WIDTH, BALL_RADIUS, BALL_SPEED})
+  const [mounted, setMounted] = useState(false)
   useEffect(() => {
+    setMounted(false)
     const CANVAS_HEIGHT = HEIGHT / 1.4;
     const CANVAS_WIDTH = WIDTH / 1.4;
 
     setData({CANVAS_WIDTH, CANVAS_HEIGHT, PADDLE_HEIGHT, PADDLE_WIDTH, BALL_RADIUS, BALL_SPEED})
+    setMounted(true)
   }, [HEIGHT, WIDTH])
-  return <>
-  
-        <div>
-          
+  if (!mounted)
+  {
+    return null;
+  }
+  return <div className="relative">
         {data && <PongGame data={data}/>}
-        </div>
-    </>
+    </div>
 }
 
 // const CANVAS_WIDTH = 600;
@@ -48,6 +51,14 @@ const Ball = ({ x, y, radius } : { x :number, y : number, radius :number}) => {
         className={styles.ball}
       />
     );
+};
+
+const Net = ({ x, y, width, height} : {x :number, y :number, width :number, height :number}) => {
+  return (
+    <>
+    <div style={{left:x, top:y, width: "8px", height}} className={styles.net}/>
+    </>
+  );
 };
 
 const PongGame = ({data} :any) => {
@@ -100,7 +111,6 @@ const PongGame = ({data} :any) => {
         ballY = data.CANVAS_HEIGHT / 2;
         ballDX = -ballDX;
       }
-
       return {
         ...prevState,
         ballX,
@@ -111,7 +121,7 @@ const PongGame = ({data} :any) => {
         player2Score,
       };
     });
-  }, [gameState.paddle1Y, gameState.paddle2Y]);
+  }, [gameState.paddle1Y, gameState.paddle2Y, data]);
 
   const handleKeyDown = React.useCallback(
     (event: any) => {
@@ -140,7 +150,7 @@ const PongGame = ({data} :any) => {
         clearInterval(intervalId);
         document.removeEventListener("keydown", handleKeyDown);
       };
-    }, [updateBallPosition, handleKeyDown, data]);
+    }, [updateBallPosition, handleKeyDown]);
     
     return (
       <>
@@ -149,15 +159,15 @@ const PongGame = ({data} :any) => {
             ref={canvasRef}
             width={data.CANVAS_WIDTH}
             height={data.CANVAS_HEIGHT}
-            className={styles.canvas}/>
-
+            className={styles.canvas}>
+          </canvas>
           <Paddle x={0} y={gameState.paddle1Y} width={data.PADDLE_WIDTH} height={data.PADDLE_HEIGHT} />
           <Paddle x={data.CANVAS_WIDTH - data.PADDLE_WIDTH} y={gameState.paddle2Y} width={data.PADDLE_WIDTH} height={data.PADDLE_HEIGHT} />
           <Ball x={gameState.ballX} y={gameState.ballY} radius={data.BALL_RADIUS} />
-
+          <Net x={data.CANVAS_WIDTH /2} y={0} width={data.CANVAS_WIDTH} height={data.CANVAS_HEIGHT} />
           </div>
-          {/* <div>Player 1 Score: {gameState.player1Score}</div>
-          <div>Player 2 Score: {gameState.player2Score}</div> */}
+          <div>Player 1 Score: {gameState.player1Score}</div>
+          <div>Player 2 Score: {gameState.player2Score}</div>
         </>
     );
   };
