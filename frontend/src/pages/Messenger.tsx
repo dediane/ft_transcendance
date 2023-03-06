@@ -33,31 +33,24 @@ function Messenger() {
             <Conversations/>
             <Conversations/>
             <Conversations/>
+            {/* { <button>Add friends Button</button> }{styles.addFriends} */}
+            
         </div>
       </div>
       <div className={styles.chatBox}>
         <div className={styles.chatBoxWrapper}>
           <div className={styles.chatBoxTop}>
           
-            <div className={styles.message}>
               <Message isMyMessage={true} />
-            </div>
-            <div className={styles.message}>
               <Message isMyMessage={false} />
-            </div>
-            <div className={styles.message}>
               <Message isMyMessage={true} />
-            </div>
-            <div className={styles.message}>
               <Message isMyMessage={true} />
-            </div>
-            <div className={styles.message}>
               <Message isMyMessage={false} />
-            </div>
-          </div>
-          <div className={styles.chatBoxBottom}></div>
-
                 <Messages messages={messages} />
+          </div>
+        <div className={styles.chatBoxBottom}></div>
+        <div className={styles.message}>
+                </div>
                 <MessageInput send={send} />
         </div>
       
