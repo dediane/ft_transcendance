@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/Game2.module.css"
+import styles2 from "@/styles/Login.module.css"
+
+
 import { relative } from "path";
 import { useWindowSize } from "@react-hook/window-size/throttled";
+import io, {Socket} from "socket.io-client"
+
+const socket = io("http://localhost:8000")
 
 export default function Game () { 
   // const CANVAS_WIDTH = window.innerWidth;
@@ -21,13 +27,69 @@ export default function Game () {
     setData({CANVAS_WIDTH, CANVAS_HEIGHT, PADDLE_HEIGHT, PADDLE_WIDTH, BALL_RADIUS, BALL_SPEED})
     setMounted(true)
   }, [HEIGHT, WIDTH])
+
+
+  //Listeners WSS
+  const [player1, setPlayer1] = useState<string>()
+  const [player2, setPlayer2] = useState<string>()
+
+  const join = (username: string) => {
+    socket.emit("join_game", username)
+  }
+
+  const start = () => {
+    socket.emit("start")
+  }
+
+  const up = () => {
+    socket.emit("up", {})
+  }
+
+  const down = () => {
+    socket.emit("down", {})
+  }
+
+
+  const startGame = () => {
+
+  }
+
+  const handle_new = (value: string) => {
+    console.log("VALUE3 ,", value)
+    setPlayer1(value)
+  }
+  useEffect(() => {
+    socket.on("new_user_1", handle_new)
+    // socket.on("message", handle_new)
+
+    socket.on("new_user_2", (value) => setPlayer2(value))
+    socket.on("start_game", startGame)
+
+    return () => {
+      socket.off("new_user_1", setPlayer1)
+      socket.off("new_user_2", setPlayer2)
+      socket.off("start_game", startGame)
+    }
+  }, [player1, player2, startGame])
+  
+
   if (!mounted)
   {
     return null;
   }
-  return <div className="relative">
-        {data && <PongGame data={data}/>}
+  return (
+    <div>
+      <div>
+        Waiting for players...
+        <button className={styles2.button} onClick={() => join("Michael")}>JOIN PLAYER 1 </button>
+        <button className={styles2.button} onClick={() => join("Diane")}> JOIN PLAYER 2 </button>
+        Players: {player1} , {player2}
+      </div>
+      <div className="relative">
+          {data && <PongGame data={data}/>}
+      </div>
     </div>
+    )
 }
 
 // const CANVAS_WIDTH = 600;
@@ -140,20 +202,21 @@ const PongGame = ({data} :any) => {
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
 
-      const intervalId = setInterval(() => {
-        updateBallPosition();
-      }, 10);
+      // const intervalId = setInterval(() => {
+      //   updateBallPosition();
+      // }, 10);
   
       document.addEventListener("keydown", handleKeyDown);
   
       return () => {
-        clearInterval(intervalId);
+        // clearInterval(intervalId);
         document.removeEventListener("keydown", handleKeyDown);
       };
     }, [updateBallPosition, handleKeyDown]);
     
     return (
       <>
+       
           <div className={styles.wrapper}>
           <canvas
             ref={canvasRef}
