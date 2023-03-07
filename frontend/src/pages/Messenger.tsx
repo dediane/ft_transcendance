@@ -11,11 +11,13 @@ import Messages from "@/components/Messages"
 
 const socket = io("http://localhost:8000")
 
-  
+
 function Messenger() {
   const [messages, setMessages] = useState<string[]>([])
   const send = (value: string) => {
-    socket?.emit("message", value)
+    if (socket)
+        socket.emit("message", value)
+    // socket.broadcast.to(roomId).emit('user-connected', userId);
   }
     const messageListener = (message: string) => {
     setMessages([...messages, message])

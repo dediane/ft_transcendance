@@ -21,6 +21,7 @@
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.2",
     "framer-motion": "^9.0.2",
+    "immer": "^9.0.19",
     "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
@@ -33,11 +34,13 @@
     "react-p5-wrapper": "^4.1.0",
     "reactjs-toastr": "^1.1.0",
     "socket.io-client": "^4.5.4",
+    "styled-components": "^5.3.8",
     "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.1",
     "@types/p5": "^1.5.0",
+    "@types/styled-components": "^5.1.26",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7",
