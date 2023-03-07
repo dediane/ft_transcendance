@@ -5,7 +5,40 @@ import styles from "../styles/Profile.module.css"
 import { useRouter } from "next/router";
 import { LayoutGroupContext } from "framer-motion";
 
-export default function Profil () {
+export default function Homepage() {
+    return (
+        <>
+        <div className="justify-between">
+        <Play />
+        <Profil />
+        </div>
+        </>
+    )
+}
+
+const Play = () => {
+    const [user, setUser] = useState(false)
+
+    useEffect(()=>{
+        const fetch_profile = async() => {
+           const result = await userService.profile()
+            setUser({...result})
+        }
+        fetch_profile()
+    }, [])
+    const handlePlay = () => {
+        console.log(user)
+    }
+    return (
+    <div className="">
+        <button className={styles.button}>
+            Play PONG!
+        </button>
+    </div>
+    )
+}
+
+const Profil = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0})
     const router = useRouter();
 
