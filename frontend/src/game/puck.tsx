@@ -36,6 +36,7 @@ export default class Puck {
     height: number;
     r: number;
     angle: number;
+    puck_speed: number;
     
     // constructor
     constructor(pfive: P5CanvasInstance, width: number, height: number) {
@@ -46,9 +47,9 @@ export default class Puck {
         this.x = width / 2;
         this.y = height / 2;
         this.angle = this.p.random(-this.p.PI / 4, this.p.PI / 4);
-        //this.angle = 0;
-        this.xspeed = 10 * this.p.cos(this.angle);
-        this.yspeed = 10 * this.p.sin(this.angle);
+        this.puck_speed = 8;
+        this.xspeed = this.puck_speed * this.p.cos(this.angle);
+        this.yspeed = this.puck_speed * this.p.sin(this.angle);
     };
 
     // function 
@@ -58,8 +59,8 @@ export default class Puck {
         this.x = this.width / 2;
         this.y = this.height / 2;
         this.angle = this.p.random(-this.p.PI / 4, this.p.PI / 4);
-        this.xspeed = 10 * this.p.cos(this.angle);
-        this.yspeed = 10 * this.p.sin(this.angle);
+        this.xspeed = this.puck_speed * this.p.cos(this.angle);
+        this.yspeed = this.puck_speed * this.p.sin(this.angle);
 
         if (this.p.random(1) < 0.5)
             this.xspeed *= -1;
@@ -121,8 +122,8 @@ export default class Puck {
                 let diff : number = this.y - (p.y - p.h / 2);
                 let rad : number = this.p.radians(45);
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
-                this.xspeed = 10 * this.p.cos(angle);
-                this.yspeed = 10 * this.p.sin(angle);
+                this.xspeed = this.puck_speed * this.p.cos(angle);
+                this.yspeed = this.puck_speed * this.p.sin(angle);
                 this.x = p.x + p.w / 2 + this.r;
             }
         }
@@ -136,8 +137,8 @@ export default class Puck {
                 let diff : number = this.y - (p.y - p.h / 2);
                 let rad : number = this.p.radians(135);
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
-                this.xspeed = 10 * this.p.cos(angle);
-                this.yspeed = 10 * this.p.sin(angle);
+                this.xspeed = this.puck_speed * this.p.cos(angle);
+                this.yspeed = this.puck_speed * this.p.sin(angle);
                 this.x = p.x - p.w / 2 - this.r;
             }
         }
