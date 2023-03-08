@@ -45,7 +45,7 @@ export default class Puck {
         this.r = 12;
         this.x = width / 2;
         this.y = height / 2;
-        this.angle = this.p.random(this.p.TWO_PI);
+        this.angle = this.p.random(-this.p.PI / 4, this.p.PI / 4);
         //this.angle = 0;
         this.xspeed = 10 * this.p.cos(this.angle);
         this.yspeed = 10 * this.p.sin(this.angle);
@@ -106,6 +106,13 @@ export default class Puck {
         this.p.ellipse(this.x, this.y, this.r * 2, this.r * 2);
     }
 
+    update_resize(w: number, h: number){
+        this.width = w; 
+        this.height = h;
+        this.r = 12;
+        this.x = w / 2;
+        this.y = h / 2;
+    }
     checkPaddleLeft(p: Paddle)
     {
         if (this.y < p.y + p.h / 2 && this.y > p.y - p.h / 2 && this.x - this.r < p.x + p.w / 2) {
@@ -116,7 +123,7 @@ export default class Puck {
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
                 this.xspeed = 10 * this.p.cos(angle);
                 this.yspeed = 10 * this.p.sin(angle);
-                this.x = p.x + p.w / 2;
+                this.x = p.x + p.w / 2 + this.r;
             }
         }
     }
@@ -131,8 +138,7 @@ export default class Puck {
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
                 this.xspeed = 10 * this.p.cos(angle);
                 this.yspeed = 10 * this.p.sin(angle);
-                this.x = p.x - p.w / 2;
-
+                this.x = p.x - p.w / 2 - this.r;
             }
         }
     }
