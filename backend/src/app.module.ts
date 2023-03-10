@@ -15,6 +15,7 @@ import { AuthController } from './auth/auth.controller';
 import { UserService } from './user/user.service';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
+import { Game } from './game/entities/game.entity';
 
 @Module({
   imports: [
@@ -32,7 +33,6 @@ import { MessageModule } from './message/message.module';
         isGlobal: true 
       })
     }),
-    TypeOrmModule.forFeature([User]),
     DatabaseModule,
     UserModule,
     ChannelModule,

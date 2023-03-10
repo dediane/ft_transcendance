@@ -7,15 +7,14 @@ import { FortyTwoAuthGuard } from './guards/fortytwo_auth.guard';
 @Controller('auth')
 export class AuthController {
 constructor(
-  private readonly authService: AuthService,
-  // private jwtService: JwtService
-  ) {}
-
+  private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-      return await this.authService.login(req.user);
+    if (!req.user.status){
+      return (req.user)}
+    return await this.authService.login(req.user.user);
   }
 
   @Get('42')

@@ -8,6 +8,9 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  static findAll() {
+      throw new Error("Method not implemented.");
+  }
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
@@ -15,8 +18,12 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
     const newUser = await this.userRepository.create({...createUserDto, password: hashedPassword, });
-    await this.userRepository.save(newUser);
-    return newUser;
+    try {
+      await this.userRepository.save(newUser);
+    } catch (error) {
+      return({status: false, error: error.driverError.detail});
+    }
+    return {status: true};
   }
 
   async findAll() {

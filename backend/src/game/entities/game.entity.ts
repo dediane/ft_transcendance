@@ -6,11 +6,11 @@ export class Game {
     @PrimaryGeneratedColumn()
     id: number;
 
-    // @ManyToOne(() => User, (user) => user.gamePlayer1)
-    // player1: User;
+    @ManyToOne(() => User, (user) => user.gamePlayer1)
+    player1: User;
 
-    // @ManyToOne(() => User, (user) => user.gamePlayer2)
-    // player2: User;
+    @ManyToOne(() => User, (user) => user.gamePlayer2)
+    player2: User;
 
     @CreateDateColumn()
     created_at: Date;
