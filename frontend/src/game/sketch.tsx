@@ -14,10 +14,11 @@ export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHe
   // like this it's can be responssive
 
   //console.log("la width param %d, la height param %d", w, h);
-
+  let p5WrapperDiv = document.getElementById("canvas_size")
   console.log("> Begin function canvas")
-  let width = p5.windowWidth;
-  let height = p5.windowHeight - 68;
+  let width = p5WrapperDiv?.clientWidth || window.innerWidth;
+  let height = p5WrapperDiv?.clientHeight || window.innerHeight;
+  console.log("clienbtHeight", p5WrapperDiv?.clientHeight)
 
   let puck = new Puck(p5, width, height);
   let paddle_left = new Paddle(p5, width, height, true);
@@ -33,7 +34,7 @@ export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHe
 
   p5.draw = () => {
     p5.background(0);
-    
+
     if (left_score == 10 || right_score == 10) {
       if (left_score == 10) {
         p5.text("FINISH", width / 2 - 100, height / 2 - 50);
@@ -99,12 +100,25 @@ export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHe
   }
 
   function windowResized() {
-    width = window.innerWidth;
-    height = window.innerHeight - 68;
+    var element = document.getElementById("canvas_size");
+    if (element == null)
+    {
+      console.log("use the window canvas T-T")
+      width = window.innerWidth;
+      height = window.innerHeight;
+    }
+    else
+    {
+      console.log("pass par notre div define hihi")
+      width = element.clientWidth;
+      height = element.clientHeight;
+    }
+
+
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
-    paddle_left.update_resize(window.innerWidth, window.innerHeight, true);
-    paddle_right.update_resize(window.innerWidth, window.innerHeight, false);
+    paddle_left.update_resize(width, height, true);
+    paddle_right.update_resize(width, height, false);
     puck.update_resize(width, height);
   }
 }
