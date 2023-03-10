@@ -1,0 +1,37 @@
+/* style={{ border: "6px solid black", borderRadius: "10px", background: "rgba(255, 255, 255, 0.35)"}} */
+
+.canvas {
+    position: 'relative';
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid;
+    border-color: #7f4dff;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.20);
+}
+.paddle {
+    border-radius: 14px;
+    background-color: #ff3ec2;
+}
+
+.net {
+	position: absolute;
+	top: 0;
+	transform: translateX(-50%);
+	border-width: 3px;
+	border-radius: 2px;
+	border-style: dotted;
+	border-color: #7f4dff;
+}
+
+.ball {
+    background-color: #38d1ff;
+
+}
+
+.wrapper {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+}

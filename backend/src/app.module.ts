@@ -13,6 +13,9 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { UserService } from './user/user.service';
+import { ChannelModule } from './channel/channel.module';
+import { MessageModule } from './message/message.module';
+import { Game } from './game/entities/game.entity';
 
 @Module({
   imports: [
@@ -30,9 +33,10 @@ import { UserService } from './user/user.service';
         isGlobal: true 
       })
     }),
-    TypeOrmModule.forFeature([User]),
     DatabaseModule,
     UserModule,
+    ChannelModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService, EventsGateway],
