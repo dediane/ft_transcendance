@@ -27,6 +27,7 @@ function Messenger() {
     return () => socket?.off("message", messageListener)
   }, [messageListener])
   return (
+
     <div className={styles.messenger}>
       <div className={styles.chatMenu}>
         <div className={styles.chatMenuWrapper}>
@@ -55,10 +56,10 @@ function Messenger() {
                 </div>
                 <MessageInput send={send} />
         </div>
+    </div>
       
           
       </div>
-    </div>
   );
 }
 
