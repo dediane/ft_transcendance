@@ -16,6 +16,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ nullable: true})
+  socketid: string;
+
   @Column({ nullable: true })
   avatar: string;
 

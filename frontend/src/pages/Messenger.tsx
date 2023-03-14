@@ -9,13 +9,13 @@ import io, {Socket} from "socket.io-client"
 import MessageInput from "@/components/MessageInput"
 import Messages from "@/components/Messages"
 
-const socket = io("http://localhost:8000")
-
 
 function Messenger() {
+  const socket = io("http://localhost:8000")
+  if (!socket)
+    return;
   const [messages, setMessages] = useState<string[]>([])
   const send = (value: string) => {
-    if (socket)
         socket.emit("message", value)
     // socket.broadcast.to(roomId).emit('user-connected', userId);
   }
@@ -23,9 +23,21 @@ function Messenger() {
     setMessages([...messages, message])
   }
     useEffect(() => {
-    socket?.on("message", messageListener)
-    return () => socket?.off("message", messageListener)
+    socket.on("message", messageListener)
+    return () => socket.off("message", messageListener)
   }, [messageListener])
+
+  // useEffect(() => {
+  //   socket.on("connect", ...)
+  //   return () => socket.off("message", messageListener)
+  // }, [messageListener])
+  // socket.on("connect", () => {
+  //   console.log("[Chat] Client connected");
+
+  //   socket.emit("updateChatUser", {
+  //     id: user.id,
+  //     username: user.username,
+  //   });})
   return (
 
     <div className={styles.messenger}>

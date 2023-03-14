@@ -73,6 +73,8 @@ function Chat(props) {
         )
     }
     function renderUser(user){
+       
+        console.log("render user");
         if (user.id === props.yourId){
             return (
                 <Row key={user.id}>

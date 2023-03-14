@@ -4,7 +4,7 @@
 // import styles from '../styles/Messenger.module.css';
 
 
-import {useEffect, useState, useRef} from "react"
+import {useEffect, useState, useRef, SetStateAction} from "react"
 import Form from "../components/UsernameForm"
 import Chat from "../components/Chat"
 import io from "socket.io-client"
@@ -12,7 +12,7 @@ import io from "socket.io-client"
 import immer from "immer"
             
 
-const socket = io("http://localhost:8000")
+// const socket = io("http://localhost:8000")
 
 
 // const users: any[] = [];
@@ -123,7 +123,7 @@ function Messenger2() {
         setMessages(newMessages);
     }
     
-    function joinRoom(room){
+    function joinRoom(room: string){
         const newConnectedRooms = immer(connectedRooms, draft => {
             draft.push(room);
         });
@@ -131,7 +131,7 @@ function Messenger2() {
         setConnectedRooms(newConnectedRooms);
     }
 
-    function toggleChat(currentChat){
+    function toggleChat(currentChat: SetStateAction<{ isChannel: boolean; chatName: string; receiverId: string }>){
         if(!messages[currentChat.chatName])
         {
             const newMessages = immer(messages, draft => {
@@ -146,31 +146,35 @@ function Messenger2() {
         setUsername(e.target.value);
     };
 
-    function connect(){
+    function connect() {
         setConnected(true);
-        socketRef.current = io.connect("/");
-        socketRef.current.emit("join server", username);
-        socketRef.current.emit("join room", "general", (messages) => roomJoinCallback(messages, "general"));
-        socketRef.current.on("new user", allUsers => {
+        socketRef.current = io.connect("http://localhost:8000");
+        if (!socketRef.current) return;
+        // socketRef.current.on("connection", (socketRef) => {
+          socketRef.current.emit("join server", username);
+          socketRef.current.emit("join room", "general", (messages) =>
+            roomJoinCallback(messages, "general")
+          );
+          socketRef.current.on("new user", (allUsers) => {
             setAllUsers(allUsers);
-        });
-        socketRef.current.on("new message", ({content, sender, chatName}) =>{
-            setMessages(messages => {
-                const newMessages = immer(messages, draft => {
-                    if (draft[chatName])
-                    {
-                        draft[chatName].push({content, sender});
-                    }
-                    else
-                    {
-                        draft[chatName] = [{content, sender}];
-                    }
-                });
-                return newMessages;
-                //14min51
+          });
+          socketRef.current.on("new message", ({ content, sender, chatName }) => {
+            setMessages((messages) => {
+              const newMessages = immer(messages, (draft) => {
+                if (draft[chatName]) {
+                  draft[chatName].push({ content, sender });
+                } else {
+                  draft[chatName] = [{ content, sender }];
+                }
+              });
+              return newMessages;
             });
-        });
-    }
+          });
+        // });
+      }
+      
+        
+    
     let body;
     if (connected)
     {
@@ -182,6 +186,7 @@ function Messenger2() {
             yourId={socketRef.current? socketRef.current.id : ""}
             allUsers={allUsers}
             joinRoom={joinRoom}
+            // connection={connect}
             connectedRooms={connectedRooms}
             currentChat={currentChat}
             toggleChat={toggleChat}
