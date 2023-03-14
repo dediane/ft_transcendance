@@ -88,11 +88,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       id: socket.id,
     };
     console.log(socket.id, 'just joined server');
-
+  
     this.users.push(user);
-    // socket.emit('new user', this.users);
-    socket.emit('new user', this.users);
+    this.server.emit('new user', this.users); // broadcast to all connected sockets
   }
+  
 
   @SubscribeMessage('join room')
   handleJoinRoom(socket: Socket, roomName: string) {

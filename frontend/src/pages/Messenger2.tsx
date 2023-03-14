@@ -116,7 +116,7 @@ function Messenger2() {
         setMessages(newMessages);
     }
 
-    function roomJoinCallback(incomingMessages, room) {
+    function roomJoinCallback(incomingMessages: any, room: string) {
         const newMessages = immer(messages, draft => {
             draft[room] = incomingMessages;
         });
