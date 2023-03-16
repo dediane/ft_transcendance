@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Game } from 'src/game/entities/game.entity';
 import { Message } from 'src/message/entities/message.entity';
 
@@ -12,6 +12,12 @@ export class User {
 
   @Column({ nullable: true, unique: true })
   login42: string;
+
+  @Column({default: false})
+  is2fa: boolean;
+
+  @Column({nullable: true})
+  secret2fa: string;
 
   @Column({ unique: true })
   email: string;
@@ -36,4 +42,8 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.sender)
   message: Message[];
+
+  @ManyToMany(() => User, (user) => user.id)
+  @JoinTable()
+  friends: User[];
 }

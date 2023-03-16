@@ -11,11 +11,12 @@ export class AuthService {
         private readonly jwtService: JwtService){}
 
     async validateUser(email: string, password: string): Promise<any> {
-        const user = await this.usersService.findOne(email);
+        const user = await this.usersService.findOnebyEmail(email);
         if (user && await bcrypt.compare(password, user.password)) {
             delete user.password
             return {status: true, user};
         }
+        //add 2fa
         return {status: false, error: "Invalid credential"};
     }
 

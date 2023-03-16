@@ -43,3 +43,40 @@
 .button:hover {
 background-image: linear-gradient(to right, #ff6fab, #ffa2c1);
 }
+
+.inputbox {
+    padding: 0.75rem;
+    color:#2e2e2e;
+    background-color: #ffffff9e;
+    border: solid 1px #ff6fab9e;
+}
+
+.inputbox:active {
+    padding: 0.75rem;
+    color:#2e2e2e;
+    background-color: #ffffff9e;
+    border: solid 1px #ff6fab9e;
+}
+
+.inputbox:hover {
+    padding: 0.75rem;
+    color:#2e2e2e;
+    background-color: #ffffff9e;
+    border: solid 1px #ff6fab9e;
+}
+
+.inputbox:focus {
+    outline: none !important;
+    padding: 0.75rem;
+    color:#2e2e2e;
+    background-color: #ffffff9e;
+    border:1px solid #ff6fab9e;
+    
+}
+
+.listelement {
+    min-width: 14rem;
+    background-color: #ffffffba;
+    padding: 0.75rem;
+    border-bottom: solid 1px #ff6fab9e;
+}

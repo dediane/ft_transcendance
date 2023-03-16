@@ -99,6 +99,7 @@ export const Registration = ({setRegister} : {setRegister :any}) => {
         const result = await userService.register(username, email, password)
         if (!result.status){
           setError(result.error)
+          return;
         }
         setSuccess(true)
     }

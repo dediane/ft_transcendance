@@ -29,7 +29,7 @@ export class UserController {
   @UseGuards (JwtAuthGuard)
   @Get()
   findOne(@Param() params: string) {
-    return this.userService.findOne(params);
+    return this.userService.findOnebyEmail(params);
   }
 
   @Patch(':id')

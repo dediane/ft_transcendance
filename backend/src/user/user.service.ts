@@ -28,7 +28,17 @@ export class UserService {
     return users;
   }
 
-  async findOne(email: string) : Promise<User | undefined> {
+  async search(params: string) {
+    console.log(params)
+    const users = await this.userRepository
+    .createQueryBuilder('user')
+    .select(['user.username', 'user.id', 'user.avatar'])
+    .where("user.username like :username", { username:`%${params}%` })
+    .getMany();
+    return users;
+  }
+
+  async findOnebyEmail(email: string) : Promise<User | undefined> {
     const user = await this.userRepository
     .createQueryBuilder('user')
     .select('user')
@@ -44,6 +54,48 @@ export class UserService {
     .where('user.id = :id', {id})
     .getOne();
     return user;
+  }
+
+  async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['friends'],
+    });
+    console.log("USER", user)
+    const friend = await this.findOnebyId(friend_id);
+    if(!user.friends) {
+      user.friends = []
+    }
+    user.friends.push(friend)
+    const result = await this.userRepository.save(user);
+    return;
+    
+  }
+
+  async removeFriend(user_id: number, friend_id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['friends'],
+    });
+    console.log("USER", user)
+    if(user.friends) {
+      for (var k = 0; k < user.friends.length; k++)
+      {
+        if (user.friends[k].id === friend_id)
+          user.friends.splice(k, 1)
+      }
+      await this.userRepository.save(user);
+    }
+    return;
+  }
+
+  async findFriend(user_id: number) {
+    return (
+      await this.userRepository.findOne({
+      where: {id: user_id},
+      relations: ['friends'],
+    })
+    )
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

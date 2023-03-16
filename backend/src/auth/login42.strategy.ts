@@ -25,7 +25,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     const {first_name, last_name, email, img_url, id, login } = profile._json;
     const generatedpwd = Math.random().toString(36).substring(2);
     const user = { first_name, last_name, email, img_url, id, username:login}
-    const existingUser = await this.userService.findOne(email)
+    const existingUser = await this.userService.findOnebyEmail(email)
     console.log("existingUser", existingUser)
     if (existingUser){
       return done(null, {...existingUser})

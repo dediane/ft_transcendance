@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import styles from "../styles/Profile.module.css"
 import { useRouter } from "next/router";
 import { LayoutGroupContext } from "framer-motion";
+import _ from "lodash";
 
 export default function Homepage() {
     return (
         <>
-        <div className="justify-between">
+        <div className="">
+        <Searchbar />
+        <Friends />
         <Play />
         <Profil />
         </div>
@@ -30,10 +33,22 @@ const Play = () => {
         console.log(user)
     }
     return (
-    <div className="">
+    <div className="flex">
+        <div className="m-4">
         <button className={styles.button}>
             Play PONG!
         </button>
+        </div>
+        <div className="m-4">
+        <button className={styles.button}>
+            Join Chat!
+        </button>
+        </div>
+        <div className="m-4">
+        <button className={styles.button}>
+            See your Stats!
+        </button>
+        </div>
     </div>
     )
 }
@@ -73,7 +88,8 @@ const Profil = () => {
         </div>
     )
 }
- 
+
+
 const Asset = ({title , value} : {title: string, value :any}) => {
     return(
         <div className="p-3">
@@ -82,3 +98,90 @@ const Asset = ({title , value} : {title: string, value :any}) => {
         </div>
     )
 }
+
+const Friends = () => {
+        const [friend, setFriend] = useState([])
+        useEffect(()=>{
+            const fetch_friends = async() => {
+                const result = await userService.find_friend()
+                console.log(result)
+                setFriend(result.friends)
+            }
+            fetch_friends()
+        }, [])
+    return(
+        <div>
+            <h2>My friends</h2>
+            {friend.map((current :any, key :any) => {
+                const {username, id} = current
+                return (
+                    <div key={key} className="flex justify-between flex-row">
+                        <div  className={styles.listel ement}>
+                            {username}
+                            {/* <button onClick={() => add_friend(id)} className={styles.button}> */}
+                                {/* add friends
+                            </button>
+                            <button onClick={() => remove_friend(id)} className={styles.button}>
+                                remove friends
+                            </button> */}
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+const Searchbar = () => {
+    const [inputValue, setInputValue] = useState('');
+    const [users, setUsers] = useState([]);
+    const handleInputChange = _.debounce(async (value) => {
+        const result = await userService.search(value)
+        setUsers(result)
+      console.log('Input value:', value, result);
+    }, 500);
+  
+    const handleInput = (event: any) => {
+      const value = event.target.value;
+      setInputValue(value);
+      handleInputChange(value);
+    };
+    return (
+        <div className="">
+            <input value={inputValue} onChange={handleInput}  
+            type="text" placeholder="search your friends" className={styles.inputbox}></input>
+            <Searchresult users={users}/>
+        </div>
+    )
+}
+
+
+const Searchresult = ({users} : {users :any}) => {
+    const add_friend = async (id :number) => {
+        await userService.add_friend(id)
+    }
+    const remove_friend = async (id :number) => {
+        await userService.remove_friend(id)
+    }
+
+    return (
+        <div>
+        {users.map((current :any, key :any) => {
+            const {username, id} = current
+            return (
+                <div key={key} className="flex justify-between flex-row">
+                    <div  className={styles.listelement}>
+                        {username}
+                        <button onClick={() => add_friend(id)} className={styles.button}>
+                            add friends
+                        </button>
+                        <button onClick={() => remove_friend(id)} className={styles.button}>
+                            remove friends
+                        </button>
+                    </div>
+                </div>
+            )
+        })}
+    </div>
+    )
+} 

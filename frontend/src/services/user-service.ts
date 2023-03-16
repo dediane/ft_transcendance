@@ -20,7 +20,24 @@ export default {
   
   login42 () {
     return axios.get("http://localhost:8000/auth/42", {})
+  },
+
+  search (input :string) {
+	  return axiosInstance.get("/search/" + input).then((res: { data: any }) => res.data)
+  },
+
+  add_friend (friend_id :number) {
+    return axiosInstance.post("/friend/add", {friend_id}).then((res: { data: any }) => res.data)
+  },
+
+  remove_friend (friend_id :number) {
+    return axiosInstance.post("/friend/remove", {friend_id}).then((res: {data :any}) => res.data)
+  },
+
+  find_friend () {
+    return axiosInstance.get("/friend").then((res: { data: any}) => res.data)
   }
+
   //Create42 route GET /auth/42 
   //here ->
 
