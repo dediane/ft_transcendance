@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import styles from "../styles/Profile.module.css"
 import { useRouter } from "next/router";
 import { LayoutGroupContext } from "framer-motion";
-import _ from "lodash";
+import _, { remove } from "lodash";
 
 export default function Homepage() {
     return (
         <>
         <div className="">
         <Searchbar />
-        <Friends />
+        <Friends/>
         <Play />
         <Profil />
         </div>
@@ -100,15 +100,23 @@ const Asset = ({title , value} : {title: string, value :any}) => {
 }
 
 const Friends = () => {
+
+        //FRIEND 
         const [friend, setFriend] = useState([])
         useEffect(()=>{
             const fetch_friends = async() => {
                 const result = await userService.find_friend()
-                console.log(result)
                 setFriend(result.friends)
             }
             fetch_friends()
         }, [])
+        
+        
+        //SETFRIEND REFRESH
+        const refresh = async (id :number) => {
+            await remove_friend(id);
+            setFriend(friend.filter((obj :any) => obj.id !== id));
+        }
     return(
         <div>
             <h2>My friends</h2>
@@ -118,12 +126,12 @@ const Friends = () => {
                     <div key={key} className="flex justify-between flex-row">
                         <div  className={styles.listelement}>
                             {username}
-                            {/* <button onClick={() => add_friend(id)} className={styles.button}> */}
-                                {/* add friends
-                            </button>
-                            <button onClick={() => remove_friend(id)} className={styles.button}>
-                                remove friends
+                            {/* <button onClick={() => add_friend(id)} className={styles.button}>
+                                add friends
                             </button> */}
+                            <button onClick={() => refresh(id)} className={styles.button}>
+                                remove friends
+                            </button>
                         </div>
                     </div>
                 )
@@ -133,51 +141,83 @@ const Friends = () => {
 }
 
 const Searchbar = () => {
-    const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState('')
     const [users, setUsers] = useState([]);
+
+
+    //FRIEND
+    const [friend, setFriend] = useState([]);
+    useEffect(() => {
+        const find = async () => {
+            const re = await userService.find_friend()
+            setFriend(re.friends)
+        }
+        find()
+    },[])
+
+    //SEARCH
     const handleInputChange = _.debounce(async (value) => {
         const result = await userService.search(value)
-        setUsers(result)
-      console.log('Input value:', value, result);
+        const updatedUserList = result.map((user: any) => {
+            const tmp = friend.find((curr : any) => curr.id === user.id);
+            if (tmp) {
+              user.isFriend = true;
+            }
+            return user;
+          });
+        setUsers(updatedUserList)
+        // setUsers(result)
+
     }, 500);
   
     const handleInput = (event: any) => {
-      const value = event.target.value;
-      setInputValue(value);
-      handleInputChange(value);
+      const value = event.target.value
+      setInputValue(value)
+      handleInputChange(value)
     };
     return (
         <div className="">
             <input value={inputValue} onChange={handleInput}  
             type="text" placeholder="search your friends" className={styles.inputbox}></input>
-            <Searchresult users={users}/>
+            <Searchresult users={users} setUsers={setUsers}/>
         </div>
     )
 }
 
+const add_friend = async (id :number) => {
+    await userService.add_friend(id)
+}
+const remove_friend = async (id :number) => {
+    await userService.remove_friend(id)
+}
 
-const Searchresult = ({users} : {users :any}) => {
-    const add_friend = async (id :number) => {
-        await userService.add_friend(id)
-    }
-    const remove_friend = async (id :number) => {
-        await userService.remove_friend(id)
-    }
+const Searchresult = ({users, setUsers} : {users :any, setUsers: any}) => {
+    const refresh_users = async (action: string, id: number) => {
+        action == "add" ? 
+            await add_friend(id) :
+            await remove_friend(id)
 
+        const index = users.map((user: any) => {
+            if(user.id === id)
+                user.isFriend = !user.isFriend
+            return user
+        })
+        setUsers(index)
+    }
     return (
         <div>
         {users.map((current :any, key :any) => {
-            const {username, id} = current
+            const {username, id, isFriend} = current
             return (
                 <div key={key} className="flex justify-between flex-row">
                     <div  className={styles.listelement}>
                         {username}
-                        <button onClick={() => add_friend(id)} className={styles.button}>
+                        {!isFriend && <button onClick={() => refresh_users('add', id)} className={styles.button}>
                             add friends
-                        </button>
-                        <button onClick={() => remove_friend(id)} className={styles.button}>
+                        </button>}
+                        {isFriend &&<button onClick={() => refresh_users('remove', id)} className={styles.button}>
                             remove friends
-                        </button>
+                        </button>}
                     </div>
                 </div>
             )
