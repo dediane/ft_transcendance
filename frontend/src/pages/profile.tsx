@@ -116,7 +116,7 @@ const Friends = () => {
                 const {username, id} = current
                 return (
                     <div key={key} className="flex justify-between flex-row">
-                        <div  className={styles.listel ement}>
+                        <div  className={styles.listelement}>
                             {username}
                             {/* <button onClick={() => add_friend(id)} className={styles.button}> */}
                                 {/* add friends
