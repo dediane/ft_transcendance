@@ -9,17 +9,26 @@ import _, { remove } from "lodash";
 export default function Homepage() {
     return (
         <>
-        <div className="">
-        <Searchbar />
-        <Friends/>
-        <Play />
-        <Profil />
+        <div className={styles.container}>
+            <FriendModule />
+            <Buttons />
+            <Profil />
         </div>
         </>
     )
 }
 
-const Play = () => {
+
+const FriendModule = () => {
+    return(
+        <div className={styles.card}>
+        <Searchbar />
+        <Friends />
+        </div>
+    )
+}
+
+const Buttons = () => {
     const [user, setUser] = useState(false)
 
     useEffect(()=>{
@@ -33,7 +42,7 @@ const Play = () => {
         console.log(user)
     }
     return (
-    <div className="flex">
+    <div className="my-auto m-8 min-w-[25%] items-center flex-1">
         <div className="m-4">
         <button className={styles.button}>
             Play PONG!
@@ -73,7 +82,7 @@ const Profil = () => {
     }
 
     return (
-         <div className={styles.profilecard}>
+         <div className={styles.card}>
             <h3 className={styles.h1}>My profil</h3>
             <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
             </img>
@@ -83,7 +92,7 @@ const Profil = () => {
                 <Asset title={'email'} value={user.email} />
                 <Asset title={'Wins:'} value={user.wins} />
                 <Asset title={'Losses:'} value={user.losses} />
-                <button onClick={() => logout()} className={styles.button}>Log out</button>
+                <button onClick={() => logout()} className={styles.buttonalert}>Log out</button>
             <hr/>
         </div>
     )
@@ -118,19 +127,19 @@ const Friends = () => {
             setFriend(friend.filter((obj :any) => obj.id !== id));
         }
     return(
-        <div>
-            <h2>My friends</h2>
+        <div className="">
+            <h2 className="text-pink-600 text-lg">My friends</h2>
             {friend.map((current :any, key :any) => {
                 const {username, id} = current
                 return (
-                    <div key={key} className="flex justify-between flex-row">
+                    <div key={key} className="">
                         <div  className={styles.listelement}>
                             {username}
                             {/* <button onClick={() => add_friend(id)} className={styles.button}>
                                 add friends
                             </button> */}
-                            <button onClick={() => refresh(id)} className={styles.button}>
-                                remove friends
+                            <button onClick={() => refresh(id)} className={styles.littlebutton}>
+                                remove
                             </button>
                         </div>
                     </div>
@@ -176,7 +185,7 @@ const Searchbar = () => {
       handleInputChange(value)
     };
     return (
-        <div className="">
+        <div className="my-4">
             <input value={inputValue} onChange={handleInput}  
             type="text" placeholder="search your friends" className={styles.inputbox}></input>
             <Searchresult users={users} setUsers={setUsers}/>
@@ -209,7 +218,7 @@ const Searchresult = ({users, setUsers} : {users :any, setUsers: any}) => {
         {users.map((current :any, key :any) => {
             const {username, id, isFriend} = current
             return (
-                <div key={key} className="flex justify-between flex-row">
+                <div key={key} className="">
                     <div  className={styles.listelement}>
                         {username}
                         {!isFriend && <button onClick={() => refresh_users('add', id)} className={styles.button}>

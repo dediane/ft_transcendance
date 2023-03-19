@@ -1,14 +1,14 @@
-.profilecard {
-    max-width: 300px;
+.card {
     padding: 1rem;
     border-radius: 20px;
     --smooth-corners: 4;
-    margin-left: auto;
+    margin-left: 20px;
     margin-right: 20px;
     margin-top: 10px;
     border: 1px solid rgba(255, 255, 255, 0.25);
     background-color: rgba(255, 255, 255, 0.30);
     box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+    min-width: 300px;
 }
 
 .profilepicture {
@@ -28,41 +28,86 @@
 
 .button { 
 	display: block;
-	width: 100%;
+	width: 200px;
+	border-radius: 0.5rem;
+	background-image: linear-gradient(to right, #902ce2, #c383ff);
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+    margin-left: auto;
+    margin-right: auto;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #fff;
+}
+
+.littlebutton { 
+	display: block;
+	width: 80px;
+	border-radius: 0.5rem;
+	background-image: linear-gradient(to right, #ff4b96, #ff83a8);
+	padding-top: 0.15rem;
+	padding-bottom: 0.25rem;
+    margin-left: auto;
+    margin-right: 0;
+	font-size: 0.85rem;
+	font-weight: 400;
+	color: #fff;
+}
+
+.littlebutton:hover {
+    background-image: linear-gradient(to right,#ff6fab, #ffa2c1);
+    }
+
+.button:hover {
+background-image: linear-gradient(to right, #bd84ff, #e0bbff);
+}
+
+.buttonalert { 
+	display: block;
+	width: 200px;
 	border-radius: 0.5rem;
 	background-image: linear-gradient(to right, #ff4b96, #ff83a8);
 	padding-left: 1.25rem;
 	padding-right: 1.25rem;
 	padding-top: 0.75rem;
 	padding-bottom: 0.75rem;
+    margin-left: auto;
+    margin-right: auto;
 	font-size: 0.875rem;
 	font-weight: 500;
 	color: #fff;
 }
 
-.button:hover {
+
+
+.buttonalert:hover {
 background-image: linear-gradient(to right, #ff6fab, #ffa2c1);
 }
 
 .inputbox {
     padding: 0.75rem;
     color:#2e2e2e;
+    border-radius: 0.5rem;
     background-color: #ffffff9e;
-    border: solid 1px #ff6fab9e;
+    border: solid 1px #f3f3f39e;
 }
 
 .inputbox:active {
     padding: 0.75rem;
     color:#2e2e2e;
+    border-radius: 0.5rem;
     background-color: #ffffff9e;
-    border: solid 1px #ff6fab9e;
+    border: solid 1px #6969699e;
 }
 
 .inputbox:hover {
     padding: 0.75rem;
     color:#2e2e2e;
+    border-radius: 0.5rem;
     background-color: #ffffff9e;
-    border: solid 1px #ff6fab9e;
+    border: solid 1px #5050509e;
 }
 
 .inputbox:focus {
@@ -70,13 +115,20 @@ background-image: linear-gradient(to right, #ff6fab, #ffa2c1);
     padding: 0.75rem;
     color:#2e2e2e;
     background-color: #ffffff9e;
-    border:1px solid #ff6fab9e;
+    border:1px solid #5555559e;
     
 }
 
 .listelement {
     min-width: 14rem;
-    background-color: #ffffffba;
     padding: 0.75rem;
-    border-bottom: solid 1px #ff6fab9e;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
 }
