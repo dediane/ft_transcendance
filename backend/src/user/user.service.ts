@@ -98,6 +98,19 @@ export class UserService {
     )
   }
 
+  async turnOnTwoFactorAuthentication(userId: number) {
+    const user = await this.findOnebyId(userId);
+    user.is2fa = true;
+    await this.userRepository.update(userId, user);
+  }
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+    const user = await this.findOnebyId(userId);
+    user.secret2fa = secret;
+    const result = await this.userRepository.update(userId, user);
+    console.log("reSULT", result)
+  }
+
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }

@@ -18,7 +18,6 @@ export default function Homepage() {
     )
 }
 
-
 const FriendModule = () => {
     return(
         <div className={styles.card}>
@@ -64,6 +63,8 @@ const Buttons = () => {
 
 const Profil = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0})
+    const [qrcode, setQrcode] = useState('');
+    const [showModal, setShowModal] = useState(false);
     const router = useRouter();
 
     useEffect(()=>{
@@ -81,24 +82,76 @@ const Profil = () => {
         router.push('/login')
     }
 
+    const active2fa = async() => {
+        const  qrcode = await userService.generate2fa()
+        setQrcode(qrcode);
+        setShowModal(true);
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
     return (
+        <>
+                
          <div className={styles.card}>
-            <h3 className={styles.h1}>My profil</h3>
-            <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
-            </img>
-            <h4>My infos</h4>
+            <div className="col-span-3">
+                <div className="">
+                    <h3 className={styles.h1}>My profil</h3>
+                    <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
+                    </img>
+                    <h4>My infos</h4>
+                    <hr/>
+                        <Asset title={'username'} value={user.username} />
+                        <Asset title={'email'} value={user.email} />
+                        <Asset title={'Wins:'} value={user.wins} />
+                        <Asset title={'Losses:'} value={user.losses} />
+                        <div>
+
+                        <button onClick={() => active2fa()} className={styles.buttonalert}>Activate 2FA</button>
+                        {showModal && (
+                            <div className="">
+                            <Activate2fa qrcode={qrcode}/>
+                            </div>
+                         )}
+                        </div>
+                        <button onClick={() => logout()} className={styles.buttonalert}>Log out</button>
+                </div>
+                <div className={styles.modal}>
+                </div>
+                {/* <img src={qrcode ? qrcode: ''} className={styles.qrcode}/> */}
             <hr/>
-                <Asset title={'username'} value={user.username} />
-                <Asset title={'email'} value={user.email} />
-                <Asset title={'Wins:'} value={user.wins} />
-                <Asset title={'Losses:'} value={user.losses} />
-                <button onClick={() => logout()} className={styles.buttonalert}>Log out</button>
-            <hr/>
+            </div>
         </div>
+        </>
     )
 }
 
-
+const Activate2fa = ({qrcode}: any) => {
+    const [inputValues, setInputValues] = useState({
+        twoFactorAuthenticationCode: '',});
+    // const [TwoFactorAuthenticationCode, setTwoFactorAuthenticationCode] = useState('')
+    const submit = async() => {
+        console.log("Code = ", inputValues.twoFactorAuthenticationCode)
+        const result = await userService.activate2fa(inputValues.twoFactorAuthenticationCode);
+    }
+    return (
+        <>
+        <p>Scan the QR code with your 2FA app</p> 
+        {console.log(qrcode)}
+        <img src={qrcode} className={styles.qrcode}/>
+        <input 
+        onChange={(e) => setInputValues({...inputValues, twoFactorAuthenticationCode: e.target.value})}
+        type="text" 
+        placeholder="Enter your 2FA code" 
+        className={styles.inputbox}
+        />
+        {console.log("INPUT VALUES: ", inputValues)}
+        <button className={styles.button} onClick={() => submit()}>Activate</button>
+        </>
+    )
+}
 const Asset = ({title , value} : {title: string, value :any}) => {
     return(
         <div className="p-3">
@@ -221,11 +274,11 @@ const Searchresult = ({users, setUsers} : {users :any, setUsers: any}) => {
                 <div key={key} className="">
                     <div  className={styles.listelement}>
                         {username}
-                        {!isFriend && <button onClick={() => refresh_users('add', id)} className={styles.button}>
+                        {!isFriend && <button onClick={() => refresh_users('add', id)} className={styles.littlebuttongreen}>
                             add friends
                         </button>}
-                        {isFriend &&<button onClick={() => refresh_users('remove', id)} className={styles.button}>
-                            remove friends
+                        {isFriend &&<button onClick={() => refresh_users('remove', id)} className={styles.littlebutton}>
+                            remove
                         </button>}
                     </div>
                 </div>

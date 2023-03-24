@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
+import axiosService from './axios-service';
 
 class AuthService {
     key : any

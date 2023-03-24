@@ -3,6 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
+import { authenticator } from 'otplib';
+import { User } from 'src/user/entities/user.entity';
+var QRCode = require('qrcode');
 
 @Injectable()
 export class AuthService {
@@ -37,6 +40,37 @@ export class AuthService {
           message: 'User information from 42',
           user: req.user,
           access_token: this.jwtService.sign(req.user)
+        };
+      }
+
+      async generateTwoFactorAuthenticationSecret(user: User): Promise<{secret: string, otpAuthUrl: any}> {
+        const secret = authenticator.generateSecret();
+        const otpAuthUrl = authenticator.keyuri(user.email, 'AUTH_APP_NAME', secret);
+        await this.usersService.setTwoFactorAuthenticationSecret(secret, user.id);
+        return {secret, otpAuthUrl}
+      }
+
+      async generateQrCodeDataURL(otpAuthUrl: string) {
+        return QRCode.toDataURL(otpAuthUrl);
+      }
+
+      isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+        return authenticator.verify({
+          token: twoFactorAuthenticationCode,
+          secret: user.secret2fa,
+        });
+      }
+
+      async loginWith2fa(userWithoutPsw: Partial<User>) {
+        const payload = {
+          email: userWithoutPsw.email,
+          is2fa: !!userWithoutPsw.is2fa,
+          isTwoFactorAuthenticated: true,
+        };
+    
+        return {
+          email: payload.email,
+          access_token: this.jwtService.sign(payload),
         };
       }
 
