@@ -41,6 +41,10 @@ class AuthService {
         return this.decode(this.getToken()).login;
     }
 
+    getUsername() {
+        return this.decode(this.getToken()).username;
+    }
+
     isLocal() {
         return this.decode(this.getToken()).local;
     }
