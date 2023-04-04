@@ -132,7 +132,8 @@ function Messenger2() {
         message={message}
         handleMessageChange={handleMessageChange}
         sendMessage={sendMessage}
-        yourId={socketRef.current ? socketRef.current.id : ""}
+        // yourId={socketRef.current ? socketRef.current.id : ""}
+        yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         joinRoom={joinRoom}
         connectedRooms={connectedRooms}

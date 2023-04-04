@@ -23,25 +23,27 @@
 //     handleMessage(@MessageBody() message: string): void{
 //         this.server.emit('message', message);
 //     }
-    
+
 //     @SubscribeMessage('join_game')
 //     async join(@MessageBody() message: string): Promise<void>{
-        
-        
+
 //         // Find/Create game
 //         //Broadcast to pending user gameid
 //         //If 2 joined send start
 //     }
 // }
 
-///////////// UP Diane version 
+///////////// UP Diane version
 
 // // //////////// DOWN Marie version
 
-
-
-
-import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { UserService } from 'src/user/user.service';
 
@@ -60,8 +62,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     javascript: [],
   };
 
-
-
   async handleDisconnect(socket: Socket) {
     console.log('Socket disconnected:', socket.id);
     this.users = this.users.filter((u) => u.id !== socket.id);
@@ -71,33 +71,49 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('Socket connected:', socket.id);
     // const users = await this.userService.findAll();
     // const user = await this.userService.findOne("balkis@gmail.com");
-    // // console.log(user);
-    // user.socketid = socket.id;
-    // this.userService.update(user.id, user);
-    // console.log(user);
-
-    // user.id = parseInt(socket.id);
-     // await user.save();
   }
+
+  // @SubscribeMessage('join server')
+  // handleJoinServer(socket: Socket, username: string) {
+  //   console.log('join server');
+  //   const user = {
+  //     username,
+  //     id: socket.id,
+  //   };
+  //   console.log(socket.id, 'just joined server');
+
+  //   this.users.push(user);
+  //   this.server.emit('new user', this.users); // broadcast to all connected sockets
+  // }
 
   @SubscribeMessage('join server')
   handleJoinServer(socket: Socket, username: string) {
     console.log('join server');
     const user = {
       username,
-      id: socket.id,
+      sockets: [socket.id],
     };
     console.log(socket.id, 'just joined server');
-  
-    this.users.push(user);
+
+    const existingUser = this.users.find((u) => u.username === username);
+    if (existingUser) {
+      existingUser.sockets.push(socket.id);
+    } else {
+      this.users.push(user);
+    }
+
     this.server.emit('new user', this.users); // broadcast to all connected sockets
   }
-  
 
   @SubscribeMessage('join room')
   handleJoinRoom(socket: Socket, roomName: string) {
-      socket.join(roomName);
-      console.log(socket.id, "just joined room", roomName, this.messages[roomName])
+    socket.join(roomName);
+    console.log(
+      socket.id,
+      'just joined room',
+      roomName,
+      this.messages[roomName],
+    );
     socket.emit('join room', this.messages[roomName]);
   }
 
@@ -135,46 +151,50 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // const user = await this.userService.findOneByUsername(sender);
     // await this.userService.saveMessage(user.id, to, content);
   }
+
+  // @SubscribeMessage('send message')
+  // async handleMessage(socket: Socket, data: any) {
+  //   // Make this function async to allow database calls
+  //   const { content, to, sender, chatName, isChannel } = data;
+  //   console.log(socket.id, 'just sent a message', data);
+
+  //   // if (isChannel) {
+  //   const payload = {
+  //     content,
+  //     chatName,
+  //     sender,
+  //   };
+  //   // const existingUser = this.users.find((u) => u.username === sender);
+
+  //   // socket.join(sender);
+  //   socket.to(to).emit('new message', payload);
+  //   // } else {
+  //   //   const payload = {
+  //   //     content,
+  //   //     chatName: sender,
+  //   //     sender,
+  //   //   };
+  //   //   socket.to(to).emit('new message', payload);
+
+  //   //   // Get all sockets associated with the user id/username and emit the message to them
+  //     // const userSockets = this.users.filter((user) => user.username === to);
+  //     // userSockets.forEach((userSocket) => {
+  //     //   socket.to(userSocket).emit('new message', payload);
+  //     // });
+  //   // }
+
+  //   if (this.messages[chatName]) {
+  //     this.messages[chatName].push({
+  //       sender,
+  //       content,
+  //     });
+  //   }
+
+  //   // Save the message to the database
+  //   // const user = await this.userService.findOneByUsername(sender);
+  //   // await this.userService.saveMessage(user.id, to, content);
+  // }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // // // import { SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 // // // import { Socket, Server } from 'socket.io';
@@ -253,10 +273,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 // // //   }
 // // // }
 
-
-
 // // // // //BEFORE
-
 
 // import {
 //   MessageBody,
@@ -269,10 +286,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 // // import { channel } from 'diagnostics_channel';
 // import { Socket, Server } from 'socket.io';
 
-
 // let users = [];
-
-
 
 // const messages = {
 //     general: [],
@@ -280,17 +294,17 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 //     jokes: [],
 //     javascript: [],
 //   };
-  
+
 //   const express = require('express');
 //   const http = require('http');
 //   const app = express();
 //   const server = http.createServer(app)
 //   const socket = require('socket.io');
 //   const io = socket(server);
-  
+
 //   io.on('connection', (socket) => {
 //       //grace a socket.on, genere un nouveau socket qui represente une personne
-      
+
 //       socket.on('join server', (username: string) => {
 //           console.log('join server');
 //           const user = {
@@ -301,12 +315,12 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 //           socket.emit('new user', users);
 //       });
 //     //   });
-      
+
 //       socket.on('join room', (roomName : string, cb) => {
 //           socket.join(roomName);
 //           cb(messages[roomName]);
 //       });
-      
+
 //       socket.on('send message', ({ content, to, sender, chatName, isChannel }) => {
 //           if (isChannel) {
 //               const payload = {

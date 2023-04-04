@@ -75,9 +75,9 @@ function Chat(props) {
     function renderUser(user){
        
         console.log("render user");
-        if (user.id === props.yourId){
+        if (user.username === props.yourId){ // pour fix le you: username, c'est ici pour sûr. faut juste que je transforme mes users en class et que je mette ici
             return (
-                <Row key={user.id}>
+                <Row key={user.username}>
                     You: {user.username}
                 </Row>
             );
@@ -85,12 +85,12 @@ function Chat(props) {
         const currentChat = {
             chatName : user.username,
             isChannel: false,
-            receiverId: user.id,
+            receiverId: user.username,
         };
         return(
             <Row onClick={() => {
                 props.toggleChat(currentChat);
-            }} key={user.id}>
+            }} key={user.username}>
                 {user.username}
             </Row>
         )
