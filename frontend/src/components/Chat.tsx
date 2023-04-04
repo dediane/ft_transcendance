@@ -1,10 +1,7 @@
-
-
-
 import React from 'react'
 import styled from "styled-components"
 
-const rooms = [
+const initialRooms = [
     "general",
     "random",
     "jokes",
@@ -60,6 +57,17 @@ const Messages = styled.div`
 `;
 
 function Chat(props) {
+    const [rooms, setRooms] = React.useState(initialRooms);
+    const [newRoomName, setNewRoomName] = React.useState('');
+
+    function addRoom() {
+        setNewRoomName('');
+        const newRoomName = window.prompt('Enter the name of the new room');
+        if (newRoomName !== null && newRoomName !== '') {
+            setRooms([...rooms, newRoomName]);
+        }
+    }
+
     function renderRooms(room){
         const currentChat = {
             chatName: room,
@@ -72,10 +80,10 @@ function Chat(props) {
             </Row>
         )
     }
+
     function renderUser(user){
-       
         console.log("render user");
-        if (user.username === props.yourId){ // pour fix le you: username, c'est ici pour sûr. faut juste que je transforme mes users en class et que je mette ici
+        if (user.username === props.yourId){
             return (
                 <Row key={user.username}>
                     You: {user.username}
@@ -95,6 +103,7 @@ function Chat(props) {
             </Row>
         )
     }
+
     function renderMessages(message, index){
         return (
             <div key={index}>
@@ -103,6 +112,7 @@ function Chat(props) {
             </div>
         )
     }
+
     let body;
     if(!props.currentChat.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
         body = (
@@ -116,19 +126,24 @@ function Chat(props) {
             <button onClick={() => props.joinRoom(props.currentChat.chatName)}> Join {props.currentChat.chatName}</button>
         )
     }
+
     function handleKeyPress(e){
         if(e.key === "Enter"){
             props.sendMessage();
         }
     }
+
     return (
      <Container>
      <SideBar>
         <h3>Channels</h3>
         {rooms.map(renderRooms)}
+        <button onClick={addRoom}>Add Room</button>
+       
         <h3>All Users</h3>
         {props.allUsers.map(renderUser)}
      </SideBar>
+
      <ChatPanel>
         <ChannelInfo>
             {props.currentChat.chatName}    
