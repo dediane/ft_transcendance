@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class MessageService {
-  create(createMessageDto: CreateMessageDto) {
-    return 'This action adds a new message';
+  constructor(
+    @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
+  ) {}
+
+  async create(createMessageDto: CreateMessageDto): Promise<Message> {
+    const message = this.messageRepository.create(createMessageDto);
+    return this.messageRepository.save(message);
   }
 
-  findAll() {
-    return `This action returns all message`;
+  async findAll(): Promise<Message[]> {
+    return this.messageRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} message`;
+  async findOne(id : number) : Promise<Message | undefined> {
+    const Message = await this.messageRepository
+    .createQueryBuilder('Message')
+    .select('Message')
+    .where('Message.id = :id', {id})
+    .getOne();
+
+    return Message;
+  }
+  
+
+  async update(id: number, updateMessageDto: UpdateMessageDto): Promise<Message> {
+    const message = await this.messageRepository.findOne({where: {id}});
+    if (!message) {
+      throw new Error(`Message with ID ${id} not found`);
+    }
+    Object.assign(message, updateMessageDto);
+    return this.messageRepository.save(message);
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  async remove(id: number): Promise<void> {
+    await this.messageRepository.delete(id);
   }
 }
