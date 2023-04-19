@@ -9,7 +9,7 @@ import { Channel } from './entities/channel.entity';
 
   controllers: [ChannelController],
   providers: [ChannelService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, ChannelService],
 
 })
 

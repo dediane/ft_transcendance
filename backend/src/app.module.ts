@@ -16,6 +16,7 @@ import { UserService } from './user/user.service';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { Game } from './game/entities/game.entity';
+import { ChannelService } from './channel/channel.service';
 
 @Module({
   imports: [
