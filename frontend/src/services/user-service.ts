@@ -15,6 +15,10 @@ export default {
     return axiosInstance.post("auth/2fa/turn-on", { twoFactorAuthenticationCode }).then((res: { data: any }) => res.data)
   },
 
+  disable2fa(twoFactorAuthenticationCode :string) {
+    return axiosInstance.post("auth/2fa/turn-off", { twoFactorAuthenticationCode }).then((res: { data: any }) => res.data)
+  },
+
   generate2fa() {
     return axiosInstance.post("auth/2fa/generate").then((res: { data: any }) => res.data)
   },

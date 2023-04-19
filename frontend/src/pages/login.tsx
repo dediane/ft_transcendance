@@ -17,6 +17,8 @@ export default function Login () {
 
 export const Authentication = () => {
   const [register, setRegister] = useState(false)
+  //Add State for 2FA React display
+
   return (
     <div className="mx-auto flex-wrap md:flex md:m-10 md:px-8">
       <div className='mx-auto max-w-lg flex-1 lg:pr-8 my-4'>
@@ -26,13 +28,13 @@ export const Authentication = () => {
       </div>
       <div className={styles.card}>
         {register && <Registration setRegister={setRegister} />}
-        {!register && <LoginForm setRegister={setRegister} />}
+        {!register && <LoginForm setRegister={setRegister}/>}
       </div>
     </div>
   )
 }
 
-const handleLogin = async ({email, password, setError, router} : {email :string, password :string, setError :any, router :any}) => {
+const handleLogin = async ({email, password, setError, router} : {email :string, password :string, setError :any, router :any},) => {
   if (!email || !password){
       setError('Missing credential')
       return
@@ -41,11 +43,16 @@ const handleLogin = async ({email, password, setError, router} : {email :string,
   console.log(result);
   if (!result.status) {
     setError(result.error)}
-  if(result.access_token ) {
+  if(result.access_token) {
     authenticationService.saveToken(result.access_token)
-    router.push("/profile");
+    
+    //Redirect if 2FA disabled 
+    if(!result.otp_active) {
+      router.push("/profile");
+    }
   }
 }  
+
 
 export const LoginForm = ({setRegister} : {setRegister: any}) => {
   const [email, setEmail] = useState('')
@@ -72,6 +79,8 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
             Log in
         </button>
         <Connect42 />
+        {/* Add 2FA Input only display if state is active */}
+
       <p className="text-center text-sm text-gray-500">
         No account? 
         <a className="underline" onClick={() => setRegister(true)}> Register</a>
@@ -155,6 +164,43 @@ export const Connect42 = () => {
     Connect with 42</button>
     </a>
   </div>
+  )
+}
+
+export const Modal2fa = () => {
+  const [inputValues, setInputValues] = useState({
+  twoFactorAuthenticationCode: '',});
+  const [qrcode, setQrcode] = useState('');
+
+  const generate2fa = async() => {
+    const  qrcode = await userService.generate2fa()
+    setQrcode(qrcode);
+  }
+  
+  const login2fa = async() => {
+    console.log("Code = ", inputValues.twoFactorAuthenticationCode)
+    const result = await userService.authenticate2fa(inputValues.twoFactorAuthenticationCode);
+  }
+
+  generate2fa();
+
+  return (
+    <div>
+       <>
+        <h1 className={styles.title2}>2FA</h1>
+        <p>Scan the QR code with your 2FA app</p> 
+        {console.log(qrcode)}
+        <img src={qrcode} className={styles.qrcode}/>
+        <input 
+        onChange={(e) => setInputValues({...inputValues, twoFactorAuthenticationCode: e.target.value})}
+        type="text" 
+        placeholder="Enter your 2FA code" 
+        className={styles.inputbox}
+        />
+        {console.log("INPUT VALUES: ", inputValues)}
+        <button className={styles.button} onClick={() => login2fa()}>Login</button>
+        </>
+    </div>
   )
 }
 

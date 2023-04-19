@@ -132,9 +132,14 @@ const Activate2fa = ({qrcode}: any) => {
     const [inputValues, setInputValues] = useState({
         twoFactorAuthenticationCode: '',});
     // const [TwoFactorAuthenticationCode, setTwoFactorAuthenticationCode] = useState('')
-    const submit = async() => {
+    const enable2fa = async() => {
         console.log("Code = ", inputValues.twoFactorAuthenticationCode)
         const result = await userService.activate2fa(inputValues.twoFactorAuthenticationCode);
+    }
+
+    const disable2fa = async() => {
+        console.log("Code = ", inputValues.twoFactorAuthenticationCode)
+        const result = await userService.disable2fa(inputValues.twoFactorAuthenticationCode);
     }
     return (
         <>
@@ -148,7 +153,8 @@ const Activate2fa = ({qrcode}: any) => {
         className={styles.inputbox}
         />
         {console.log("INPUT VALUES: ", inputValues)}
-        <button className={styles.button} onClick={() => submit()}>Activate</button>
+        <button className={styles.button} onClick={() => enable2fa()}>Activate</button>
+        <button className={styles.button} onClick={() => disable2fa()}>Disable</button>
         </>
     )
 }
@@ -172,8 +178,7 @@ const Friends = () => {
             }
             fetch_friends()
         }, [])
-        
-        
+
         //SETFRIEND REFRESH
         const refresh = async (id :number) => {
             await remove_friend(id);
@@ -229,7 +234,6 @@ const Searchbar = () => {
           });
         setUsers(updatedUserList)
         // setUsers(result)
-
     }, 500);
   
     const handleInput = (event: any) => {

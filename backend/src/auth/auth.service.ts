@@ -30,7 +30,7 @@ export class AuthService {
         };
     }
 
-    login42(req) {
+    login42(req :any) {
         if (!req.user) {
           return {status: false};
         }
@@ -54,7 +54,9 @@ export class AuthService {
         return QRCode.toDataURL(otpAuthUrl);
       }
 
-      isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+      async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+        //const db_user = await this.usersService.findOnebyEmail(user.email)
+        //console.log("LO<g",twoFactorAuthenticationCode, user.secret2fa)
         return authenticator.verify({
           token: twoFactorAuthenticationCode,
           secret: user.secret2fa,
@@ -73,9 +75,4 @@ export class AuthService {
           access_token: this.jwtService.sign(payload),
         };
       }
-
 }
-// //const jwt = await this.jwtService.signAsync({id: user.id});
-// const jwt = this.jwtService.sign({id: user.id})
-// console.log(jwt)
-// //return jwt;

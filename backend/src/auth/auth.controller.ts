@@ -15,20 +15,24 @@ constructor(
   ) {}
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(@Request() req :any) {
     if (!req.user.status){
       return (req.user)}
-    return await this.authService.login(req.user.user);
+    if(!req.user.is2fa) {
+      return await this.authService.login(req.user.user);
+    } else {
+      return {status: true, otp_active: true}
+    }
   }
 
   @Get('42')
   @UseGuards(FortyTwoAuthGuard)
-  async auth(@Request() req) {}
+  async auth(@Request() req :any) {}
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   @Redirect("http://localhost:3000", 302)
-  callback42(@Request() req) {
+  callback42(@Request() req :any) {
     const {status, access_token} = this.authService.login42(req);
     if(!status)
       return { url: 'http://localhost:3000/login' };
@@ -62,6 +66,21 @@ constructor(
     }
     await this.userService.turnOnTwoFactorAuthentication(req.user.id);
   }
+
+  @Post('2fa/turn-off')
+  @UseGuards(JwtAuthGuard)
+  async turnOffTwoFactorAuthentication(@Request() req, @Body() body) {
+    const isCodeValid =
+      this.authService.isTwoFactorAuthenticationCodeValid(
+        body.twoFactorAuthenticationCode,
+        req.user,
+      );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+    await this.userService.turnOffTwoFactorAuthentication(req.user.id);
+  }
+
 
   @Post('2fa/authenticate')
   @HttpCode(200)

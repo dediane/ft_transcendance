@@ -29,7 +29,6 @@ export class UserService {
   }
 
   async search(params: string) {
-    console.log(params)
     const users = await this.userRepository
     .createQueryBuilder('user')
     .select(['user.username', 'user.id', 'user.avatar'])
@@ -61,7 +60,6 @@ export class UserService {
       where: { id: user_id },
       relations: ['friends'],
     });
-    console.log("USER", user)
     const friend = await this.findOnebyId(friend_id);
     if(!user.friends) {
       user.friends = []
@@ -77,7 +75,6 @@ export class UserService {
       where: { id: user_id },
       relations: ['friends'],
     });
-    console.log("USER", user)
     if(user.friends) {
       for (var k = 0; k < user.friends.length; k++)
       {
@@ -103,6 +100,13 @@ export class UserService {
     user.is2fa = true;
     await this.userRepository.update(userId, user);
   }
+
+  async turnOffTwoFactorAuthentication(userId: number) {
+    const user = await this.findOnebyId(userId);
+    user.is2fa = false;
+    await this.userRepository.update(userId, user);
+  }
+
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
     const user = await this.findOnebyId(userId);
