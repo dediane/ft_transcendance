@@ -108,6 +108,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('join room')
   handleJoinRoom(socket: Socket, roomName: string) {
     socket.join(roomName);
+    if (!this.messages[roomName]) {
+      this.messages[roomName] = []; // add new room if it doesn't exist
+    }
     console.log(
       socket.id,
       'just joined room',

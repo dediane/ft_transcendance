@@ -4,12 +4,12 @@ import io from "socket.io-client";
 import immer from "immer";
 import AuthService from "../services/authentication-service"
 //backend/src/auth/auth.service
-const initialMessagesState = {
-  general: [],
-  random: [],
-  jokes: [],
-  javascript: [],
-};
+// const initialMessagesState = {
+//   general: [],
+//   random: [],
+//   jokes: [],
+//   javascript: [],
+// };
 
 function Messenger2() {
 //   const [AuthService.getUsername(), setAuthService.getUsername()] = useState("");
@@ -21,7 +21,7 @@ function Messenger2() {
   });
   const [connectedRooms, setConnectedRooms] = useState(["general"]);
   const [allUsers, setAllUsers] = useState([]);
-  const [messages, setMessages] = useState(initialMessagesState);
+  // const [messages, setMessages] = useState(initialMessagesState);
   const [message, setMessage] = useState("");
   const socketRef = useRef();
 
@@ -32,6 +32,19 @@ function Messenger2() {
 //   useEffect(() => {
 //     setMessage("");
 //   }, [messages]);
+
+const [messages, setMessages] = useState({}); // set initial state to empty object
+  
+// create a new channel && set initial state to empty array
+function createNewChannel(channelName) {
+  setMessages(prevMessages => ({
+    ...prevMessages,
+    [channelName]: [] // set initial state to empty array
+  }));
+}
+
+
+
 
   function sendMessage() {
     const payload = {
@@ -124,9 +137,16 @@ function Messenger2() {
     };
   }, []);
 
+useEffect(() => {
+  createNewChannel("general");
+  createNewChannel("random");
+  createNewChannel("jokes");
+  createNewChannel("javascript");
+}, []);
   
   let body;
   if (connected) {
+    
     body = (
       <Chat
         message={message}
@@ -136,6 +156,7 @@ function Messenger2() {
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         joinRoom={joinRoom}
+        createNewChannel={createNewChannel}
         connectedRooms={connectedRooms}
         currentChat={currentChat}
         toggleChat={toggleChat}
