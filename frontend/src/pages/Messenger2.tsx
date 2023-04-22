@@ -1,18 +1,11 @@
-import { useEffect, useState, useRef, SetStateAction } from "react";
+import { useEffect, useState, useRef } from "react";
 import Chat from "../components/Chat";
 import io from "socket.io-client";
 import immer from "immer";
-import AuthService from "../services/authentication-service"
-//backend/src/auth/auth.service
-// const initialMessagesState = {
-//   general: [],
-//   random: [],
-//   jokes: [],
-//   javascript: [],
-// };
+import AuthService from "../services/authentication-service";
+import Auth from "./auth";
 
 function Messenger2() {
-//   const [AuthService.getUsername(), setAuthService.getUsername()] = useState("");
   const [connected, setConnected] = useState(false);
   const [currentChat, setCurrentChat] = useState({
     isChannel: true,
@@ -21,7 +14,6 @@ function Messenger2() {
   });
   const [connectedRooms, setConnectedRooms] = useState(["general"]);
   const [allUsers, setAllUsers] = useState([]);
-  // const [messages, setMessages] = useState(initialMessagesState);
   const [message, setMessage] = useState("");
   const socketRef = useRef();
 
@@ -29,22 +21,38 @@ function Messenger2() {
     setMessage(e.target.value);
   }
 
-//   useEffect(() => {
-//     setMessage("");
-//   }, [messages]);
+  const [messages, setMessages] = useState({});
 
-const [messages, setMessages] = useState({}); // set initial state to empty object
+  const [rooms, setRooms] = useState<string[]>([]);
+
+  useEffect(() => {
+    const initialRooms = ["general", "random", "jokes", "javascript"];
+    initialRooms.forEach((room) => createNewChannel(room));
+  }, []);
+
+ 
+
+  function createNewChannel(channelName: string) {
+    if (channelName.trim() === "") { // check if channelName is empty
+      return;
+    }
   
-// create a new channel && set initial state to empty array
-function createNewChannel(channelName) {
-  setMessages(prevMessages => ({
-    ...prevMessages,
-    [channelName]: [] // set initial state to empty array
-  }));
-}
 
-
-
+    socketRef?.current?.emit("create chan", channelName);
+  
+    setRooms((prevRooms) => {
+      if (!prevRooms.includes(channelName)) {
+        return [...prevRooms, channelName];
+      }
+      return prevRooms;
+    });
+    setMessages((prevMessages) => ({
+      ...prevMessages,
+      [channelName]: [],
+    }));
+  }
+  
+  
 
   function sendMessage() {
     const payload = {
@@ -65,8 +73,6 @@ function createNewChannel(channelName) {
     setMessages(newMessages);
   }
 
-  
-
   function roomJoinCallback(incomingMessages: any, room: string) {
     console.log("incoming::::", incomingMessages);
     const newMessages = immer(messages, (draft) => {
@@ -79,15 +85,13 @@ function createNewChannel(channelName) {
     const newConnectedRooms = immer(connectedRooms, (draft) => {
       draft.push(room);
     });
-    socketRef.current.emit(
-      "join room",
-      room,
-      (messages: any) => roomJoinCallback(messages, room)
+    socketRef.current.emit("join room", room, (messages: any) =>
+      roomJoinCallback(messages, room)
     );
     setConnectedRooms(newConnectedRooms);
   }
 
-  function toggleChat(currentChat: SetStateAction<{ isChannel: boolean; chatName: string; receiverId: string; }>) {
+  function toggleChat(currentChat) {
     if (!messages[currentChat.chatName]) {
       const newMessages = immer(messages, (draft) => {
         draft[currentChat.chatName] = [];
@@ -97,8 +101,6 @@ function createNewChannel(channelName) {
     setCurrentChat(currentChat);
   }
 
-
-
   useEffect(() => {
     const userdata = {
       id: AuthService.getId(),
@@ -106,28 +108,34 @@ function createNewChannel(channelName) {
     };
 
     socketRef.current = io("http://localhost:8000");
-    //ocketRef.current = io.connect("http://localhost:8000");
+
     socketRef.current.on("connect", () => {
       console.log("connected to server");
       setConnected(true);
     });
 
-        // socketRef.current.on("connection", (socketRef) => {
-         
-          
     socketRef.current.emit("join server", userdata);
     socketRef.current.emit("join room", "general", (messages: any) =>
-        roomJoinCallback(messages, "general")
+      roomJoinCallback(messages, "general")
     );
-       
+
     socketRef.current.on("connected users", (users) => {
       console.log("all users", users);
       setAllUsers(users);
     });
+   
+
+    socketRef.current.on("new chan", (users) => {
+      if (roomName) {
+        console.log("new chan created", users);
+        createNewChannel(roomName);
+      }
+    });
+    
 
     socketRef.current.on("new message", ({ content, sender, chatName }) => {
-        setMessages((messages) => {
-          const newMessages = immer(messages, (draft) => {
+      setMessages((messages) => {
+        const newMessages = immer(messages, (draft) => {
             if (draft[chatName]) {
               draft[chatName].push({ content, sender });
             } else {
@@ -145,13 +153,15 @@ function createNewChannel(channelName) {
     };
   }, []);
 
-useEffect(() => {
-  createNewChannel("general");
-  createNewChannel("random");
-  createNewChannel("jokes");
-  createNewChannel("javascript");
-}, []);
-  
+
+
+
+// useEffect(() => {
+//   createNewChannel("javascript");
+//   createNewChannel("TEST");
+// }, []);
+
+
   let body;
   if (connected) {
     
@@ -166,6 +176,7 @@ useEffect(() => {
         joinRoom={joinRoom}
         createNewChannel={createNewChannel}
         connectedRooms={connectedRooms}
+        rooms={rooms}
         currentChat={currentChat}
         toggleChat={toggleChat}
         messages={messages[currentChat.chatName]}

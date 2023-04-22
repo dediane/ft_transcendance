@@ -91,21 +91,43 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 }
 
 
+  // @SubscribeMessage('create chan')
+  // async handleCreateNewChan(socket: Socket, roomName: string) {
+  //   if (!roomName) {
+  //     throw new Error('Room name cannot be null or undefined.');
+  // }
+  //    if (!this.channelService.findOneByName(roomName)) //si dm ou prive ok mais sinon attention aux doublons de noms donc faire plutot par channelid
+  //     {
+  //     const channelDto: CreateChannelDto = {
+  //       roomName
+  //     };
+  //     this.channelService.createChannel(channelDto);
+  //   // }
+  //   // this.server.emit('new chan', this.users); // broadcast to all connected sockets
+
+  // }}
+
+
   @SubscribeMessage('create chan')
   async handleCreateNewChan(socket: Socket, roomName: string) {
-    if (!roomName) {
-      throw new Error('Room name cannot be null or undefined.');
-  }
-     if (!this.channelService.findOneByName(roomName)) //si dm ou prive ok mais sinon attention aux doublons de noms donc faire plutot par channelid
-      {
-      const channelDto: CreateChannelDto = {
-        roomName
-      };
-      this.channelService.createChannel(channelDto);
-    // }
-    // this.server.emit('new chan', this.users); // broadcast to all connected sockets
+    
+    if (roomName == null) { // check if roomName is null or undefined
+      socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
+    return;
+    }
+    console.log(`room (${roomName})  created`)
 
-  }}
+    const existingChannel = await this.channelService.findOneByName(roomName);
+    if (!existingChannel) {
+      console.log(`room (${roomName})  doesn't exist so let's create it`)
+      const channelDto: CreateChannelDto = {
+        name: roomName
+      };
+      await this.channelService.createChannel(channelDto);
+      
+    }
+  }
+  
 
   @SubscribeMessage('join room')
   async handleJoinRoom(socket: Socket, roomName: string) {

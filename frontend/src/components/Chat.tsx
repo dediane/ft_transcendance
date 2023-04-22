@@ -105,13 +105,18 @@ const Input = styled.input`
   /* styles for the input fields */
 `;
 
-const button = styled.button`
+const Button = styled.button`
   /* styles for the buttons */
 `;
 
 
+
 function Chat(props) {
-    const [rooms, setRooms] = React.useState(initialRooms);
+    const [rooms, setRooms] = React.useState(props.rooms);
+    // const [rooms, setRooms] = React.useState(Array.from(new Set(props.rooms)));
+
+// const [rooms, setRooms] = useState<string[]>(props.rooms);
+
     const [newRoomName, setNewRoomName] = React.useState('');
     const [showModal, setShowModal] = useState(false);
     const [roomName, setRoomName] = useState('');
@@ -291,7 +296,7 @@ const [showPopup, setShowPopup] = useState(false);
     if(!props.currentChat.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
         body = (
             <Messages>
-                {props.messages.map(renderMessages)}
+                {props.messages?.map(renderMessages)}
             </Messages>
         )
     } else
@@ -312,7 +317,7 @@ const [showPopup, setShowPopup] = useState(false);
     return (
         <Container>
             <SideBar>
-                <button onClick={openModal}>Add Room</button>
+                <Button onClick={openModal}>Add Room</Button>
                 {showModal && (
                     <ModalContainer>
                            <TextBox
@@ -339,10 +344,10 @@ const [showPopup, setShowPopup] = useState(false);
                     </ModalContainer>
                 )}
                 <h3>Channels</h3>
-                {rooms.map(renderRooms)}
+                {rooms?.map(renderRooms)}
        
         <h3>All connected Users</h3>
-        {props.allUsers.map(renderUser)}
+        {props.allUsers?.map(renderUser)}
      </SideBar>
 
      <ChatPanel>

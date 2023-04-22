@@ -7,7 +7,6 @@ export class Channel {
     @PrimaryGeneratedColumn()
     id: number;
 
-    // @Column({ unique: true })
     @Column({ unique: true, nullable: false })
     name: string;
 
