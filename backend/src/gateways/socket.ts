@@ -115,7 +115,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
     return;
     }
-    console.log(`room (${roomName})  created`)
+    console.log(`attempting (${roomName}) room creation`)
     const usr = await this.userService.findOnebyId(datachan.creator);
 
     const existingChannel = await this.channelService.findOneByName(roomName);
@@ -127,7 +127,18 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
         admins: [usr],
         invitedUsers: [usr],
       };
-      await this.channelService.createChannel(channelDto);
+
+    const newChannel = await this.channelService.createChannel(channelDto);
+
+          // // Add the new channel to the creator user's channels
+          // if (usr.channels) {
+          //   usr.channels.push(newChannel);
+          //   await this.userService.save(usr);
+          // } else {
+          //   console.log("user chan bug")
+          //   // handle the case where usr.channels is undefined
+          // }
+          
       
     }
   }

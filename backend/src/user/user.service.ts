@@ -27,11 +27,25 @@ export class UserService {
     return {status: true};
   }
 
-  async findAll() {
-    const users = await this.userRepository.find();
+  // async findAll() {
+  //   const users = await this.userRepository.find();
+  //   return users;
+  // }
+  
+  async findAll(): Promise<User[]> {
+    const users = await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.channels', 'channel')
+      // .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
+      // .leftJoinAndSelect('user.adminChannels', 'adminChannel')
+      // .leftJoinAndSelect('channel.messages', 'message')
+      .select(['user.username', 'channel.name'])
+      // .select(['user.id', 'user.username', 'message.id', 'channel.name', 'invitedChannel.name', 'adminChannel.name'])
+      .getMany();
+  
     return users;
   }
-
+  
+  
   async findOne(email: string) : Promise<User | undefined> {
     const user = await this.userRepository
     .createQueryBuilder('user')
@@ -40,7 +54,7 @@ export class UserService {
     .getOne()
     return user;
   }
-
+  
   async findOnebyId(id : number) : Promise<User | undefined> {
     const user = await this.userRepository
     .createQueryBuilder('user')
@@ -49,6 +63,42 @@ export class UserService {
     .getOne();
     return user;
   }
+  // async findAll() {
+  //   // const users = await this.userRepository.find();
+
+  //   const users = await this.userRepository.find({
+  //     // relations: ['id', 'username', 'message', 'channels', 'invitedChannels', 'adminChannels']
+  //     relations: ['message', 'channels', 'invitedChannels', 'adminChannels']
+  //   });
+  //   return users;
+  // }
+
+  // async findOnebyId(id: number): Promise<User | undefined> {
+  //   const user = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .leftJoinAndSelect('user.channels', 'channel')
+  //     .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
+  //     .leftJoinAndSelect('user.adminChannels', 'adminChannel')
+  //     .where('user.id = :id', { id })
+  //     .getOne();
+  //   return user;
+  // }
+
+
+
+
+  // async findOnebyId(id : number) : Promise<User | undefined> {
+  //   const user = await this.userRepository
+  //   .createQueryBuilder('user')
+  //   .select('user')
+  //   .where('user.id = :id', {id})
+  //   .getOne();
+  //   return user;
+  // }
+
+
+
+
   async findOneChannelByName(userId: number, channelName: string): Promise<Channel | undefined> {
     const user = await this.userRepository.findOne({
       where: { id: userId },

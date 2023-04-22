@@ -29,12 +29,25 @@ export class ChannelService {
   //   return this.channelRepository.find();
   // }
 
+  // async findAll() {
+  //   const channels = await this.channelRepository.find({
+  //     relations: ['messages', 'members', 'invitedUsers', 'admins']
+  //   });
+  //   return channels;
+  // }
+  
   async findAll() {
-    const channels = await this.channelRepository.find({
-      relations: ['messages', 'members', 'invitedUsers', 'admins']
-    });
+    const channels = await this.channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.members', 'member')
+      // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
+      // .leftJoinAndSelect('channel.admins', 'admin')
+      // .leftJoinAndSelect('channel.messages', 'message')
+      // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
+      .getMany();
     return channels;
   }
+  
   
   // async findOne(id: number): Promise<Channel> {
   //   return this.channelRepository.findOne({ where: { id } });

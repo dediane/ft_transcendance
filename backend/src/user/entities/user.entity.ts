@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, ManyToOne, JoinColumn, JoinTable } from 'typeorm';
 import { Game } from 'src/game/entities/game.entity';
 import { Message } from 'src/message/entities/message.entity';
 import { Channel } from 'src/channel/entities/channel.entity';
@@ -58,24 +58,35 @@ export class User {
   gamePlayer2: Game[];
 
   @OneToMany(() => Message, (message) => message.sender)
-  message: Message[];
-  channels: Channel[]; //channel dont il est membre
-  invitedChannels: Channel[]; // channel sur invite (pour le kick/ban/mot de passe)
-  adminChannels: Channel[]; // chan dont admin (pour les commandes ci-dessus + changement de mdp)
+@JoinColumn()
+messages: Message[];
 
+// @ManyToMany(() => Channel, (channel) => channel.members)
+// @JoinTable()
+// channels: Channel[];
+
+// @ManyToMany(() => Channel, (channel) => channel.invitedUsers)
+// @JoinTable()
+// invitedChannels: Channel[];
+
+// @ManyToMany(() => Channel, (channel) => channel.admins)
+// @JoinTable()
+// adminChannels: Channel[];
+@ManyToMany(() => Channel, channels => channels.members)
+channels: Channel[];
 
   async getChannels(): Promise<Channel[]> {
     return this.channels;
   }
 
-  async getInvitedChannels(): Promise<Channel[]> {
-    return this.invitedChannels;
-  }
+  // async getInvitedChannels(): Promise<Channel[]> {
+  //   return this.invitedChannels;
+  // }
 
 
-  async getadminChannels(): Promise<Channel[]> {
-    return this.adminChannels;
-  }
+  // async getadminChannels(): Promise<Channel[]> {
+  //   return this.adminChannels;
+  // }
   // @ManyToMany(() => Channel, channel => channel.users)
   // memberships: ChannelMembership[];
 }
