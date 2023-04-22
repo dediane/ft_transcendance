@@ -87,7 +87,14 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       }
     }
   }
+  const chans =  await this.channelService.findAll();
+  const channelNames = chans.map(channel => channel.name);
+console.log(channelNames);
+  this.server.emit('all chans',channelNames);
   this.server.emit('connected users', this.users);
+ 
+  // this.server.emit('all chans', chan);
+
 }
 
 
@@ -129,6 +136,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       };
 
     const newChannel = await this.channelService.createChannel(channelDto);
+    this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
 
           // // Add the new channel to the creator user's channels
           // if (usr.channels) {

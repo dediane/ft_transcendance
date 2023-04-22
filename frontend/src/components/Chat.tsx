@@ -2,12 +2,12 @@ import React, { useState, useEffect} from 'react';
 import styled from "styled-components"
 import Popup from 'reactjs-popup';
 
-const initialRooms = [
-    "general",
-    "random",
-    "jokes",
-    "javascript"
-];
+// const initialRooms = [
+//     "general",
+//     "random",
+//     "jokes",
+//     "javascript"
+// ];
 
 
 const Container = styled.div`
@@ -344,8 +344,9 @@ const [showPopup, setShowPopup] = useState(false);
                     </ModalContainer>
                 )}
                 <h3>Channels</h3>
-                {rooms?.map(renderRooms)}
-       
+                {props.rooms?.map(renderRooms)}
+                {/* {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)} */}
+
         <h3>All connected Users</h3>
         {props.allUsers?.map(renderUser)}
      </SideBar>

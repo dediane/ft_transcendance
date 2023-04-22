@@ -1,9 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, SetStateAction } from "react";
 import Chat from "../components/Chat";
 import io from "socket.io-client";
 import immer from "immer";
 import AuthService from "../services/authentication-service";
 import Auth from "./auth";
+import axios from 'axios';
 
 function Messenger2() {
   const [connected, setConnected] = useState(false);
@@ -17,19 +18,51 @@ function Messenger2() {
   const [message, setMessage] = useState("");
   const socketRef = useRef();
 
+  const [rooms, setRooms] = useState<string[]>([]);
+
+
   function handleMessageChange(e) {
     setMessage(e.target.value);
   }
 
   const [messages, setMessages] = useState({});
 
-  const [rooms, setRooms] = useState<string[]>([]);
 
-  useEffect(() => {
-    const initialRooms = ["general", "random", "jokes", "javascript"];
-    initialRooms.forEach((room) => createNewChannel(room));
-  }, []);
 
+
+  // useEffect(() => {
+  //   const fetchChannels = async () => {
+  //     try {
+  //   const response = await this.channelService.findAll();
+
+  //       const response = await axios.get('https://localhost:8000/channels');
+  //       console.log(response.data);
+  //       const channelNames = response.data.map(channel => channel.name);
+  //       const allRooms = [...rooms, ...channelNames];
+  //       setRooms(allRooms);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  
+  //   fetchChannels();
+  // }, []);
+  
+  
+  // useEffect(() => {
+  //   const fetchChannels = async () => {
+  //     try {
+  //       const response = await axios.get('https://localhost:8000/channel');
+  //       console.log(response.data);
+  //       setRooms(response.data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  
+  //   fetchChannels();
+  // }, []);
+  
  
 
   function createNewChannel(channelName: string) {
@@ -104,7 +137,14 @@ function Messenger2() {
     setCurrentChat(currentChat);
   }
 
+  // useEffect(() => {
+  //   const initialRooms = ["general", "random", "jokes", "javascript"];
+  //   initialRooms.forEach((room) => createNewChannel(room));
+  // }, []);
   useEffect(() => {
+    const initialRooms = ["general", "random", "jokes", "javascript"];
+    initialRooms.forEach((room) => createNewChannel(room));
+
     const userdata = {
       id: AuthService.getId(),
       name: AuthService.getUsername(),
@@ -116,21 +156,58 @@ function Messenger2() {
       console.log("connected to server");
       setConnected(true);
     });
+    
+    
+  //   socketRef.current.on("all chans", (channelNames: string[]) => {
+  //   setRooms(channelNames)
+  // });
+
+  
 
     socketRef.current.emit("join server", userdata);
     socketRef.current.emit("join room", "general", (messages: any) =>
       roomJoinCallback(messages, "general")
     );
 
-    socketRef.current.on("connected users", (users) => {
+    socketRef.current.on("connected users", (users: SetStateAction<never[]>) => {
       console.log("all users", users);
       setAllUsers(users);
     });
    
 
+    socketRef.current.on("all chans", (chans: SetStateAction<never[]>) => {
+      console.log("all chans", chans);
+      setRooms(chans);
+    });
+
+    // socketRef?.current?.on('all chans', (channelNames: string[]) => {
+    //   console.log("ROOOOOOMS");
+    //   setRooms(channelNames);
+    
+    // });
+    // socketRef.current.on('all chans', (channelNames: string[]) => {
+    //   console.log("ROOOOOOMS");
+    //   setRooms(channelNames);
+    //   // setRooms(prevRooms => {
+    //   //   const updatedRooms = channelNames.filter(channelName => !prevRooms.includes(channelName));
+    //   //   return [...prevRooms, ...updatedRooms];
+    //   // });
+    // });
+  
+  
+  // socketRef.current.on("all chans", (data: { name: any; }[]) => {
+  //   // Extract the channel names from the data object
+  //   const channelNames = data.map((channel: { name: any; }) => channel.name);
+  // console.log("channel names!!!!!!!!!!");
+  //   // Add the channel names to the setRooms state
+  //   setRooms(new Set(channelNames));
+  // });
+
+
+  
     socketRef.current.on("new chan", (users) => {
         console.log("new chan created", users);
-        createNewChannel(roomName);
+        // createNewChannel(roomName);
   
     });
     
@@ -176,9 +253,9 @@ function Messenger2() {
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         joinRoom={joinRoom}
+        rooms={rooms}
         createNewChannel={createNewChannel}
         connectedRooms={connectedRooms}
-        rooms={rooms}
         currentChat={currentChat}
         toggleChat={toggleChat}
         messages={messages[currentChat.chatName]}
