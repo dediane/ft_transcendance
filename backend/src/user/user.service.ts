@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Channel } from 'src/channel/entities/channel.entity';
 
 @Injectable()
 export class UserService {
@@ -48,12 +49,58 @@ export class UserService {
     .getOne();
     return user;
   }
+  async findOneChannelByName(userId: number, channelName: string): Promise<Channel | undefined> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['channels']
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const channel = user.channels.find(channel => channel.name === channelName);
+    return channel;
+  }
+  
+
+  async findOneBySocketId(socketId: string): Promise<User | undefined> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user')
+      .where(':socketId = ANY(user.socketids)', { socketId })
+      .getOne();
+    return user;
+  }
+  
+
+  async addSocketId(userId: number, socketId: string): Promise<User> {
+    const user = await this.findOnebyId(userId);
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    user.socketids = user.socketids ? [...user.socketids, socketId] : [socketId];
+    return this.userRepository.save(user);
+  }
+
+  async removeSocketId(userId: number, socketId: string): Promise<User> {
+    const user = await this.findOnebyId(userId);
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    user.socketids = user.socketids?.filter(id => id !== socketId);
+    return this.userRepository.save(user);
+  }
+  
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
-  }
+  } 
+  
 
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+  async save(user: User): Promise<User> {
+    return this.userRepository.save(user);
+  }
+  
 }

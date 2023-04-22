@@ -1,43 +1,3 @@
-// import {
-//     MessageBody,
-//     SubscribeMessage,
-//     WebSocketGateway,
-//     WebSocketServer,
-//     OnGatewayConnection,
-//     OnGatewayDisconnect
-// } from '@nestjs/websockets'
-
-// import { Socket, Server } from 'socket.io'
-
-// @WebSocketGateway({cors: '*'})
-// export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-//     @WebSocketServer()
-//     server;
-//     async handleConnection(socket: Socket) {
-//         console.log('Socket connected:', socket.id);
-//     }
-//     async handleDisconnect(socket: Socket) {
-//         console.log('Socket disconnected:', socket.id);
-//     }
-//     @SubscribeMessage('message')
-//     handleMessage(@MessageBody() message: string): void{
-//         this.server.emit('message', message);
-//     }
-
-//     @SubscribeMessage('join_game')
-//     async join(@MessageBody() message: string): Promise<void>{
-
-//         // Find/Create game
-//         //Broadcast to pending user gameid
-//         //If 2 joined send start
-//     }
-// }
-
-///////////// UP Diane version
-
-// // //////////// DOWN Marie version
-
-
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -49,14 +9,18 @@ import { Socket, Server } from 'socket.io';
 import { UserService } from 'src/user/user.service';
 import { MessageService } from 'src/message/message.service';
 import { ChannelService } from 'src/channel/channel.service';
+import { AuthService } from 'src/auth/auth.service'
+// import AuthService from "../services/authentication-service"
 
 import { CreateMessageDto } from 'src/message/dto/create-message.dto';
+import { CreateChannelDto } from 'src/channel/dto/create-channel.dto';
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly messageService: MessageService, // Inject your MessageService here
     private readonly channelService: ChannelService,
     private readonly userService: UserService,
+    // private readonly authService: AuthService,
   ) {}
 
   @WebSocketServer()
@@ -70,38 +34,83 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     javascript: [],
   };
 
-  async handleDisconnect(socket: Socket) {
-    console.log('Socket disconnected:', socket.id);
-    this.users = this.users.filter((u) => u.id !== socket.id);
-    this.server.emit('new user', this.users);
-  }
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
     const users = await this.messageService.findAll();
-    // const user = await this.userService.findOne("balkis@gmail.com");
   }
 
-  @SubscribeMessage('join server')
-  handleJoinServer(socket: Socket, username: string) {
-    console.log('join server');
+ async handleDisconnect(socket: Socket) {
+  console.log('Socket disconnected:', socket.id);
+  const userIndex = this.users.findIndex((u) => u.sockets.includes(socket.id));
+  if (userIndex >= 0) {
+    // Remove the socket id from the user's array of sockets
+    this.users[userIndex].sockets = this.users[userIndex].sockets.filter((s) => s !== socket.id);
+    console.log(`${this.users[userIndex].username}' just closed a tab: with socketid ${socket.id} `);
+
+    // If the user has no more sockets, remove the user object from the users array
+    if (this.users[userIndex].sockets.length === 0) {
+      const disconnectedUser = this.users.splice(userIndex, 1)[0];
+      console.log(`${disconnectedUser.username} (${disconnectedUser.id}) has disconnected`);
+    }
+  }
+  this.server.emit('connected users', this.users);
+}
+
+@SubscribeMessage('join server')
+async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
+  console.log('join server');
+  const userIndex = this.users.findIndex((u) => u.id === userdata.id);
+  if (userIndex >= 0) {
+    // User already exists, add new socket to their existing array of sockets
+    this.users[userIndex].sockets.push(socket.id);
+    console.log(this.users[userIndex], 'just opened a new tab');
+  } else {
+    // User doesn't exist, create a new user object with a new array of sockets
     const user = {
-      username,
+      username: userdata.name,
+      id: userdata.id,
       sockets: [socket.id],
     };
-    console.log(socket.id, 'just joined server');
+    this.users.push(user);
+    console.log(user, 'just joined server');
 
-    const existingUser = this.users.find((u) => u.username === username);
-    if (existingUser) {
-      existingUser.sockets.push(socket.id);
-    } else {
-      this.users.push(user);
+    // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
+    const usr = await this.userService.findOnebyId(userdata.id);
+    const channels = await usr.getChannels();
+    if (channels) {
+      const channelNames = channels.map(channel => channel.name);
+      const channelNamesStr = channelNames.join(', ');
+      for (const channel of channels) {
+        const channelName = channel.name;
+        const channelMessages = await this.messageService.getMessagesForChannel(channel.id);
+        this.messages[channelName].push(...channelMessages);
+      }
     }
-
-    this.server.emit('new user', this.users); // broadcast to all connected sockets
   }
+  this.server.emit('connected users', this.users);
+}
+
+
+  @SubscribeMessage('create chan')
+  async handleCreateNewChan(socket: Socket, roomName: string) {
+    if (!roomName) {
+      throw new Error('Room name cannot be null or undefined.');
+  }
+     if (!this.channelService.findOneByName(roomName)) //si dm ou prive ok mais sinon attention aux doublons de noms donc faire plutot par channelid
+      {
+      const channelDto: CreateChannelDto = {
+        roomName
+      };
+      this.channelService.createChannel(channelDto);
+    // }
+    // this.server.emit('new chan', this.users); // broadcast to all connected sockets
+
+  }}
 
   @SubscribeMessage('join room')
-  handleJoinRoom(socket: Socket, roomName: string) {
+  async handleJoinRoom(socket: Socket, roomName: string) {
+    //cote client mettre si bon mdp then ok call this function
+    //await add to user this roomname (roomid plutot)
     socket.join(roomName);
     if (!this.messages[roomName]) {
       this.messages[roomName] = []; // add new room if it doesn't exist
@@ -116,8 +125,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('send message')
-  async handleMessage(socket: Socket, data: any) { // Make this function async to allow database calls
-    const { content, to, sender, chatName, isChannel } = data;
+  async handleMessage(socket: Socket, userid: number, data: any) { // Make this function async to allow database calls
+    // const { content, to, sender, chatName, isChannel } = data;
+    
+
+    if (data) {
+      const { content, to, sender, chatName, isChannel } = data;
+    
     console.log(socket.id, "just sent a message", data)
 
     if (isChannel) {
@@ -127,7 +141,20 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         sender,
       };
       socket.to(to).emit('new message', payload);
-    //   socket.to(chatName).emit('new message', payload);
+    // Save the message to the database
+    // const channel = await this.channelService.findOne(to);
+    // const userchans = this.userService.getChannels();
+
+    //TO DO BEFORE: A ADD DANS LE USER APRES CREATION ET CHECK DANS CHANNEL DATABASE
+    const channel = await this.userService.findOneChannelByName(userid, chatName); //pour eviter doublon mp/private etc
+    if (channel) {
+      const messageDto: CreateMessageDto = {
+        content,
+        sender,
+        channel,
+      };
+      await this.messageService.create(messageDto);
+    }
     } else {
       const payload = {
         content,
@@ -135,8 +162,18 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         sender,
       };
       socket.to(to).emit('new message', payload);
-    //   socket.to(chatName).emit('new message', payload);
+      // Save the message to the database
+      const channel = await this.channelService.findOne(to);
+      if (channel) {
+        const messageDto: CreateMessageDto = {
+          content,
+          sender,
+          channel,
+        };
+        await this.messageService.create(messageDto);
+        // await this.messageRepository.save(message);
 
+      }
     }
     if (this.messages[chatName]) {
       this.messages[chatName].push({
@@ -144,9 +181,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         content,
       });
     }
-
-    // Save the message to the database
-    // const user = await this.userService.findOneByUsername(sender);
-    // await this.userService.saveMessage(user.id, to, content);
+  } else {
+    console.log('Data parameter is undefined');
   }
+  }
+  
 }

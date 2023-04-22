@@ -20,7 +20,18 @@ export class MessageService {
   async findAll(): Promise<Message[]> {
     return this.messageRepository.find();
   }
-
+  async getMessagesForChannel(channelId: number): Promise<Message[]> {
+    const messages = await this.messageRepository.find({
+      where: {
+        channel: { id: channelId },
+      },
+      relations: ['sender', 'channel'],
+    });
+    return messages;
+  }
+  
+  
+  
   async findOne(id : number) : Promise<Message | undefined> {
     const Message = await this.messageRepository
     .createQueryBuilder('Message')

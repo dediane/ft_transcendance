@@ -99,6 +99,11 @@ function createNewChannel(channelName) {
 
 
   useEffect(() => {
+    const userdata = {
+      id: AuthService.getId(),
+      name: AuthService.getUsername(),
+    };
+
     socketRef.current = io("http://localhost:8000");
     //ocketRef.current = io.connect("http://localhost:8000");
     socketRef.current.on("connect", () => {
@@ -107,12 +112,14 @@ function createNewChannel(channelName) {
     });
 
         // socketRef.current.on("connection", (socketRef) => {
-    socketRef.current.emit("join server", AuthService.getUsername());
+         
+          
+    socketRef.current.emit("join server", userdata);
     socketRef.current.emit("join room", "general", (messages: any) =>
         roomJoinCallback(messages, "general")
     );
        
-    socketRef.current.on("new user", (users) => {
+    socketRef.current.on("connected users", (users) => {
       console.log("all users", users);
       setAllUsers(users);
     });
@@ -133,7 +140,7 @@ function createNewChannel(channelName) {
 
 
     return () => {
-      socketRef.current.disconnect();
+    socketRef.current.disconnect();
     };
   }, []);
 

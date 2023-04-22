@@ -25,6 +25,7 @@ export class AuthService {
             status: true
         };
     }
+    
 
     login42(req) {
         if (!req.user) {
@@ -44,3 +45,5 @@ export class AuthService {
 // const jwt = this.jwtService.sign({id: user.id})
 // console.log(jwt)
 // //return jwt;
+
+

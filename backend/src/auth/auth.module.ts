@@ -8,6 +8,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { FortyTwoStrategy } from './login42.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports:
@@ -21,5 +22,6 @@ import { FortyTwoStrategy } from './login42.strategy';
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, FortyTwoStrategy],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}

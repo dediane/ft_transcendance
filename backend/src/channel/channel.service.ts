@@ -20,6 +20,11 @@ export class ChannelService {
     return this.channelRepository.save(channel);
   }
 
+  async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
+    const channel = this.channelRepository.create(createChannelDto);
+    return this.channelRepository.save(channel);
+  }
+  
   // async findAll(): Promise<Channel[]> {
   //   return this.channelRepository.find();
   // }
@@ -41,7 +46,28 @@ export class ChannelService {
 
     return channel;
   }
+
+
+  async findOneByName(name: string): Promise<Channel | undefined> {
+    const channel = await this.channelRepository
+      .createQueryBuilder('channel')
+      .select('channel')
+      .where('channel.name = :name', { name })
+      .getOne();
   
+    return channel;
+  }
+  
+  
+  // async findOne(id: number): Promise<Channel | undefined> {
+  //   const channel = await this.channelRepository.findOne(id);
+  //   if (channel) {
+  //     const messages = await this.messageService.findAllByChannelId(channel.id);
+  //     channel.message = messages;
+  //   }
+  //   return channel;
+  // }
+
   async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
   const channel = await this.channelRepository.findOne({ where: { id } });
   if (!channel) {

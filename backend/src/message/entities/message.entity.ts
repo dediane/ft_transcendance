@@ -14,6 +14,6 @@ export class Message {
     @ManyToOne(() => User, (user) => user.message)
     sender: User;
 
-    @ManyToOne(() => Channel, (channel) => channel.message)
+    @ManyToOne(() => Channel, (channel) => channel.messages)
     channel: Channel;
 }
