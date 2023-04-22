@@ -35,10 +35,10 @@ export class UserService {
   async findAll(): Promise<User[]> {
     const users = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.channels', 'channel')
-      // .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
+      .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
       // .leftJoinAndSelect('user.adminChannels', 'adminChannel')
       // .leftJoinAndSelect('channel.messages', 'message')
-      .select(['user.username', 'channel.name'])
+      .select(['user.username', 'channel.name',  'invitedChannel.name'])
       // .select(['user.id', 'user.username', 'message.id', 'channel.name', 'invitedChannel.name', 'adminChannel.name'])
       .getMany();
   

@@ -40,8 +40,9 @@ export class ChannelService {
     const channels = await this.channelRepository
       .createQueryBuilder('channel')
       .leftJoinAndSelect('channel.members', 'member')
-      // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
-      // .leftJoinAndSelect('channel.admins', 'admin')
+      .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
+      .leftJoinAndSelect('channel.admins', 'admin')
+      .select(['channel.name', 'member.username', 'invitedUser.username', 'admin.username'])
       // .leftJoinAndSelect('channel.messages', 'message')
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();

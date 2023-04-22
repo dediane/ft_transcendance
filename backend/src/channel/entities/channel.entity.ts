@@ -24,23 +24,30 @@ export class Channel {
     // @JoinTable()
     // members: User[];
 
-    // @ManyToMany(() => User, user => user.invitedChannels, {cascade: true})
-    // @JoinTable()
-    // invitedUsers: User[];
-  
+
 
     // @ManyToMany(() => User, user => user.adminChannels, {cascade: true})
     // @JoinTable()
     // admins: User[];
-
-    @ManyToMany(() => User, user => user.channels)
-    @JoinTable()
-    members: User[];
-  
+    
     @ManyToMany(() => User)
     @JoinTable()
     admins: User[];
     
+
+    @ManyToMany(() => User, user => user.channels)
+    @JoinTable()
+    members: User[];
+
+    @ManyToMany(() => User, user => user.invitedChannels)
+    @JoinTable()
+    invitedUsers: User[];
+        // @ManyToMany(() => User, user => user.invitedChannels, {cascade: true})
+    // @JoinTable()
+    // invitedUsers: User[];
+  
+  
+ 
     async getMembers(): Promise<User[]> {
       return this.members;
     }

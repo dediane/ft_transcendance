@@ -129,10 +129,9 @@ function Messenger2() {
    
 
     socketRef.current.on("new chan", (users) => {
-      if (roomName) {
         console.log("new chan created", users);
         createNewChannel(roomName);
-      }
+  
     });
     
 

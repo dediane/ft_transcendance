@@ -75,17 +75,17 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     console.log(user, 'just joined server');
 
     // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
-    // const usr = await this.userService.findOnebyId(userdata.id);
-    // const channels = await usr.getChannels();
-    // if (channels) {
-    //   const channelNames = channels.map(channel => channel.name);
-    //   const channelNamesStr = channelNames.join(', ');
-    //   for (const channel of channels) {
-    //     const channelName = channel.name;
-    //     const channelMessages = await this.messageService.getMessagesForChannel(channel.id);
-    //     this.messages[channelName].push(...channelMessages);
-    //   }
-    // }
+    const usr = await this.userService.findOnebyId(userdata.id);
+    const channels = await usr.getChannels();
+    if (channels) {
+      const channelNames = channels.map(channel => channel.name);
+      const channelNamesStr = channelNames.join(', ');
+      for (const channel of channels) {
+        const channelName = channel.name;
+        const channelMessages = await this.messageService.getMessagesForChannel(channel.id);
+        this.messages[channelName].push(...channelMessages);
+      }
+    }
   }
   this.server.emit('connected users', this.users);
 }
