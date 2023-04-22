@@ -28,26 +28,40 @@ export class ChannelService {
   // async findAll(): Promise<Channel[]> {
   //   return this.channelRepository.find();
   // }
+
   async findAll() {
-    const channels = await this.channelRepository.find();
+    const channels = await this.channelRepository.find({
+      relations: ['messages', 'members', 'invitedUsers', 'admins']
+    });
     return channels;
   }
-
+  
   // async findOne(id: number): Promise<Channel> {
   //   return this.channelRepository.findOne({ where: { id } });
   // }
 
-  async findOne(id : number) : Promise<Channel | undefined> {
-    const channel = await this.channelRepository
-    .createQueryBuilder('channel')
-    .select('channel')
-    .where('channel.id = :id', {id})
-    .getOne();
+  // async findOne(id : number) : Promise<Channel | undefined> {
+  //   const channel = await this.channelRepository
+  //   .createQueryBuilder('channel')
+  //   .select('channel')
+  //   .where('channel.id = :id', {id})
+  //   .getOne();
 
+  //   return channel;
+  // }
+
+  async findOne(id: number): Promise<Channel | undefined> {
+    const channel = await this.channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.messages', 'message')
+      .leftJoinAndSelect('channel.members', 'member')
+      .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
+      .leftJoinAndSelect('channel.admins', 'admin')
+      .where('channel.id = :id', { id })
+      .getOne();
     return channel;
   }
-
-
+  
   async findOneByName(name: string): Promise<Channel | undefined> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')

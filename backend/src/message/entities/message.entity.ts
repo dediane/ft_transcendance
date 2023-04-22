@@ -16,4 +16,5 @@ export class Message {
 
     @ManyToOne(() => Channel, (channel) => channel.messages)
     channel: Channel;
+    
 }

@@ -37,8 +37,11 @@ function Messenger2() {
       return;
     }
   
-
-    socketRef?.current?.emit("create chan", channelName);
+    const datachan = {
+      creator : AuthService.getId(),
+      roomName : channelName,
+    }
+    socketRef?.current?.emit("create chan", datachan);
   
     setRooms((prevRooms) => {
       if (!prevRooms.includes(channelName)) {

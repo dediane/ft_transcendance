@@ -109,19 +109,23 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
 
   @SubscribeMessage('create chan')
-  async handleCreateNewChan(socket: Socket, roomName: string) {
-    
+  async handleCreateNewChan(socket: Socket, datachan: any) {
+    const { creator, roomName } = datachan;
     if (roomName == null) { // check if roomName is null or undefined
       socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
     return;
     }
     console.log(`room (${roomName})  created`)
+    const usr = await this.userService.findOnebyId(datachan.creator);
 
     const existingChannel = await this.channelService.findOneByName(roomName);
     if (!existingChannel) {
       console.log(`room (${roomName})  doesn't exist so let's create it`)
       const channelDto: CreateChannelDto = {
-        name: roomName
+        name: roomName,
+        members: [usr],
+        admins: [usr],
+        invitedUsers: [usr],
       };
       await this.channelService.createChannel(channelDto);
       
