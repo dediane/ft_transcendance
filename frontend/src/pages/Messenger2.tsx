@@ -51,6 +51,7 @@ function createNewChannel(channelName) {
       content: message,
       to: currentChat.isChannel ? currentChat.chatName : currentChat.receiverId,
       sender: AuthService.getUsername(),
+      senderid: AuthService.getId(),
       chatName: currentChat.chatName,
       isChannel: currentChat.isChannel,
     };

@@ -75,17 +75,17 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     console.log(user, 'just joined server');
 
     // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
-    const usr = await this.userService.findOnebyId(userdata.id);
-    const channels = await usr.getChannels();
-    if (channels) {
-      const channelNames = channels.map(channel => channel.name);
-      const channelNamesStr = channelNames.join(', ');
-      for (const channel of channels) {
-        const channelName = channel.name;
-        const channelMessages = await this.messageService.getMessagesForChannel(channel.id);
-        this.messages[channelName].push(...channelMessages);
-      }
-    }
+    // const usr = await this.userService.findOnebyId(userdata.id);
+    // const channels = await usr.getChannels();
+    // if (channels) {
+    //   const channelNames = channels.map(channel => channel.name);
+    //   const channelNamesStr = channelNames.join(', ');
+    //   for (const channel of channels) {
+    //     const channelName = channel.name;
+    //     const channelMessages = await this.messageService.getMessagesForChannel(channel.id);
+    //     this.messages[channelName].push(...channelMessages);
+    //   }
+    // }
   }
   this.server.emit('connected users', this.users);
 }
@@ -125,12 +125,12 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   }
 
   @SubscribeMessage('send message')
-  async handleMessage(socket: Socket, userid: number, data: any) { // Make this function async to allow database calls
+  async handleMessage(socket: Socket, data: any) { // Make this function async to allow database calls
     // const { content, to, sender, chatName, isChannel } = data;
     
 
     if (data) {
-      const { content, to, sender, chatName, isChannel } = data;
+      const { content, to, sender, senderid, chatName, isChannel } = data;
     
     console.log(socket.id, "just sent a message", data)
 
@@ -146,15 +146,15 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     // const userchans = this.userService.getChannels();
 
     //TO DO BEFORE: A ADD DANS LE USER APRES CREATION ET CHECK DANS CHANNEL DATABASE
-    const channel = await this.userService.findOneChannelByName(userid, chatName); //pour eviter doublon mp/private etc
-    if (channel) {
-      const messageDto: CreateMessageDto = {
-        content,
-        sender,
-        channel,
-      };
-      await this.messageService.create(messageDto);
-    }
+    // const channel = await this.userService.findOneChannelByName(senderid, chatName); //pour eviter doublon mp/private etc
+    // if (channel) {
+    //   const messageDto: CreateMessageDto = {
+    //     content,
+    //     sender,
+    //     channel,
+    //   };
+    //   await this.messageService.create(messageDto);
+    // }
     } else {
       const payload = {
         content,
@@ -163,17 +163,17 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       };
       socket.to(to).emit('new message', payload);
       // Save the message to the database
-      const channel = await this.channelService.findOne(to);
-      if (channel) {
-        const messageDto: CreateMessageDto = {
-          content,
-          sender,
-          channel,
-        };
-        await this.messageService.create(messageDto);
+      // const channel = await this.channelService.findOne(to);
+      // if (channel) {
+        // const messageDto: CreateMessageDto = {
+        //   content,
+        //   sender,
+        //   channel,
+        // };
+        // await this.messageService.create(messageDto);
         // await this.messageRepository.save(message);
 
-      }
+      // }
     }
     if (this.messages[chatName]) {
       this.messages[chatName].push({
