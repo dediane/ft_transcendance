@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { Message } from 'src/message/entities/message.entity';
 
 @Injectable()
 export class ChannelService {
@@ -13,7 +14,9 @@ export class ChannelService {
   constructor(
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
-  ) {}
+  @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
+ ) {}
 
   async create(createChannelDto: CreateChannelDto) {
     const channel = this.channelRepository.create(createChannelDto);
@@ -85,6 +88,27 @@ export class ChannelService {
       .getOne();
   
     return channel;
+  }
+  
+
+  async findMessagesByChatname(chatname: string): Promise<{ content: string, chatName: string, sender: string }[]> {
+    const messages = await this.messageRepository
+      .createQueryBuilder('message')
+      .leftJoin('message.channel', 'channel')
+      .leftJoin('message.sender', 'sender')
+      .select(['message.content', 'channel.name', 'sender.username'])
+      .where('channel.name = :chatname', { chatname })
+      .getMany();
+  
+    return messages.map(message => {
+      const { content, channel } = message;
+      const sender = message.sender ? message.sender.username : null;
+      return {
+        content,
+        chatName: channel.name,
+        sender,
+      };
+    });
   }
   
   

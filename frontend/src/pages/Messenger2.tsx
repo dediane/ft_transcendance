@@ -174,6 +174,10 @@ function Messenger2() {
       roomJoinCallback(messages, "general")
     );
 
+    // socket.emit('join room', roomName, (messages) => {
+    //   roomJoinCallback(messages, roomName);
+    // });
+  
     socketRef.current.on("connected users", (users: SetStateAction<never[]>) => {
       console.log("all users", users);
       setAllUsers(users);
@@ -183,20 +187,68 @@ function Messenger2() {
       console.log("all chans", chans);
       setRooms(chans);
     
-      const initialMessages: { [key: string]: any[] } = {};
-      chans.forEach((channelName: string) => {
-        initialMessages[channelName] = [];
-      });
-      setMessages(initialMessages);
-    });
-    
-    socketRef.current.on("new chan", (users) => {
-        console.log("new chan created", users);
-        // createNewChannel(roomName);
-  
+      socketRef.current.emit("join room", "general", (messages: any) =>
+      roomJoinCallback(messages, "general")
+    );
+
+    socketRef.current.on("join room", ({ room, messages }) => {
+      console.log("received join room event for room", room, messages);
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [room]: messages,
+      }));
     });
     
 
+    // socketRef.current.emit("join room", (messages: { channel: string; }) => {
+    //   roomJoinCallback(messages,  messages.channel);
+
+    //   console.log("received join room event", messages);
+      
+    //   setMessages((prevMessages) => ({
+    //     ...prevMessages,
+    //     [messages.channel]: messages.content,
+    //   }));
+    // });
+
+    //   const initialMessages: { [key: string]: any[] } = {};
+    //   chans.forEach((channelName: string) => {
+    //     initialMessages[channelName] = [];
+    //   });
+    //   setMessages(initialMessages);
+    });
+    
+
+    // socketRef.current.emit("join room", "general", (messages: any) =>
+    //   roomJoinCallback(messages, "general")
+    // );
+
+    // socketRef.current.on("all chans", "general", (messages: any) =>
+    // roomJoinCallback(messages, "general")
+   
+    //   const initialMessages: { [key: string]: any[] } = {};
+    //   chans.forEach((channelName: string) => {
+    //     initialMessages[channelName] = [];
+    //   });
+    //   setMessages(initialMessages);
+    // });
+
+    // socketRef.current.on("new chan", (users) => {
+    //     console.log("new chan created", users);
+    //     // createNewChannel(roomName);
+  
+    // });
+    
+
+    socketRef.current.on("new chan", (channelName) => {
+      console.log("received new chan", channelName);
+      setRooms((prevRooms) => [...prevRooms, channelName]);
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [channelName]: [],
+      }));
+    });
+  
     socketRef.current.on("new message", ({ content, sender, chatName }) => {
       setMessages((messages) => {
         const newMessages = immer(messages, (draft) => {

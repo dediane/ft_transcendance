@@ -73,28 +73,50 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     };
     this.users.push(user);
     console.log(user, 'just joined server');
-
+  }
+    
     // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
     const usr = await this.userService.findOnebyId(userdata.id);
-    const channels = await usr.getChannels();
+    // const channels = await usr.getChannels();
+    // console.log('are there any', channels)
+    const channels = await this.channelService.findAll();
+    console.log('are there any', channels)
+
+    const chans =  await this.channelService.findAll();
+    const channelNames = chans.map(channel => channel.name);
+    console.log(channelNames);
+    this.server.emit('all chans',channelNames);
+    this.server.emit('connected users', this.users);
+
     if (channels) {
       const channelNames = channels.map(channel => channel.name);
       const channelNamesStr = channelNames.join(', ');
       for (const channel of channels) {
         const channelName = channel.name;
-        const channelMessages = await this.messageService.getMessagesForChannel(channel.id);
+        const channelMessages =  await this.channelService.findMessagesByChatname(channelName);
+       
+        socket.join(channelName);
+        if (!this.messages[channelName]) {
+          this.messages[channelName] = []; // add new room if it doesn't exist
+        }
+        console.log(
+          socket.id,
+          'just joined rooOOOOm',
+          channelName,
+          channelMessages,
+        );
         this.messages[channelName].push(...channelMessages);
-      }
-    }
+        console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
+        // socket.emit('join room', this.messages[channelName]); // send all messages for all rooms
+          // this.server.emit('join room', this.messages[channelName]); // send all messages for all rooms
+          this.server.emit('join room', { room: channelName, messages: this.messages[channelName] }); // send all messages for all rooms
+        
+        }
+    
+   
+  
   }
-  const chans =  await this.channelService.findAll();
-  const channelNames = chans.map(channel => channel.name);
-console.log(channelNames);
-  this.server.emit('all chans',channelNames);
-  this.server.emit('connected users', this.users);
  
-  // this.server.emit('all chans', chan);
-
 }
 
 
@@ -178,25 +200,25 @@ console.log(channelNames);
       const payload = {
         content,
         chatName,
-        sender,
+        sender: data.sender,
       };
       socket.to(to).emit('new message', payload);
     // Save the message to the database
     const channel = await this.channelService.findOneByName(to);
     // const userchans = this.userService.getChannels();  //plutot enregistrer dans le user chan pour eviter doublons ou bien par chanid
-    const user = await this.userService.findOnebyId(senderid);
+    const senderr = await this.userService.findOnebyId(senderid);
     //TO DO BEFORE: A ADD DANS LE USER APRES CREATION ET CHECK DANS CHANNEL DATABASE
     if (channel) {
       const messageDto: CreateMessageDto = {
         content,
-        user,
+        sender: senderr,
         channel,
       };
       await this.messageService.create(messageDto);
     }
     if (this.messages[chatName]) {
       this.messages[chatName].push({
-        sender,
+        sender: data.sender,
         content,
       });
     }
