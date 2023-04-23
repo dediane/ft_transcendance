@@ -100,20 +100,31 @@ function Messenger2() {
       isChannel: currentChat.isChannel,
     };
     socketRef.current.emit("send message", payload);
+    if (currentChat && currentChat.chatName) {
+      const newMessages = immer(messages, (draft) => {
+        draft[currentChat.chatName].push({
+          sender: AuthService.getUsername(),
+          content: message,
+        });
+      });
+      setMessages(newMessages);
+    }}
+    
+
+  function roomJoinCallback(incomingMessages: any, room: string) {
+    console.log("incoming::::", incomingMessages);
     const newMessages = immer(messages, (draft) => {
+      if (!draft[currentChat.chatName]) {
+        draft[currentChat.chatName] = [];
+      }
+        draft[room] = incomingMessages;
+
       draft[currentChat.chatName].push({
         sender: AuthService.getUsername(),
         content: message,
       });
     });
-    setMessages(newMessages);
-  }
-
-  function roomJoinCallback(incomingMessages: any, room: string) {
-    console.log("incoming::::", incomingMessages);
-    const newMessages = immer(messages, (draft) => {
-      draft[room] = incomingMessages;
-    });
+    
     setMessages(newMessages);
   }
 
@@ -142,8 +153,8 @@ function Messenger2() {
   //   initialRooms.forEach((room) => createNewChannel(room));
   // }, []);
   useEffect(() => {
-    const initialRooms = ["general", "random", "jokes", "javascript"];
-    initialRooms.forEach((room) => createNewChannel(room));
+    // const initialRooms = ["general", "random", "jokes", "javascript"];
+    // initialRooms.forEach((room) => createNewChannel(room));
 
     const userdata = {
       id: AuthService.getId(),
@@ -156,12 +167,6 @@ function Messenger2() {
       console.log("connected to server");
       setConnected(true);
     });
-    
-    
-  //   socketRef.current.on("all chans", (channelNames: string[]) => {
-  //   setRooms(channelNames)
-  // });
-
   
 
     socketRef.current.emit("join server", userdata);
@@ -173,38 +178,18 @@ function Messenger2() {
       console.log("all users", users);
       setAllUsers(users);
     });
-   
 
     socketRef.current.on("all chans", (chans: SetStateAction<never[]>) => {
       console.log("all chans", chans);
       setRooms(chans);
-    });
-
-    // socketRef?.current?.on('all chans', (channelNames: string[]) => {
-    //   console.log("ROOOOOOMS");
-    //   setRooms(channelNames);
     
-    // });
-    // socketRef.current.on('all chans', (channelNames: string[]) => {
-    //   console.log("ROOOOOOMS");
-    //   setRooms(channelNames);
-    //   // setRooms(prevRooms => {
-    //   //   const updatedRooms = channelNames.filter(channelName => !prevRooms.includes(channelName));
-    //   //   return [...prevRooms, ...updatedRooms];
-    //   // });
-    // });
-  
-  
-  // socketRef.current.on("all chans", (data: { name: any; }[]) => {
-  //   // Extract the channel names from the data object
-  //   const channelNames = data.map((channel: { name: any; }) => channel.name);
-  // console.log("channel names!!!!!!!!!!");
-  //   // Add the channel names to the setRooms state
-  //   setRooms(new Set(channelNames));
-  // });
-
-
-  
+      const initialMessages: { [key: string]: any[] } = {};
+      chans.forEach((channelName: string) => {
+        initialMessages[channelName] = [];
+      });
+      setMessages(initialMessages);
+    });
+    
     socketRef.current.on("new chan", (users) => {
         console.log("new chan created", users);
         // createNewChannel(roomName);

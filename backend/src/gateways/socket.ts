@@ -171,15 +171,10 @@ console.log(channelNames);
 
   @SubscribeMessage('send message')
   async handleMessage(socket: Socket, data: any) { // Make this function async to allow database calls
-    // const { content, to, sender, chatName, isChannel } = data;
-    
-
     if (data) {
       const { content, to, sender, senderid, chatName, isChannel } = data;
     
     console.log(socket.id, "just sent a message", data)
-
-    if (isChannel) {
       const payload = {
         content,
         chatName,
@@ -187,38 +182,17 @@ console.log(channelNames);
       };
       socket.to(to).emit('new message', payload);
     // Save the message to the database
-    // const channel = await this.channelService.findOne(to);
-    // const userchans = this.userService.getChannels();
-
+    const channel = await this.channelService.findOneByName(to);
+    // const userchans = this.userService.getChannels();  //plutot enregistrer dans le user chan pour eviter doublons ou bien par chanid
+    const user = await this.userService.findOnebyId(senderid);
     //TO DO BEFORE: A ADD DANS LE USER APRES CREATION ET CHECK DANS CHANNEL DATABASE
-    // const channel = await this.userService.findOneChannelByName(senderid, chatName); //pour eviter doublon mp/private etc
-    // if (channel) {
-    //   const messageDto: CreateMessageDto = {
-    //     content,
-    //     sender,
-    //     channel,
-    //   };
-    //   await this.messageService.create(messageDto);
-    // }
-    } else {
-      const payload = {
+    if (channel) {
+      const messageDto: CreateMessageDto = {
         content,
-        chatName: sender,
-        sender,
+        user,
+        channel,
       };
-      socket.to(to).emit('new message', payload);
-      // Save the message to the database
-      // const channel = await this.channelService.findOne(to);
-      // if (channel) {
-        // const messageDto: CreateMessageDto = {
-        //   content,
-        //   sender,
-        //   channel,
-        // };
-        // await this.messageService.create(messageDto);
-        // await this.messageRepository.save(message);
-
-      // }
+      await this.messageService.create(messageDto);
     }
     if (this.messages[chatName]) {
       this.messages[chatName].push({

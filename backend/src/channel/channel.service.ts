@@ -43,7 +43,8 @@ export class ChannelService {
       .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
       .leftJoinAndSelect('channel.admins', 'admin')
       .select(['channel.name', 'member.username', 'invitedUser.username', 'admin.username'])
-      // .leftJoinAndSelect('channel.messages', 'message')
+      .leftJoinAndSelect('channel.messages', 'message')
+      .select(['channel.name', 'message.content'])
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();
     return channels;
@@ -110,3 +111,4 @@ export class ChannelService {
     await this.channelRepository.delete(id);
   }
 }
+
