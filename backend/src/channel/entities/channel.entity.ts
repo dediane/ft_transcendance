@@ -17,9 +17,9 @@ export class Channel {
     dm: boolean;
 
 
-    @OneToMany(() => Message, message => message.channel)
+    @OneToMany(() => Message, message => message.channel, { onDelete: 'CASCADE' })
     messages: Message[];
-  
+
     // @ManyToMany(() => User, user => user.channels, {cascade: true})
     // @JoinTable()
     // members: User[];

@@ -88,6 +88,18 @@ function Messenger2() {
     }));
   }
   
+  function removeChannel(channelName: string) {
+    socketRef?.current?.emit("remove chan", channelName);
+  
+    setRooms((prevRooms) => {
+      return prevRooms.filter((room) => room !== channelName);
+    });
+    setMessages((prevMessages) => {
+      const newMessages = { ...prevMessages };
+      delete newMessages[channelName];
+      return newMessages;
+    });
+  }
   
 
   function sendMessage() {
@@ -219,19 +231,7 @@ function Messenger2() {
     });
     
 
-    // socketRef.current.emit("join room", "general", (messages: any) =>
-    //   roomJoinCallback(messages, "general")
-    // );
-
-    // socketRef.current.on("all chans", "general", (messages: any) =>
-    // roomJoinCallback(messages, "general")
-   
-    //   const initialMessages: { [key: string]: any[] } = {};
-    //   chans.forEach((channelName: string) => {
-    //     initialMessages[channelName] = [];
-    //   });
-    //   setMessages(initialMessages);
-    // });
+  
 
     // socketRef.current.on("new chan", (users) => {
     //     console.log("new chan created", users);
@@ -270,14 +270,6 @@ function Messenger2() {
   }, []);
 
 
-
-
-// useEffect(() => {
-//   createNewChannel("javascript");
-//   createNewChannel("TEST");
-// }, []);
-
-
   let body;
   if (connected) {
     
@@ -292,6 +284,7 @@ function Messenger2() {
         joinRoom={joinRoom}
         rooms={rooms}
         createNewChannel={createNewChannel}
+        removeChannel={removeChannel}
         connectedRooms={connectedRooms}
         currentChat={currentChat}
         toggleChat={toggleChat}

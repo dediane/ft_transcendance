@@ -120,23 +120,6 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 }
 
 
-  // @SubscribeMessage('create chan')
-  // async handleCreateNewChan(socket: Socket, roomName: string) {
-  //   if (!roomName) {
-  //     throw new Error('Room name cannot be null or undefined.');
-  // }
-  //    if (!this.channelService.findOneByName(roomName)) //si dm ou prive ok mais sinon attention aux doublons de noms donc faire plutot par channelid
-  //     {
-  //     const channelDto: CreateChannelDto = {
-  //       roomName
-  //     };
-  //     this.channelService.createChannel(channelDto);
-  //   // }
-  //   // this.server.emit('new chan', this.users); // broadcast to all connected sockets
-
-  // }}
-
-
   @SubscribeMessage('create chan')
   async handleCreateNewChan(socket: Socket, datachan: any) {
     const { creator, roomName } = datachan;
@@ -173,6 +156,34 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     }
   }
   
+
+//   @SubscribeMessage('remove chan')
+// async handleRemoveChannel(socket: Socket, channelName: string) {
+//   const existingChannel = await this.channelService.findOneByName(channelName);
+//   if (existingChannel) {
+//     await this.channelService.remove(existingChannel.id);
+//     this.server.emit('chan removed', channelName); // broadcast to all connected sockets
+//   } else {
+//     socket.emit('error', `Channel ${channelName} does not exist.`);
+//   }
+// }
+
+@SubscribeMessage('remove chan')
+async handleRemoveChannel(socket: Socket, channelName: string) {
+  const existingChannel = await this.channelService.findOneByName(channelName);
+  if (existingChannel) {
+    // await Promise.all(existingChannel.messages.map(async (msg) => {
+    //   await this.messageService.remove(msg.id);
+    // }));
+    
+    // await this.messageService.remove(existingChannel.messages.map(msg => msg.id)); // remove all messages in the channel
+    await this.channelService.remove(existingChannel.id);
+    this.server.emit('chan removed', channelName); // broadcast to all connected sockets
+  } else {
+    socket.emit('error', `Channel ${channelName} does not exist.`);
+  }
+}
+
 
   @SubscribeMessage('join room')
   async handleJoinRoom(socket: Socket, roomName: string) {

@@ -109,6 +109,16 @@ const Button = styled.button`
   /* styles for the buttons */
 `;
 
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+`;
+
 
 
 function Chat(props) {
@@ -222,6 +232,7 @@ const [showPopup, setShowPopup] = useState(false);
       function closeModal2() {
         setShowModal2(false);
       }
+
       function handleRoomNameSubmit() {
         // add the new room to the list of rooms
        
@@ -355,19 +366,40 @@ const [showPopup, setShowPopup] = useState(false);
         <ChannelInfo>
             {props.currentChat.chatName}    
             {props.currentChat.members}     {/* a ajouter*/}
-            <button onClick={openModal2}> Parameters : Add members, block, kick, change password</button>
-
+            {/* <button onClick={openModal2}> Parameters : Add members, block, kick, change password</button> */}
+            <button onClick={openModal2}>
+               Parameters : Add members, block, kick, change password
+            
+            
+            </button>
         </ChannelInfo>
         <BodyContainer>
         <Popup open={showPopup} onClose={() => setShowPopup(false)}>
-  <div>Error: Room already exists</div>
+  <div>The room has been deleted</div>
 </Popup>
         {showModal2 && (
                     <ModalContainer2>
+                    <CloseButton onClick={closeModal2}>X</CloseButton>
+
                     - Add Member (if admin)
                     - Change password (if admin)
+                    <Button onClick={() => {
+    props.removeChannel(props.currentChat.chatName);
+    setShowPopup(true); // set showPopup to true to display the popup
+    // closeModal2();
+}}>
+    Remove Channel
+</Button>
+<Popup open={showPopup} onClose={() => setShowPopup(false)}>
+    <div>The room has been deleted</div>
+</Popup>
+
+
+
+{/* </Button> */}
                     - Remove member aka block/mute (if admin)
                     - change a member to admin (if admin)
+                    
                     </ModalContainer2>)}
             {body}
         </BodyContainer>
