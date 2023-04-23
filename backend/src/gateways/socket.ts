@@ -109,7 +109,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
         console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
         // socket.emit('join room', this.messages[channelName]); // send all messages for all rooms
           // this.server.emit('join room', this.messages[channelName]); // send all messages for all rooms
-          this.server.emit('join room', { room: channelName, messages: this.messages[channelName] }); // send all messages for all rooms
+          this.server.emit('join room', { room: channelName, messages: channelMessages}); // send all messages for all rooms
         
         }
     

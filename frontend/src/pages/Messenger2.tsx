@@ -182,9 +182,9 @@ function Messenger2() {
   
 
     socketRef.current.emit("join server", userdata);
-    socketRef.current.emit("join room", "general", (messages: any) =>
-      roomJoinCallback(messages, "general")
-    );
+    // socketRef.current.emit("join room", "general", (messages: any) =>
+    //   roomJoinCallback(messages, "general")
+    // );
 
     // socket.emit('join room', roomName, (messages) => {
     //   roomJoinCallback(messages, roomName);
@@ -199,9 +199,9 @@ function Messenger2() {
       console.log("all chans", chans);
       setRooms(chans);
     
-      socketRef.current.emit("join room", "general", (messages: any) =>
-      roomJoinCallback(messages, "general")
-    );
+    //   socketRef.current.emit("join room", "general", (messages: any) =>
+    //   roomJoinCallback(messages, "general")
+    // );
 
     socketRef.current.on("join room", ({ room, messages }) => {
       console.log("received join room event for room", room, messages);
@@ -258,7 +258,7 @@ function Messenger2() {
               draft[chatName] = [{ content, sender }];
             }
           });
-          return newMessages;
+          // return newMessages;
         });
       });
 

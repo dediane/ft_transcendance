@@ -384,15 +384,19 @@ const [showPopup, setShowPopup] = useState(false);
     - Add Member (if admin)
     - Change password (if admin)
     <Button onClick={() => {
-        props.removeChannel(props.currentChat.chatName);
-        closeModal2();
-      }}>removeChannel</Button>
+      props.removeChannel(props.currentChat.chatName);
+      setShowPopup(true); // set showPopup to true to display the popup
+      closeModal2(); // close the modal
+    }}>	
+      Remove Channel
+    </Button>	
+    - Remove member aka block/mute (if admin)	
+    - change a member to admin (if admin)	
 
-    - Remove member aka block/mute (if admin)
-    - change a member to admin (if admin)
   </ModalContainer2>
 )}
 {body}
+
 
         </BodyContainer>
         <TextBox
