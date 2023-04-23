@@ -377,31 +377,23 @@ const [showPopup, setShowPopup] = useState(false);
         <Popup open={showPopup} onClose={() => setShowPopup(false)}>
   <div>The room has been deleted</div>
 </Popup>
-        {showModal2 && (
-                    <ModalContainer2>
-                    <CloseButton onClick={closeModal2}>X</CloseButton>
+{showModal2 && (
+  <ModalContainer2>
+    <CloseButton onClick={closeModal2}>X</CloseButton>
 
-                    - Add Member (if admin)
-                    - Change password (if admin)
-                    <Button onClick={() => {
-    props.removeChannel(props.currentChat.chatName);
-    setShowPopup(true); // set showPopup to true to display the popup
-    // closeModal2();
-}}>
-    Remove Channel
-</Button>
-<Popup open={showPopup} onClose={() => setShowPopup(false)}>
-    <div>The room has been deleted</div>
-</Popup>
+    - Add Member (if admin)
+    - Change password (if admin)
+    <Button onClick={() => {
+        props.removeChannel(props.currentChat.chatName);
+        closeModal2();
+      }}>removeChannel</Button>
 
+    - Remove member aka block/mute (if admin)
+    - change a member to admin (if admin)
+  </ModalContainer2>
+)}
+{body}
 
-
-{/* </Button> */}
-                    - Remove member aka block/mute (if admin)
-                    - change a member to admin (if admin)
-                    
-                    </ModalContainer2>)}
-            {body}
         </BodyContainer>
         <TextBox
             value={props.message}
