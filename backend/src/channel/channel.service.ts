@@ -137,6 +137,27 @@ export class ChannelService {
     });
   }
   
+
+  async findAdmins(channel: Channel): Promise<User[]> {
+    const admins = await this.channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.admins', 'admin')
+      .where('channel.id = :channelId', { channelId: channel.id })
+      .getOneOrFail();
+  
+    return admins.admins;
+  }
+  
+  async findMembers(channel: Channel): Promise<User[]> {
+    const members = await this.channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.members', 'member')
+      .where('channel.id = :channelId', { channelId: channel.id })
+      .getOneOrFail();
+  
+    return members.members;
+  }
+  
   
   // async findOne(id: number): Promise<Channel | undefined> {
   //   const channel = await this.channelRepository.findOne(id);
@@ -194,7 +215,8 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
 
 async displayMembers(channel: Channel) {
   const memberNames = channel.members.map(member => member.username);
-  console.log(`Members of ${channel.name}: ${memberNames.join(', ')}`);
+  // console.log(`Members of ${channel.name}: ${memberNames.join(', ')}`);
+  return memberNames;
   }
 
 

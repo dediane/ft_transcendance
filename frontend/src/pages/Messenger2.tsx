@@ -14,6 +14,9 @@ function Messenger2() {
     receiverId: "",
   });
   const [connectedRooms, setConnectedRooms] = useState(["general"]);
+
+  const [members, setMembers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [message, setMessage] = useState("");
   const socketRef = useRef();
@@ -85,7 +88,8 @@ function Messenger2() {
   }
   
   function removeChannel(channelName: string) {
-    socketRef?.current?.emit("remove chan", currentChat.chatName, channelName);
+   
+    socketRef?.current?.emit("remove chan", currentChat.chatName);
   
     setRooms((prevRooms) => {
       return prevRooms.filter((room) => room !== channelName);
@@ -289,11 +293,22 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     // );
 
     socketRef.current.on("join room", ({ room, messages }) => {
-      console.log("received join room event for room", room, messages);
+      // console.log("received join room event for room", room, messages);
       setMessages((prevMessages) => ({
         ...prevMessages,
         [room]: messages,
       }));
+    });
+
+    socketRef.current.on("join room", ({ room, messages, databasechan }) => {
+      // console.log("received join room event for room", room, messages);
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [room]: messages,
+      }));
+      setMembers(databasechan.members);
+      setAdmins(databasechan.admins);
+      // console.log(databasechan.members)
     });
     
 
@@ -367,6 +382,8 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         // yourId={socketRef.current ? socketRef.current.id : ""}
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
+        members={members}
+        admins={admins}
         joinRoom={joinRoom}
         rooms={rooms}
         createNewChannel={createNewChannel}

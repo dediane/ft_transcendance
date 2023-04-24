@@ -110,7 +110,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
         console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
         // socket.emit('join room', this.messages[channelName]); // send all messages for all rooms
           // this.server.emit('join room', this.messages[channelName]); // send all messages for all rooms
-          this.server.emit('join room', { room: channelName, messages: channelMessages}); // send all messages for all rooms
+          // this.server.emit('join room', { room: channelName, messages: channelMessages}); // send all messages for all rooms
+          this.server.emit('join room', { room: channelName, messages: channelMessages, databasechan: channel}); // send all messages for all rooms
         
         }
     
@@ -173,6 +174,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
 @SubscribeMessage('remove chan')
 async handleRemoveChannel(socket: Socket, channelName: string) {
+
   const existingChannel = await this.channelService.findOneByName(channelName);
   if (existingChannel) {
     // await Promise.all(existingChannel.messages.map(async (msg) => {
