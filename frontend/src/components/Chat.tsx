@@ -316,21 +316,68 @@ function handlePasswordToggle(event) {
         )
     }
 
+
     function renderMembersOfTheRoom(room) {
-      // const members = props.members.filter(member => member.room === room);
-    
+      console.log("member array", props.currentChat.members);
       return (
         <div>
-          <h3>Members of {room}:</h3>
+          <h3>Members of this channel:</h3>
           <ul>
-            {props.members.map(member => (
-              <li key={member.id}>{member.name}</li>
+            {props.currentChat.members.map((member, index) => (
+              <li key={index}>{member}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    function handleRemoveFromChan(member: any): void {
+      throw new Error('Function not implemented.');
+    }
+
+    function handleMakeAdmin(member: any): void {
+      throw new Error('Function not implemented.');
+    }
+
+
+    function changeMembersOfTheRoom(room) {
+      console.log("member array", props.currentChat.members);
+   
+      return (
+        <div>
+          <h3>Members of this channel:</h3>
+          <ul>
+            {props.currentChat.members.map((member, index) => (
+              <li key={index}>
+                {member}
+                <button onClick={() => handleRemoveFromChan(member)}>Remove from Chan</button>
+                <button onClick={() => handleMakeAdmin(member)}>Make Admin</button>
+              </li>
             ))}
           </ul>
         </div>
       );
     }
     
+
+    function renderUser(user){
+          return (
+              <Row key={user.username}>
+                  You: {user.username}
+              </Row>
+          );
+      const currentChat = {
+          chatName : user.username,
+          isChannel: false,
+          receiverId: user.username,
+      };
+      // return(
+      //     <Row onClick={() => {
+      //         props.toggleChat(currentChat);
+      //     }} key={user.username}>
+      //         {user.username}
+      //     </Row>
+      // )
+  }
 
     
 
@@ -394,7 +441,9 @@ function handlePasswordToggle(event) {
      <ChatPanel>
         <ChannelInfo>
             {props.currentChat.chatName}    
-            {props.currentChat.members}     {/* a ajouter*/}
+            {props.currentChat?.members?.map(renderMembersOfTheRoom)} 
+
+            {/* {props.currentChat.members}     a ajouter */}
             {/* <button onClick={openModal2}> Parameters : Add members, block, kick, change password</button> */}
             <button onClick={openModal2}>
                Parameters : Add members, block, kick, change password
@@ -407,16 +456,16 @@ function handlePasswordToggle(event) {
 {showModal2 && (
   <ModalContainer2>
     <CloseButton onClick={closeModal2}>X</CloseButton>
-
+    {props.currentChat?.members?.map(changeMembersOfTheRoom)} 
+            
 {/* ADMIN :
     - Remove member
     - change a member to admin
     - remove an admin
      // a rechecker
     */}
-    <h3>Members of this chan</h3>
-        {props.members?.map(renderMembersOfTheRoom)} 
-
+    {/* <h3>Members of this chan</h3> */}
+        {/* {props.members?.map(renderMembersOfTheRoom)}  */}
     <div>
       <button onClick={openPasswordModal}>Change password of the chat</button>
       <PopupModal

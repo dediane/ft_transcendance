@@ -10,12 +10,15 @@ function Messenger2() {
   const [connected, setConnected] = useState(false);
   const [currentChat, setCurrentChat] = useState({
     isChannel: true,
-    chatName: "general",
+    chatName: "",
     receiverId: "",
+    members: [],
+    admins: [],
   });
   const [connectedRooms, setConnectedRooms] = useState(["general"]);
 
   const [members, setMembers] = useState([]);
+  const [invitedMembers, setinvitedMembers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [message, setMessage] = useState("");
@@ -36,11 +39,11 @@ function Messenger2() {
   // useEffect(() => {
   //   const fetchChannels = async () => {
   //     try {
-  //   const response = await this.channelService.findAll();
+  //   // const response = await this.channelService.findAll();
 
   //       const response = await axios.get('https://localhost:8000/channels');
   //       console.log(response.data);
-  //       const channelNames = response.data.map(channel => channel.name);
+  //       const channelNames = response.data.map((channel: { name: any; }) => channel.name);
   //       const allRooms = [...rooms, ...channelNames];
   //       setRooms(allRooms);
   //     } catch (error) {
@@ -138,18 +141,6 @@ function Messenger2() {
 
     //set admins?? remove member as admin
   }
-
-
-//PAS OBLIGATOIRE
-  // function changeChanName(newChatName: string)
-  // {
-  //   const payload = {
-  //     AdminId: AuthService.getId(),
-  //     old : currentChat.chatName,
-  //     new : newChatName,
-  //   };
-  //   socketRef?.current?.emit("change chatName", payload);  //member to remove a envoyer a la database pour modif
-  // }
 
   function changeChatPassword(newpass: string)
   {
@@ -271,13 +262,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
   
 
     socketRef.current.emit("join server", userdata);
-    // socketRef.current.emit("join room", "general", (messages: any) =>
-    //   roomJoinCallback(messages, "general")
-    // );
 
-    // socket.emit('join room', roomName, (messages) => {
-    //   roomJoinCallback(messages, roomName);
-    // });
   
     socketRef.current.on("connected users", (users: SetStateAction<never[]>) => {
       console.log("all users", users);
@@ -288,56 +273,35 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       console.log("all chans", chans);
       setRooms(chans);
     
-    //   socketRef.current.emit("join room", "general", (messages: any) =>
-    //   roomJoinCallback(messages, "general")
-    // );
 
-    socketRef.current.on("join room", ({ room, messages }) => {
-      // console.log("received join room event for room", room, messages);
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [room]: messages,
-      }));
-    });
-
-    socketRef.current.on("join room", ({ room, messages, databasechan }) => {
-      // console.log("received join room event for room", room, messages);
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [room]: messages,
-      }));
-      setMembers(databasechan.members);
-      setAdmins(databasechan.admins);
-      // console.log(databasechan.members)
-    });
-    
-
-    // socketRef.current.emit("join room", (messages: { channel: string; }) => {
-    //   roomJoinCallback(messages,  messages.channel);
-
-    //   console.log("received join room event", messages);
-      
+    // socketRef.current.on("join room", ({ room, messages }) => {
     //   setMessages((prevMessages) => ({
     //     ...prevMessages,
-    //     [messages.channel]: messages.content,
+    //     [room]: messages,
     //   }));
     // });
 
-    //   const initialMessages: { [key: string]: any[] } = {};
-    //   chans.forEach((channelName: string) => {
-    //     initialMessages[channelName] = [];
-    //   });
-    //   setMessages(initialMessages);
+    socketRef.current.on("join room", ({ room, messages, members, admins }) => {
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [room]: messages,
+      }));
+        // setMembers(members);
+        // setAdmins(admins);
+
+        // Get the current state
+        const chatState = { ...currentChat };
+
+        // Add new member(s) to the members array
+        chatState.members = [...chatState.members, members];
+        chatState.admins = [...chatState.admins, admins];
+
+        // Update the state
+        setCurrentChat(chatState);
+
     });
     
-
-  
-
-    // socketRef.current.on("new chan", (users) => {
-    //     console.log("new chan created", users);
-    //     // createNewChannel(roomName);
-  
-    // });
+    });
     
 
     socketRef.current.on("new chan", (channelName) => {
@@ -363,12 +327,10 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       });
 
 
-
     return () => {
     socketRef.current.disconnect();
     };
   }, []);
-
 
   let body;
   if (connected) {

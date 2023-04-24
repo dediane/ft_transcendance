@@ -95,7 +95,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       for (const channel of channels) {
         const channelName = channel.name;
         const channelMessages =  await this.channelService.findMessagesByChatname(channelName);
-       
+       const members =   channel.members.map(user => user.username)
+       const admins =   channel.admins.map(user => user.username)
         socket.join(channelName);
         if (!this.messages[channelName]) {
           this.messages[channelName] = []; // add new room if it doesn't exist
@@ -107,11 +108,15 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
           channelMessages,
         );
         this.messages[channelName].push(...channelMessages);
+        console.log("members and admins AAAAAAARE", admins, members)
         console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
         // socket.emit('join room', this.messages[channelName]); // send all messages for all rooms
           // this.server.emit('join room', this.messages[channelName]); // send all messages for all rooms
           // this.server.emit('join room', { room: channelName, messages: channelMessages}); // send all messages for all rooms
-          this.server.emit('join room', { room: channelName, messages: channelMessages, databasechan: channel}); // send all messages for all rooms
+         
+        //  if(channel)
+        //   console.log("il y a bien une dataabassseeeeeeeeuh")
+          this.server.emit('join room', { room: channelName, messages: channelMessages, members: members, admins: admins }); // send all messages for all rooms
         
         }
     
