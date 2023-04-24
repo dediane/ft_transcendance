@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import styled from "styled-components"
 import Popup from 'reactjs-popup';
-
+import Modal from "react-modal";
 // const initialRooms = [
 //     "general",
 //     "random",
@@ -137,13 +137,13 @@ function Chat(props) {
     const [password, setPassword] = useState('');
     const [showModal2, setShowModal2] = useState(false);
     
-    const handlePasswordToggle = (event) => {
-      setRequirePassword(event.target.checked);
-    };
+    // const handlePasswordToggle = (event) => {
+    //   setRequirePassword(event.target.checked);
+    // };
     
-    const handlePasswordChange = (event) => {
-      setPassword(event.target.value);
-    };
+    // const handlePasswordChange = (event) => {
+    //   setPassword(event.target.value);
+    // };
     
 
     const handleChatNameChange = (event) => {
@@ -156,6 +156,8 @@ function Chat(props) {
   const openChatMembersModal = () => {
     // TODO: Add code to open the chat members modal container
   };
+
+
 
 //   const renderRooms = (room) => {
 //     // TODO: Add code to render the rooms
@@ -188,25 +190,46 @@ function Chat(props) {
 //     }
 //   };
 const [showPopup, setShowPopup] = useState(false);
-  function handleChatNameKeyPress(event) {
-    if (event.key === "Enter" || event.key === "Next") {
-      event.preventDefault();
-      // add the new room to the list of rooms if it doesn't already exist
-      if (chatName !== null && chatName !== '') {
-        if (!rooms.includes(chatName)) {
-          setRooms([...rooms, chatName]);
-          props.createNewChannel(chatName);
-        } else {
-            setShowPopup(true);
-          
-          console.log('Error: Room already exists'); //ajouter le message d'erreur sur l'ecran !
-        }
+
+
+function handleChatNameKeyPress(event) {
+  if (event.key === "Enter" || event.key === "Next") {
+    event.preventDefault();
+    // add the new room to the list of rooms if it doesn't already exist
+    if (chatName !== null && chatName !== '') {
+      if (!rooms.includes(chatName)) {
+        const newRoom = {
+          chatName: chatName,
+          password: requirePassword ? password : null
+        };
+        // setRooms([...rooms, newRoom]);
+        // props.createNewChannel(newRoom);
+
+        setRooms([...rooms, chatName]);
+        props.createNewChannel(newRoom);
+      } else {
+        setShowPopup(true);
+        console.log('Error: Room already exists'); // add the error message to the screen
       }
-      // reset the chat name state variable
-      setChatName('');
-      setShowModal(false);
     }
+    // reset the chat name state variable
+    setChatName('');
+    setShowModal(false);
   }
+}
+
+function handlePasswordToggle(event) {
+  setRequirePassword(event.target.checked);
+}
+
+function handlePasswordChange(event) {
+  setPassword(event.target.value);
+}
+
+const changePassword = () => {
+  props.changeChatPassword(password);
+  closePasswordModal();
+};
   
   const handlePasswordKeyPress = (event) => {
     if (event.key === "Enter" || event.key === "Next") {
@@ -303,6 +326,8 @@ const [showPopup, setShowPopup] = useState(false);
         )
     }
 
+    
+
     let body;
     if(!props.currentChat.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
         body = (
@@ -323,6 +348,29 @@ const [showPopup, setShowPopup] = useState(false);
         }
     }
 
+    // const openPasswordModal = () => {
+    //   const modal = document.getElementById("change-password-modal");
+    //   if (modal) {
+    //     modal.style.display = "block";
+    //   }
+    // };
+    
+    // const closePasswordModal = () => {
+    //   const modal = document.getElementById("change-password-modal");
+    //   if (modal) {
+    //     modal.style.display = "block";
+    //   }
+    // }
+
+    const openPasswordModal = () => {
+      setShowPopup(true);
+    };
+    
+    const closePasswordModal = () => {
+      setShowPopup(false);
+    };
+    
+
     
 
     return (
@@ -330,29 +378,29 @@ const [showPopup, setShowPopup] = useState(false);
             <SideBar>
                 <Button onClick={openModal}>Add Room</Button>
                 {showModal && (
-                    <ModalContainer>
-                           <TextBox
-            value={chatName}
-            onChange={handleChatNameChange}
-            onKeyPress={handleChatNameKeyPress}
-            placeholder="Enter chat name here"
-          />
+                    
+<ModalContainer>
+  <TextBox
+    value={chatName}
+    onChange={handleChatNameChange}
+    onKeyPress={handleChatNameKeyPress}
+    placeholder="Enter chat name here"
+  />
 
-        <div>
-        <input type="checkbox" id="password-checkbox" onChange={handlePasswordToggle} />
-        <label htmlFor="password-checkbox">Require Password</label>
-      </div>
-      {requirePassword && (
-        <TextBox
-          value={password}
-          onChange={handlePasswordChange}
-          onKeyPress={handlePasswordKeyPress}
-          placeholder="Enter password here"
-        />
-      )}
-                       
-                        <button onClick={() => closeModal()}>Close Modal</button>
-                    </ModalContainer>
+  <div>
+    <input type="checkbox" id="password-checkbox" onChange={handlePasswordToggle} />
+    <label htmlFor="password-checkbox">Require Password</label>
+  </div>
+  {requirePassword && (
+    <TextBox
+      value={password}
+      onChange={handlePasswordChange}
+      placeholder="Enter password here"
+    />
+  )}
+                   
+  <button onClick={() => closeModal()}>Close Modal</button>
+</ModalContainer>
                 )}
                 <h3>Channels</h3>
                 {props.rooms?.map(renderRooms)}
@@ -369,29 +417,51 @@ const [showPopup, setShowPopup] = useState(false);
             {/* <button onClick={openModal2}> Parameters : Add members, block, kick, change password</button> */}
             <button onClick={openModal2}>
                Parameters : Add members, block, kick, change password
-            
-            
             </button>
         </ChannelInfo>
         <BodyContainer>
-        <Popup open={showPopup} onClose={() => setShowPopup(false)}>
+        {/* <Popup open={showPopup} onClose={() => setShowPopup(false)}>
   <div>The room has been deleted</div>
-</Popup>
+</Popup> */}
 {showModal2 && (
   <ModalContainer2>
     <CloseButton onClick={closeModal2}>X</CloseButton>
 
-    - Add Member (if admin)
-    - Change password (if admin)
+ADMIN :
+    - Add Member
+    - Remove member
+    - change a member to admin
+    - remove an admin
+
+    <div>
+    <button onClick={openPasswordModal}>Change password of the chat</button>
+    {/* <Modal onRequestClose={closePasswordModal} id="change-password-modal"> */}
+    <Modal isOpen={showPopup} onRequestClose={openPasswordModal} id="change-password-modal">
+      <TextBox
+        value={password}
+        onChange={handlePasswordChange}
+        placeholder="Enter new password here"
+      />
+      <button onClick={changePassword}>Save</button>
+      <button onClick={closePasswordModal}>Cancel</button>
+    </Modal>
+  </div>
+
     <Button onClick={() => {
       props.removeChannel(props.currentChat.chatName);
       setShowPopup(true); // set showPopup to true to display the popup
       closeModal2(); // close the modal
     }}>	
       Remove Channel
+
     </Button>	
-    - Remove member aka block/mute (if admin)	
-    - change a member to admin (if admin)	
+
+    ALL USERS:
+    - Block a member	
+    - Mute a member	
+    - Leave Chan
+
+
 
   </ModalContainer2>
 )}

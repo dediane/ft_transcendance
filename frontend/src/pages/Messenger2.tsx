@@ -64,32 +64,28 @@ function Messenger2() {
   // }, []);
   
  
-
-  function createNewChannel(channelName: string) {
-    if (channelName.trim() === "") { // check if channelName is empty
-      return;
-    }
-  
+  function createNewChannel(data: any) {
     const datachan = {
-      creator : AuthService.getId(),
-      roomName : channelName,
-    }
+      creator: AuthService.getId(),
+      roomName: data.chatName,
+      password: data.password,
+    };
     socketRef?.current?.emit("create chan", datachan);
   
     setRooms((prevRooms) => {
-      if (!prevRooms.includes(channelName)) {
-        return [...prevRooms, channelName];
+      if (!prevRooms.includes(data.chatName)) {
+        return [...prevRooms, data.chatName];
       }
       return prevRooms;
     });
     setMessages((prevMessages) => ({
       ...prevMessages,
-      [channelName]: [],
+      [data.chatName]: [],
     }));
   }
   
   function removeChannel(channelName: string) {
-    socketRef?.current?.emit("remove chan", channelName);
+    socketRef?.current?.emit("remove chan", currentChat.chatName, channelName);
   
     setRooms((prevRooms) => {
       return prevRooms.filter((room) => room !== channelName);
@@ -100,7 +96,104 @@ function Messenger2() {
       return newMessages;
     });
   }
+
+
+  function inviteMember()
+  {
+    const payload = {
+      AdminId: AuthService.getId(), //check si tout le monde peut inviter non admin y compris
+      username : username,
+      chatName : currentChat.chatName
+    };
+    socketRef?.current?.emit("invite to chan", payload); //member invited a envoyer a la database pour modif
+    setInvitedMembers((prevRooms) => {
+      if (!prevInvitedMembers.includes(username)) {
+        return [...prevInvitedMembers, username];
+      }
+      return prevInvitedMembers;
+    });
+
+  }
   
+
+  function removeMember(username : string)
+  {
+    const payload = {
+      AdminId: AuthService.getId(),
+      username : username,
+      chatName : currentChat.chatName
+    };
+    socketRef?.current?.emit("remove from chan", payload);  //member to remove a envoyer a la database pour modif
+    setMembers((prevUsers) => {
+      return prevUsers.filter((user) => user !== username);
+    });
+
+    setInvitedMembers((prevInvitedUsers) => {
+      return prevInvitedUsers.filter((user) => user !== username);
+    });
+
+    //set admins?? remove member as admin
+  }
+
+
+//PAS OBLIGATOIRE
+  // function changeChanName(newChatName: string)
+  // {
+  //   const payload = {
+  //     AdminId: AuthService.getId(),
+  //     old : currentChat.chatName,
+  //     new : newChatName,
+  //   };
+  //   socketRef?.current?.emit("change chatName", payload);  //member to remove a envoyer a la database pour modif
+  // }
+
+  function changeChatPassword(newpass: string)
+  {
+    const payload = {
+      userId: AuthService.getId(),
+      channelName: currentChat.chatName,
+      newPassword : newpass,
+    };
+    socketRef?.current?.emit("change password", payload);  //member to remove a envoyer a la database pour modif
+  }
+
+
+  function AddMemberAsAdmin(userNameToAddasAdmin: string)
+  {
+    const payload = {
+      AdminId: AuthService.getId(),
+      userNameToAdd : userNameToAddasAdmin,
+    };
+    socketRef?.current?.emit("add to Admins list", payload);  //member to remove a envoyer a la database pour modif
+  }
+
+  function RemoveMemberFromAdmins(userNameToRemoveasAdmin: string)
+  {
+    const payload = {
+      AdminId: AuthService.getId(),
+      userNameToRemove : userNameToRemoveasAdmin,
+    };
+    socketRef?.current?.emit("remove from Admins list", payload);  //member to remove a envoyer a la database pour modif
+  }
+
+
+
+function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
+    const newConnectedRooms = immer(connectedRooms, (draft) => {
+      draft.push(room);
+    });
+    socketRef.current.emit("join room", room, (messages: any) =>
+      roomJoinCallback(messages, room)
+    ); //send to database all the rooms he is in ?? 
+    setConnectedRooms(newConnectedRooms);
+
+    setMembers((prevMembers) => {
+      if (!prevMembers.includes(username)) {
+        return [...prevMembers, username];
+      }
+      return prevMembers;
+    });
+  }
 
   function sendMessage() {
     const payload = {
@@ -140,15 +233,7 @@ function Messenger2() {
     setMessages(newMessages);
   }
 
-  function joinRoom(room: string) {
-    const newConnectedRooms = immer(connectedRooms, (draft) => {
-      draft.push(room);
-    });
-    socketRef.current.emit("join room", room, (messages: any) =>
-      roomJoinCallback(messages, room)
-    );
-    setConnectedRooms(newConnectedRooms);
-  }
+
 
   function toggleChat(currentChat) {
     if (!messages[currentChat.chatName]) {
@@ -278,6 +363,7 @@ function Messenger2() {
         message={message}
         handleMessageChange={handleMessageChange}
         sendMessage={sendMessage}
+        changeChatPassword={changeChatPassword}
         // yourId={socketRef.current ? socketRef.current.id : ""}
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}

@@ -74,6 +74,10 @@ channels: Channel[];
 @ManyToMany(() => Channel, channels => channels.invitedUsers)
 invitedChannels: Channel[];
 
+@OneToMany(() => Channel, channel => channel.owner)
+ownedChannels: Channel[];
+
+
 // @ManyToMany(() => Channel, (channel) => channel.invitedUsers)
 // @JoinTable()
 // invitedChannels: Channel[];

@@ -1,6 +1,6 @@
 import { Message } from 'src/message/entities/message.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
 
 @Entity('channels')
 export class Channel {
@@ -15,7 +15,9 @@ export class Channel {
 
     @Column({default: false})
     dm: boolean;
-
+    
+    @ManyToOne(() => User, user => user.ownedChannels)
+    owner: User;
 
     @OneToMany(() => Message, message => message.channel, { onDelete: 'CASCADE' })
     messages: Message[];
@@ -42,11 +44,14 @@ export class Channel {
     @ManyToMany(() => User, user => user.invitedChannels)
     @JoinTable()
     invitedUsers: User[];
-        // @ManyToMany(() => User, user => user.invitedChannels, {cascade: true})
+
+    // @ManyToMany(() => User, user => user.blocked)
     // @JoinTable()
-    // invitedUsers: User[];
+    // blockedUsers: User[];
   
-  
+    // @ManyToMany(() => User, user => user.blocked)
+    // @JoinTable()
+    // mutedUsers: User[];
  
     async getMembers(): Promise<User[]> {
       return this.members;

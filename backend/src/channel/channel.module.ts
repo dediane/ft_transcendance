@@ -4,9 +4,12 @@ import { ChannelController } from './channel.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Channel } from './entities/channel.entity';
 import { Message } from 'src/message/entities/message.entity';
+import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel, Message])],
+  imports: [UserModule, TypeOrmModule.forFeature([Channel, Message, User])],
 
   controllers: [ChannelController],
   providers: [ChannelService],

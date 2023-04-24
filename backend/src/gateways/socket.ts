@@ -14,6 +14,7 @@ import { AuthService } from 'src/auth/auth.service'
 
 import { CreateMessageDto } from 'src/message/dto/create-message.dto';
 import { CreateChannelDto } from 'src/channel/dto/create-channel.dto';
+import { UpdateChannelDto } from 'src/channel/dto/update-channel.dto';
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
@@ -122,7 +123,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
   @SubscribeMessage('create chan')
   async handleCreateNewChan(socket: Socket, datachan: any) {
-    const { creator, roomName } = datachan;
+    const { creator, roomName, password } = datachan;
     if (roomName == null) { // check if roomName is null or undefined
       socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
     return;
@@ -135,6 +136,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       console.log(`room (${roomName})  doesn't exist so let's create it`)
       const channelDto: CreateChannelDto = {
         name: roomName,
+        owner: usr,
+        password: password,
         members: [usr],
         admins: [usr],
         invitedUsers: [usr],
@@ -184,6 +187,14 @@ async handleRemoveChannel(socket: Socket, channelName: string) {
   }
 }
 
+
+@SubscribeMessage('change password')
+async handleChatPassword(socket: Socket, data: any) {
+  const { userId, channelName, newPassword } = data;
+  const updateChannelDto: UpdateChannelDto = { password: newPassword, name: channelName };
+
+  await this.channelService.changeChannelPassword(userId, updateChannelDto);
+}
 
   @SubscribeMessage('join room')
   async handleJoinRoom(socket: Socket, roomName: string) {
