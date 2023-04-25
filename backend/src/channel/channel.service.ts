@@ -241,28 +241,36 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
 // }
 
 
-// async addMember(channel: Channel, adminId: number, username: string) {
-//   const admin = await this.userService.findOnebyId(adminId);
+async addMember(channelName: string, adminId: number, username: string) {
+  const channel = await this.findOneByName(channelName);
+  const admin = await this.userService.findOnebyId(adminId);
 
-//   // // Check if the admin is in the channel's list of admins
-//   // const isAdminInAdminsList = channel?.admins?.some(admin => admin.id === adminId);
+  // // Check if the admin is in the channel's list of admins
+  // const isAdminInAdminsList = channel?.admins?.some(admin => admin.id === adminId);
 
-//   // if (!isAdminInAdminsList){
-//   //   throw new Error("Only admins are authorized to add members to the channel.");
-//   // }
+  // if (!isAdminInAdminsList){
+  //   throw new Error("Only admins are authorized to add members to the channel.");
+  // }
 
-//     const user = await this.userService.findOneByName(username);
+    const user = await this.userService.findOneByName(username);
 
-//     // Check if user is already in the channel's members list
-//     // const isUserInMembersList = channel.members.some(member => member.id === user.id);
+    // Check if user is already in the channel's members list
+    // const isUserInMembersList = channel.members.some(member => member.id === user.id);
 
-//     // if (!isUserInMembersList) {
-//     await this.update(channel.id, {
-//             members: [ ...channel.members, user]
-//           });
-//         // }
-//     return user;
-//   }
+    // if (!isUserInMembersList) {
+    // await this.update(channel.id, {
+    //         members: [ ...channel.members, user]
+    //       });
+        // }
+
+
+  if(!channel.members) {
+    channel.members = []
+  }
+  channel.members.push(user)
+  const result = await this.channelRepository.save(channel);
+    return user;
+  }
 // async addMember(channelId: number, user: User): Promise<void> {
 // async addMember(channel: Channel, adminId: number, username: string) {
 //     const user = await this.userService.findOneByName(username);
@@ -277,29 +285,33 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
 //   // }
 // }
 
-async addMember(channelName: string, adminId: number, username: string) {
+// async addMember(channelName: string, adminId: number, username: string) {
 
-  const channel = await this.channelRepository.createQueryBuilder('channel')
-  // .leftJoin('channel.owner', 'owner')
-  .where('channel.name = :name', { name: channelName })
-  // .andWhere('owner.id = :userId', { userId })
-  .getOne();
-
-if (!channel) {
-  throw new Error('Channel not found or user is not the owner');
-}
-  const user = await this.userService.findOneByName(username);
-  if (!user) {
-    throw new Error("No user found to add");
-  }
-  if (!channel.id) {
-    throw new Error("Channel ID is not defined");
-  }
-  await this.channelRepository.update(channel.id, {
-    members: [ ...channel.members, user]
-  });
+//   const channel = await this.findOneByName(channelName);
+ 
+// if (!channel) {
+//   throw new Error('Channel not found or user is not the owner');
+// }
+//   const user = await this.userService.findOneByName(username);
+//   if (!user) {
+//     throw new Error("No user found to add");
+//   }
   
-}
+//   if (!channel.id) {
+//     throw new Error("Channel ID is not defined");
+//   }
+
+//   if(!channel.members) {
+//     channel.members = []
+//   }
+//   channel.members.push(user)
+//   const result = await this.channelRepository.save(channel);
+//   return;
+//   // await this.channelRepository.update(channel.id, {
+//   //   members: [ ...channel.members, user]
+//   // });
+  
+// }
 
 
 // async addMember(channel: Channel, adminId: number, username: string) {
