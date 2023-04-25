@@ -136,13 +136,14 @@ function Messenger2() {
     socketRef?.current?.emit("add admin", payload);  //member to remove a envoyer a la database pour modif
   }
 
-  function RemoveMemberFromAdmins(userNameToRemoveasAdmin: string)
+  function removeAdmin(userNameToRemoveasAdmin: string)
   {
     const payload = {
+      channelName: currentChat.chatName,
       AdminId: AuthService.getId(),
-      userNameToRemove : userNameToRemoveasAdmin,
+      username : userNameToRemoveasAdmin,
     };
-    socketRef?.current?.emit("remove from Admins list", payload);  //member to remove a envoyer a la database pour modif
+    socketRef?.current?.emit("remove admin", payload);  //member to remove a envoyer a la database pour modif
   }
 
 
@@ -332,7 +333,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         admins={admins}
         addMember={addMember}
         addAdmin={addAdmin}
-        RemoveMemberFromAdmins={RemoveMemberFromAdmins}
+        removeAdmin={removeAdmin}
         removeMember={removeMember}
         joinRoom={joinRoom}
         rooms={rooms}

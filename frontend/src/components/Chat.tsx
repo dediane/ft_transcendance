@@ -217,6 +217,29 @@ function Chat(props) {
     setAdmin(event.target.value);
   }
   
+  const [AdmintoRemove, setAdmintoRemove] = useState('');
+  const [showRemoveAdminPopup, setShowRemoveAdminPopup] = useState(false);
+
+  const openRemoveAdminModal = () => {
+    setShowRemoveAdminPopup(true);
+  };
+
+  const closeRemoveAdminModal = () => {
+    setShowRemoveAdminPopup(false);
+    // setPassword('');
+  };
+
+  const removeAdmin = () => {
+  props.removeAdmin(AdmintoRemove);
+
+    // do something with the new user
+    closeRemoveAdminModal();
+  };
+
+  function handleAdminRemoveing(event) {
+    setAdmintoRemove(event.target.value);
+  }
+
 
     const handleChatNameChange = (event) => {
         setChatName(event.target.value);
@@ -537,6 +560,19 @@ function handlePasswordToggle(event) {
         modalId="add-user-modal"
         buttonText="Add User"
       />
+      <button onClick={openRemoveAdminModal}>Remove admin from Chat</button> 
+      <PopupModal
+        isOpen={showRemoveAdminPopup}
+        onRequestClose={closeRemoveAdminModal}
+        onSave={removeAdmin} //attention: plutot call invite que Remove non ? appelle Remove apres premiere connexion?? en consideration des chats prives
+        onCancel={closeRemoveAdminModal}
+        value={AdmintoRemove}
+        onChange={handleAdminRemoveing}
+        placeholder="Enter username here"
+        modalId="Remove-user-modal"
+        buttonText="Remove User"
+      />
+
     </div>
 
     <Button onClick={() => {

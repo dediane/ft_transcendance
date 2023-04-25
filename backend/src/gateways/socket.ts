@@ -224,6 +224,15 @@ async handleAddAdmin(socket: Socket, payload: any) {
   await this.channelService.addAdmin(channelName, AdminId, username);
 }
 
+@SubscribeMessage('remove admin')
+async handleRemovAdmin(socket: Socket, payload: any) {
+  const { channelName, AdminId, username } = payload;
+
+    console.log(channelName, AdminId, username)
+  const chan = await this.channelService.findOneByName(channelName);
+  await this.channelService.removeAdmin(channelName, AdminId, username);
+}
+
 
 @SubscribeMessage('remove member')
 async handleRemoveMember(socket: Socket, payload: any) {

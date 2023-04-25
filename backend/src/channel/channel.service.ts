@@ -241,61 +241,88 @@ async addMember(channelName: string, adminId: number, username: string) : Promis
     
   }
 
+  // async removeFriend(user_id: number, friend_id: number) {
+  //   const user = await this.userRepository.findOne({
+  //     where: { id: user_id },
+  //     relations: ['friends'],
+  //   });
+  //   console.log("USER", user)
+  //   if(user.friends) {
+  //     for (var k = 0; k < user.friends.length; k++)
+  //     {
+  //       if (user.friends[k].id === friend_id)
+  //         user.friends.splice(k, 1)
+  //     }
+  //     await this.userRepository.save(user);
+  //   }
+  //   return;
+  // }
 
-async removeAdmin(channel: Channel, userId: number) {
-  const isAdmin = channel.admins.some(admin => admin.id === userId);
-  const isOwner = channel.owner.id === userId;
+// async removeAdmin(channel: Channel, userId: number) {
+  async removeAdmin(channelName: string, adminId: number, username: string){
+  const channel = await this.findOneByName(channelName);
 
-  if (!isAdmin) {
-    throw new Error('User is not an admin');
-  }
+  // const isAdmin = channel.admins.some(admin => admin.id === userId);
+  // const isOwner = channel.owner.id === userId;
 
-  const user = await this.userService.findOnebyId(userId);
-  const filteredAdmins = channel.admins.filter(admin => admin.id !== userId);
+  // if (!isAdmin) {
+  //   throw new Error('User is not an admin');
+  // }
 
-  let newOwner;
-  if (isOwner) {
-    if (filteredAdmins.length === 0) {
-      // If the owner is the only admin, make the first member the new owner
-      newOwner = channel.members[0];
-    } else {
-      // Otherwise, the first remaining admin becomes the new owner
-      newOwner = filteredAdmins[0];
+  // const user = await this.userService.findOnebyId(userId);
+  if(channel.admins) {
+    for (var k = 0; k < channel.admins.length; k++)
+    {
+      if (channel.admins[k].username === username)
+      channel.admins.splice(k, 1)
     }
+    await this.channelRepository.save(channel);
   }
+  // const filteredAdmins = channel.admins.filter(admin => admin.username !== username);
 
-  await this.channelRepository.update(channel.id, {
-    admins: filteredAdmins,
-    owner: isOwner ? newOwner : channel.owner,
-    members: channel.members.filter(member => member.id !== userId),
-  });
+  // let newOwner;
+  // if (isOwner) {
+  //   if (filteredAdmins.length === 0) {
+  //     // If the owner is the only admin, make the first member the new owner
+  //     newOwner = channel.members[0];
+  //   } else {
+  //     // Otherwise, the first remaining admin becomes the new owner
+  //     newOwner = filteredAdmins[0];
+  //   }
+  // }
 
-  return user;
+  // await this.channelRepository.update(channel.id, {
+  //   admins: filteredAdmins,
+    // owner: isOwner ? newOwner : channel.owner,
+    // members: channel.members.filter(member => member.id !== userId),
+  // });
+
+  // return user;
 }
 
 async removeMember(channel: Channel, adminId: number, userId: number) {
 
-  const admin = await this.userService.findOnebyId(adminId);
+  // const admin = await this.userService.findOnebyId(adminId);
 
-  // Check if the admin is in the channel's list of admins
-  const isAdmin = channel.admins.some(admin => admin.id === userId);
-  if (!isAdmin){
-    throw new Error("Only admins are authorized to remove members from the channel.");
-  }
+  // // Check if the admin is in the channel's list of admins
+  // const isAdmin = channel.admins.some(admin => admin.id === userId);
+  // if (!isAdmin){
+  //   throw new Error("Only admins are authorized to remove members from the channel.");
+  // }
 
-  try {
-    await this.removeAdmin(channel, userId);
-  } catch (e) {}
+  // try {
+  //   await this.removeAdmin(channel, userId);
+  // } catch (e) {}
 
-  const user = await this.userService.findOnebyId(userId);
-  const userRemovedList = channel.members.filter((chanUser) => {
-    return chanUser.id !== user.id;
-  });
+  // const user = await this.userService.findOnebyId(userId);
+  // const userRemovedList = channel.members.filter((chanUser) => {
+  //   return chanUser.id !== user.id;
+  // });
 
-  await this.channelRepository.update(channel.id, {
-    members: userRemovedList,
-  });
-  return user;
+  // await this.channelRepository.update(channel.id, {
+  //   members: userRemovedList,
+  // });
+  // return user;
 }
 
   async remove(id: number): Promise<void> {
