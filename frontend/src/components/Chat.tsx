@@ -3,7 +3,8 @@ import styled from "styled-components"
 import Popup from 'reactjs-popup';
 import Modal from "react-modal";
 import PopupModal from "./PopUpModal"
-import CustomPopup from "./customPopup"
+import CustomPopup from "./CustomPopup"
+import { m } from 'framer-motion';
 
 // const initialRooms = [
 //     "general",
@@ -146,6 +147,7 @@ function Chat(props) {
     const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [showAddUserPopup, setShowAddUserPopup] = useState(false);
   const [password, setPassword] = useState('');
+  const [member, setMember] = useState('');
 
   // const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   setPassword(event.target.value);
@@ -153,6 +155,10 @@ function Chat(props) {
 
   function handlePasswordChange(event) {
     setPassword(event.target.value);
+  }
+
+  function handleMemberAdding(event) {
+    setMember(event.target.value);
   }
   
   const changePassword = () => {
@@ -181,6 +187,8 @@ function Chat(props) {
   };
 
   const addUser = () => {
+    props.addMember(member);
+
     // do something with the new user
     closeAddUserModal();
   };
@@ -431,8 +439,8 @@ function handlePasswordToggle(event) {
 </ModalContainer>
                 )}
                 <h3>Channels</h3>
-                {props.rooms?.map(renderRooms)}
-                {/* {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)} */}
+                {/* {props.rooms?.map(renderRooms)} */}
+                {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)}
 
         <h3>All connected Users</h3>
         {props.allUsers?.map(renderUser)}
@@ -485,8 +493,8 @@ function handlePasswordToggle(event) {
         onRequestClose={closeAddUserModal}
         onSave={addUser} //attention: plutot call invite que add non ? appelle add apres premiere connexion?? en consideration des chats prives
         onCancel={closeAddUserModal}
-        value=""
-        onChange={() => {}}
+        value={member}
+        onChange={handleMemberAdding}
         placeholder="Enter username here"
         modalId="add-user-modal"
         buttonText="Add User"

@@ -68,11 +68,15 @@ messages: Message[];
 // @ManyToMany(() => Channel, (channel) => channel.admins)
 // @JoinTable()
 // adminChannels: Channel[];
+
+@ManyToMany(() => Channel, channels => channels.admins)
+adminChannels: Channel[];
+
 @ManyToMany(() => Channel, channels => channels.members)
 channels: Channel[];
 
-@ManyToMany(() => Channel, channels => channels.invitedUsers)
-invitedChannels: Channel[];
+// @ManyToMany(() => Channel, channels => channels.invitedUsers)
+// invitedChannels: Channel[];
 
 @OneToMany(() => Channel, channel => channel.owner)
 ownedChannels: Channel[];
@@ -86,9 +90,9 @@ ownedChannels: Channel[];
     return this.channels;
   }
 
-  async getInvitedChannels(): Promise<Channel[]> {
-    return this.invitedChannels;
-  }
+  // async getInvitedChannels(): Promise<Channel[]> {
+  //   return this.invitedChannels;
+  // }
 
 
   // async getadminChannels(): Promise<Channel[]> {

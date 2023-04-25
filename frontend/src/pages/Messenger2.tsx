@@ -33,42 +33,6 @@ function Messenger2() {
 
   const [messages, setMessages] = useState({});
 
-
-
-
-  // useEffect(() => {
-  //   const fetchChannels = async () => {
-  //     try {
-  //   // const response = await this.channelService.findAll();
-
-  //       const response = await axios.get('https://localhost:8000/channels');
-  //       console.log(response.data);
-  //       const channelNames = response.data.map((channel: { name: any; }) => channel.name);
-  //       const allRooms = [...rooms, ...channelNames];
-  //       setRooms(allRooms);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  
-  //   fetchChannels();
-  // }, []);
-  
-  
-  // useEffect(() => {
-  //   const fetchChannels = async () => {
-  //     try {
-  //       const response = await axios.get('https://localhost:8000/channel');
-  //       console.log(response.data);
-  //       setRooms(response.data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  
-  //   fetchChannels();
-  // }, []);
-  
  
   function createNewChannel(data: any) {
     const datachan = {
@@ -135,9 +99,7 @@ function Messenger2() {
       return prevUsers.filter((user) => user !== username);
     });
 
-    setInvitedMembers((prevInvitedUsers) => {
-      return prevInvitedUsers.filter((user) => user !== username);
-    });
+
 
     //set admins?? remove member as admin
   }
@@ -153,7 +115,18 @@ function Messenger2() {
   }
 
 
-  function AddMemberAsAdmin(userNameToAddasAdmin: string)
+  function addMember(username: string)
+  {
+    const payload = {
+      channelName: currentChat.chatName,
+      AdminId: AuthService.getId(),
+      username : username,
+    };
+    socketRef?.current?.emit("add member", payload);  //member to remove a envoyer a la database pour modif
+
+  }
+
+  function addMemberAsAdmin(userNameToAddasAdmin: string)
   {
     const payload = {
       AdminId: AuthService.getId(),
@@ -181,6 +154,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       roomJoinCallback(messages, room)
     ); //send to database all the rooms he is in ?? 
     setConnectedRooms(newConnectedRooms);
+    const username = AuthService.getUsername();
 
     setMembers((prevMembers) => {
       if (!prevMembers.includes(username)) {
@@ -346,6 +320,10 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         allUsers={allUsers}
         members={members}
         admins={admins}
+        addMember={addMember}
+        addMemberAsAdmin={addMemberAsAdmin}
+        RemoveMemberFromAdmins={RemoveMemberFromAdmins}
+        removeMember={removeMember}
         joinRoom={joinRoom}
         rooms={rooms}
         createNewChannel={createNewChannel}

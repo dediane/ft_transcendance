@@ -32,7 +32,9 @@ export class Channel {
     // @JoinTable()
     // admins: User[];
     
-    @ManyToMany(() => User)
+    // @ManyToMany(() => User)
+
+    @ManyToMany(() => User, user => user.adminChannels)
     @JoinTable()
     admins: User[];
     
@@ -41,9 +43,9 @@ export class Channel {
     @JoinTable()
     members: User[];
 
-    @ManyToMany(() => User, user => user.invitedChannels)
-    @JoinTable()
-    invitedUsers: User[];
+    // @ManyToMany(() => User, user => user.invitedChannels)
+    // @JoinTable()
+    // invitedUsers: User[];
 
     // @ManyToMany(() => User, user => user.blocked)
     // @JoinTable()

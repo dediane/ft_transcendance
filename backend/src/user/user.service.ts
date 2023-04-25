@@ -34,18 +34,34 @@ export class UserService {
   
   async findAll(): Promise<User[]> {
     const users = await this.userRepository.createQueryBuilder('user')
-      .leftJoinAndSelect('user.channels', 'channel')
-      .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
+      .leftJoinAndSelect('user.channels', 'memberOfChannel')
+      .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
+      .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
+      // .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
       // .leftJoinAndSelect('user.adminChannels', 'adminChannel')
       // .leftJoinAndSelect('channel.messages', 'message')
-      .select(['user.username', 'channel.name',  'invitedChannel.name'])
+      .select(['user.username', 'memberOfChannel.name',  'adminOfChannel.name',  'ownerOfChannel.name'])
       // .select(['user.id', 'user.username', 'message.id', 'channel.name', 'invitedChannel.name', 'adminChannel.name'])
       .getMany();
   
     return users;
   }
   
+  async findOneByName(username: string): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user')
+      .where('user.username = :username', { username })
+      .getOne();
   
+    if (!user) {
+      throw new Error(`User with username ${username} not found.`);
+    }
+  
+    return user;
+  }
+  
+
   async findOne(email: string) : Promise<User | undefined> {
     const user = await this.userRepository
     .createQueryBuilder('user')

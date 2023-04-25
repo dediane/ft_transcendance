@@ -18,6 +18,7 @@ export class ChannelService {
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
     private readonly userService: UserService,
+    // private readonly channelService: ChannelService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   @InjectRepository(Message)
@@ -44,44 +45,29 @@ export class ChannelService {
   //   });
   //   return channels;
   // }
-  
+  //si valeur n'existe pas dans l'entity et appel a  sur leftJoinAndSelect('channel.admins', 'admin') va mettre ce message d'erreur [Nest] 24976  - 04/24/2023, 9:41:03 PM   ERROR [WsExceptionsHandler] Relation with property path invitedUsers in entity was not found.
   async findAll() {
     const channels = await this.channelRepository
       .createQueryBuilder('channel')
       .leftJoinAndSelect('channel.owner', 'owner')
       .leftJoinAndSelect('channel.members', 'member')
-      .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
+      // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
       .leftJoinAndSelect('channel.admins', 'admin')
-      .select(['channel.name', 'channel.name', 'member.username', 'invitedUser.username', 'admin.username'])
+      .select(['channel.name', 'channel.name', 'member.username', 'admin.username'])
       .leftJoinAndSelect('channel.messages', 'message')
-      .select(['channel.name', 'owner.username', 'channel.password', 'member.username', 'invitedUser.username', 'admin.username', 'message.content'])
+      .select(['channel.name', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'message.content'])
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();
     return channels;
   }
   
-  
-  // async findOne(id: number): Promise<Channel> {
-  //   return this.channelRepository.findOne({ where: { id } });
-  // }
-
-  // async findOne(id : number) : Promise<Channel | undefined> {
-  //   const channel = await this.channelRepository
-  //   .createQueryBuilder('channel')
-  //   .select('channel')
-  //   .where('channel.id = :id', {id})
-  //   .getOne();
-
-  //   return channel;
-  // }
-
   async findOne(id: number): Promise<Channel | undefined> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')
       // .leftJoinAndSelect('channel.password', 'password')
       .leftJoinAndSelect('channel.messages', 'message')
       .leftJoinAndSelect('channel.members', 'member')
-      .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
+      // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
       .leftJoinAndSelect('channel.admins', 'admin')
       .where('channel.id = :id', { id })
       .getOne();
@@ -110,8 +96,9 @@ export class ChannelService {
   async findOneByName(name: string): Promise<Channel | undefined> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')
-      .select('channel')
+      .leftJoinAndSelect('channel.members', 'members')
       .where('channel.name = :name', { name })
+      .select(['channel.name', 'members.username'])
       .getOne();
   
     return channel;
@@ -169,15 +156,28 @@ export class ChannelService {
   //   return channel;
   // }
 
-  async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
+//   async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
+//   const channel = await this.channelRepository.findOne({ where: { id } });
+//   if (!channel) {
+//     throw new Error(`Channel with ID ${id} not found`);
+//   }
+//   Object.assign(channel, updateChannelDto);
+  
+//   return this.channelRepository.save(channel);
+// }
+
+async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
   const channel = await this.channelRepository.findOne({ where: { id } });
   if (!channel) {
     throw new Error(`Channel with ID ${id} not found`);
   }
+  
+  // const updatedChannel = await this.channelRepository.merge(channel, updateChannelDto);
+  // return this.channelRepository.save(updatedChannel);
+
   Object.assign(channel, updateChannelDto);
   return this.channelRepository.save(channel);
 }
-
 
 async isChannelPasswordCorrect(channelName: string, userInput: string): Promise<boolean> {
   const channelPassword = await this.getChannelPassword(channelName);
@@ -214,46 +214,190 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
   return true;
 }
 
-async displayMembers(channel: Channel) {
-  const memberNames = channel.members.map(member => member.username);
-  // console.log(`Members of ${channel.name}: ${memberNames.join(', ')}`);
-  return memberNames;
+// async displayMembers(channel: Channel) {
+//   const memberNames = channel.members.map(member => member.username);
+//   // console.log(`Members of ${channel.name}: ${memberNames.join(', ')}`);
+//   return memberNames;
+//   }
+
+
+
+
+//   return user;
+// }
+// async addMember(channel: Channel, userId: number) {
+//   const user = await this.userService.findOnebyId(userId);
+
+//   // Check if user is already in the channel's members list
+//   const isUserInMembersList = channel.members.some(member => member.id === user.id);
+
+//   if (!isUserInMembersList) {
+//     await this.update(channel.id, {
+//       members: [ ...channel.members, user]
+//     });
+//   }
+
+//   return user;
+// }
+
+
+// async addMember(channel: Channel, adminId: number, username: string) {
+//   const admin = await this.userService.findOnebyId(adminId);
+
+//   // // Check if the admin is in the channel's list of admins
+//   // const isAdminInAdminsList = channel?.admins?.some(admin => admin.id === adminId);
+
+//   // if (!isAdminInAdminsList){
+//   //   throw new Error("Only admins are authorized to add members to the channel.");
+//   // }
+
+//     const user = await this.userService.findOneByName(username);
+
+//     // Check if user is already in the channel's members list
+//     // const isUserInMembersList = channel.members.some(member => member.id === user.id);
+
+//     // if (!isUserInMembersList) {
+//     await this.update(channel.id, {
+//             members: [ ...channel.members, user]
+//           });
+//         // }
+//     return user;
+//   }
+// async addMember(channelId: number, user: User): Promise<void> {
+// async addMember(channel: Channel, adminId: number, username: string) {
+//     const user = await this.userService.findOneByName(username);
+// if (!user)
+// {
+//   throw new Error('no user known by that name');
+// }
+//   // const channel = await this.channelRepository.findOne(channelId);
+//   // if (Array.isArray(channel.members)) {
+//     channel.members.push(user);
+//     await this.channelRepository.save(channel);
+//   // }
+// }
+
+async addMember(channelName: string, adminId: number, username: string) {
+
+  const channel = await this.channelRepository.createQueryBuilder('channel')
+  // .leftJoin('channel.owner', 'owner')
+  .where('channel.name = :name', { name: channelName })
+  // .andWhere('owner.id = :userId', { userId })
+  .getOne();
+
+if (!channel) {
+  throw new Error('Channel not found or user is not the owner');
+}
+  const user = await this.userService.findOneByName(username);
+  if (!user) {
+    throw new Error("No user found to add");
   }
-
-
-async addMember(channel: Channel, userId: number) {
-  const user = await this.userService.findOnebyId(userId);
-
-  // Check if user is already in the channel's members list
-  const isUserInMembersList = channel.members.some(member => member.id === user.id);
-
-  if (!isUserInMembersList) {
-    await this.channelRepository.update(channel.id, {
-      members: [ ...channel.members, user]
-    });
+  if (!channel.id) {
+    throw new Error("Channel ID is not defined");
   }
-
-  return user;
+  await this.channelRepository.update(channel.id, {
+    members: [ ...channel.members, user]
+  });
+  
 }
 
 
-async inviteUser(channel: Channel, userId: number) {
-  const user = await this.userService.findOnebyId(userId);
+// async addMember(channel: Channel, adminId: number, username: string) {
+//   const user = await this.userService.findOneByName(username);
+//   if (!user) {
+//     throw new Error('No user found with that name');
+//   }
+  
+//   if (Array.isArray(channel.members)) {
+//     channel.members.push(user);
+//   } else {
+//     channel.members = [user];
+//   }
+  
+//   await this.channelRepository.save(channel);
+// }
 
-  // Check if user is already in the channel's members list
-  const isUserinInvitedList = channel.invitedUsers.some(invitedUser => invitedUser.id === user.id);
+// async addMember(channelName: string, userId: number, username: string) {
+//   const user = await this.userService.findOneByName(username);
+//   const channel = await this.findOneByName(channelName);
 
-  if (!isUserinInvitedList) {
-    await this.channelRepository.update(channel.id, {
-      invitedUsers: [ ...channel.invitedUsers, user]
-    });
-  }
+//   if(!channel)
+//     throw new Error("no chan");
 
-  return user;
-}
+//   if(!channel.members)
+//     throw new Error("channel has no members");
+
+//   await this.channelRepository.update(channel.id, {
+//     members: [ ...channel.members, user]
+//   });
+
+//   const channelmembers = channel.members.map(member => member.username);
+//   const channelmembersStr = channelmembers.join(', ');
+//   throw new Error(channelmembersStr);
+
+//   return user;
+// }
+
+
+
+
+
+  
+  
+
+// async addUserToChannel(channel: Channel, adminId: number,  userId: number) {
+//   const user = await this.userService.findOnebyId(userId);
+
+//   await this.channelService.update(channel.id, {
+//     users: [ ...channel.users, user]
+//   });
+//   return user;
+// }
+
+
+// async addMember(channel: Channel, adminId: number, userId: string) {
+//   const admin = await this.userService.findOnebyId(adminId);
+
+//   // Check if the admin is in the channel's list of admins
+//   // const isAdminInAdminsList = channel?.admins?.some(admin => admin.id === adminId);
+
+//   // if (!isAdminInAdminsList){
+//   //   throw new Error("Only admins are authorized to add members to the channel.");
+//   // }
+
+//   const user = await this.userService.findOneByName(userId.trim());
+
+//   // Check if user is already in the channel's members list
+//   // const isUserInMembersList = channel.members.some(member => member.id === user.id);
+
+//   // if (!isUserInMembersList) {
+//     // Add the user to the members list
+//     channel.members.push(user);
+//     await this.channelRepository.save(channel);
+//   // }
+
+//   return user;
+// }
+
+
+
+// async inviteUser(channel: Channel, userId: number) {
+//   const user = await this.userService.findOnebyId(userId);
+
+//   // Check if user is already in the channel's members list
+//   const isUserinInvitedList = channel.invitedUsers.some(invitedUser => invitedUser.id === user.id);
+
+//   if (!isUserinInvitedList) {
+//     await this.channelRepository.update(channel.id, {
+//       invitedUsers: [ ...channel.invitedUsers, user]
+//     });
+//   }
+
+//   return user;
+// }
 
 //userid who asked for it, channel id what chan and adminId = admintoadd
-async addAdmin(userId: string, channelId: number, adminId: number): Promise<boolean> {
+async addAdmin(adminId: number, userId: string, channelId: number): Promise<boolean> {
   // Check if user is the owner of the channel
   const channel = await this.channelRepository.createQueryBuilder('channel')
   .leftJoin('channel.owner', 'owner')
@@ -314,7 +458,16 @@ async removeAdmin(channel: Channel, userId: number) {
   return user;
 }
 
-async removeUser(channel: Channel, userId: number) {
+async removeMember(channel: Channel, adminId: number, userId: number) {
+
+  const admin = await this.userService.findOnebyId(adminId);
+
+  // Check if the admin is in the channel's list of admins
+  const isAdmin = channel.admins.some(admin => admin.id === userId);
+  if (!isAdmin){
+    throw new Error("Only admins are authorized to remove members from the channel.");
+  }
+
   try {
     await this.removeAdmin(channel, userId);
   } catch (e) {}
@@ -324,13 +477,8 @@ async removeUser(channel: Channel, userId: number) {
     return chanUser.id !== user.id;
   });
 
-  const userInvitedRemovedList = channel.invitedUsers.filter((invitedUser) => {
-    return invitedUser.id !== user.id;
-  });
-
   await this.channelRepository.update(channel.id, {
     members: userRemovedList,
-    invitedUsers: userInvitedRemovedList,
   });
   return user;
 }

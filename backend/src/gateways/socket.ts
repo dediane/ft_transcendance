@@ -146,7 +146,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
         password: password,
         members: [usr],
         admins: [usr],
-        invitedUsers: [usr],
+        // invitedUsers: [usr],
       };
 
     const newChannel = await this.channelService.createChannel(channelDto);
@@ -202,6 +202,34 @@ async handleChatPassword(socket: Socket, data: any) {
 
   await this.channelService.changeChannelPassword(userId, updateChannelDto);
 }
+
+@SubscribeMessage('add member')
+async handleAddMember(socket: Socket, payload: any) {
+  const { channelName, AdminId, username } = payload;
+
+    console.log(channelName, AdminId, username)
+  const chan = await this.channelService.findOneByName(channelName);
+  await this.channelService.addMember(channelName, AdminId, username);
+}
+
+@SubscribeMessage('add admin')
+async handleAddAdmin(socket: Socket, payload: any) {
+  const { channelName, AdminId, username } = payload;
+
+    console.log(channelName, AdminId, username)
+ const channel = await this.channelService.findOneByName(channelName);
+  await this.channelService.addAdmin(AdminId, username, channel.id);
+}
+
+@SubscribeMessage('remove member')
+async handleRemoveMember(socket: Socket, payload: any) {
+  const { channelName, AdminId, username } = payload;
+
+    console.log(channelName, AdminId, username)
+  const chan = await this.channelService.findOneByName(channelName);
+  await this.channelService.removeMember(chan, AdminId, username);
+}
+
 
   @SubscribeMessage('join room')
   async handleJoinRoom(socket: Socket, roomName: string) {
