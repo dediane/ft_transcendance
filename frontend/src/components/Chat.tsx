@@ -179,6 +179,9 @@ function Chat(props) {
   };
   
 
+
+
+
   const openAddUserModal = () => {
     setShowAddUserPopup(true);
   };
@@ -194,6 +197,9 @@ function Chat(props) {
     // do something with the new user
     closeAddUserModal();
   };
+
+
+
 
 
 
@@ -216,6 +222,9 @@ function Chat(props) {
   function handleAdminAdding(event) {
     setAdmin(event.target.value);
   }
+
+
+
   
   const [AdmintoRemove, setAdmintoRemove] = useState('');
   const [showRemoveAdminPopup, setShowRemoveAdminPopup] = useState(false);
@@ -240,6 +249,31 @@ function Chat(props) {
     setAdmintoRemove(event.target.value);
   }
 
+
+
+
+  const [MemberToRemove, setMemberToRemove] = useState('');
+  const [showRemoveMemberPopup, setShowRemoveMemberPopup] = useState(false);
+
+  const openRemoveMemberModal = () => {
+    setShowRemoveMemberPopup(true);
+  };
+
+  const closeRemoveMemberModal = () => {
+    setShowRemoveMemberPopup(false);
+    // setPassword('');
+  };
+
+  const removeMember = () => {
+  props.removeMember(MemberToRemove);
+
+    // do something with the new user
+    closeRemoveMemberModal();
+  };
+
+  function handleMemberRemoveing(event) {
+    setMemberToRemove(event.target.value);
+  }
 
     const handleChatNameChange = (event) => {
         setChatName(event.target.value);
@@ -572,6 +606,19 @@ function handlePasswordToggle(event) {
         modalId="Remove-user-modal"
         buttonText="Remove User"
       />
+      <button onClick={openRemoveMemberModal}>Remove Member from Chan</button> 
+      <PopupModal
+        isOpen={showRemoveMemberPopup}
+        onRequestClose={closeRemoveMemberModal}
+        onSave={removeMember} //attention: plutot call invite que Remove non ? appelle Remove apres premiere connexion?? en consideration des chats prives
+        onCancel={closeRemoveMemberModal}
+        value={MemberToRemove}
+        onChange={handleMemberRemoveing}
+        placeholder="Enter username here"
+        modalId="Remove-user-modal"
+        buttonText="Remove User"
+      />
+
 
     </div>
 

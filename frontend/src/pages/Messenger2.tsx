@@ -87,22 +87,6 @@ function Messenger2() {
   }
   
 
-  function removeMember(username : string)
-  {
-    const payload = {
-      AdminId: AuthService.getId(),
-      username : username,
-      chatName : currentChat.chatName
-    };
-    socketRef?.current?.emit("remove from chan", payload);  //member to remove a envoyer a la database pour modif
-    setMembers((prevUsers) => {
-      return prevUsers.filter((user) => user !== username);
-    });
-
-
-
-    //set admins?? remove member as admin
-  }
 
   function changeChatPassword(newpass: string)
   {
@@ -147,7 +131,21 @@ function Messenger2() {
   }
 
 
-
+  function removeMember(userNameToRemoveasMember: string)
+  {
+    console.log("to remove in messenger2", userNameToRemoveasMember)
+    console.log("currentchatName", currentChat.chatName)
+    const payload = {
+      channelName: currentChat.chatName,
+      AdminId: AuthService.getId(),
+      username : userNameToRemoveasMember,
+    };
+    // setMembers((prevUsers) => {
+    //   return prevUsers.filter((user) => user !== username);
+    // });
+    socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
+  }
+  
 function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
     const newConnectedRooms = immer(connectedRooms, (draft) => {
       draft.push(room);

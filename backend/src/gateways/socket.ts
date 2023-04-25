@@ -236,11 +236,12 @@ async handleRemovAdmin(socket: Socket, payload: any) {
 
 @SubscribeMessage('remove member')
 async handleRemoveMember(socket: Socket, payload: any) {
+  console.log("socket remove member")
   const { channelName, AdminId, username } = payload;
 
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
-  await this.channelService.removeMember(chan, AdminId, username);
+  await this.channelService.removeMember(channelName, AdminId, username);
 }
 
 

@@ -300,7 +300,19 @@ async addMember(channelName: string, adminId: number, username: string) : Promis
   // return user;
 }
 
-async removeMember(channel: Channel, adminId: number, userId: number) {
+async removeMember(channelName: string, adminId: number, username: string){
+
+  console.log("REMOVE MEMBER CALLED SERVICE")
+  const channel = await this.findOneByName(channelName);
+
+  if(channel.members) {
+    for (var k = 0; k < channel.members.length; k++)
+    {
+      if (channel.members[k].username === username)
+      channel.members.splice(k, 1)
+    }
+    await this.channelRepository.save(channel);
+  }
 
   // const admin = await this.userService.findOnebyId(adminId);
 
