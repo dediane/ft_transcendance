@@ -146,8 +146,10 @@ function Chat(props) {
 
     const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [showAddUserPopup, setShowAddUserPopup] = useState(false);
+  const [showAddAdminPopup, setShowAddAdminPopup] = useState(false);
   const [password, setPassword] = useState('');
   const [member, setMember] = useState('');
+  const [admin, setAdmin] = useState('');
 
   // const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   setPassword(event.target.value);
@@ -192,6 +194,29 @@ function Chat(props) {
     // do something with the new user
     closeAddUserModal();
   };
+
+
+
+  const openAddAdminModal = () => {
+    setShowAddAdminPopup(true);
+  };
+
+  const closeAddAdminModal = () => {
+    setShowAddAdminPopup(false);
+    // setPassword('');
+  };
+
+  const addAdmin = () => {
+  props.addAdmin(admin);
+
+    // do something with the new user
+    closeAddAdminModal();
+  };
+
+  function handleAdminAdding(event) {
+    setAdmin(event.target.value);
+  }
+  
 
     const handleChatNameChange = (event) => {
         setChatName(event.target.value);
@@ -495,6 +520,19 @@ function handlePasswordToggle(event) {
         onCancel={closeAddUserModal}
         value={member}
         onChange={handleMemberAdding}
+        placeholder="Enter username here"
+        modalId="add-user-modal"
+        buttonText="Add User"
+      />
+{/*si l'admin n'est membre encore a ajouter dans la liste des membres avant !!donc je changerais ca pour que toggle une liste des membres et ne peut cliquer que sur membre pour admin adding */}
+<button onClick={openAddAdminModal}>Add admin to Chat</button> 
+      <PopupModal
+        isOpen={showAddAdminPopup}
+        onRequestClose={closeAddAdminModal}
+        onSave={addAdmin} //attention: plutot call invite que add non ? appelle add apres premiere connexion?? en consideration des chats prives
+        onCancel={closeAddAdminModal}
+        value={admin}
+        onChange={handleAdminAdding}
         placeholder="Enter username here"
         modalId="add-user-modal"
         buttonText="Add User"

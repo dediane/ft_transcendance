@@ -22,18 +22,6 @@ export class Channel {
     @OneToMany(() => Message, message => message.channel, { onDelete: 'CASCADE' })
     messages: Message[];
 
-    // @ManyToMany(() => User, user => user.channels, {cascade: true})
-    // @JoinTable()
-    // members: User[];
-
-
-
-    // @ManyToMany(() => User, user => user.adminChannels, {cascade: true})
-    // @JoinTable()
-    // admins: User[];
-    
-    // @ManyToMany(() => User)
-
     @ManyToMany(() => User, user => user.adminChannels)
     @JoinTable()
     admins: User[];
@@ -43,26 +31,9 @@ export class Channel {
     @JoinTable()
     members: User[];
 
-    // @ManyToMany(() => User, user => user.invitedChannels)
-    // @JoinTable()
-    // invitedUsers: User[];
-
-    // @ManyToMany(() => User, user => user.blocked)
-    // @JoinTable()
-    // blockedUsers: User[];
-  
-    // @ManyToMany(() => User, user => user.blocked)
-    // @JoinTable()
-    // mutedUsers: User[];
- 
     async getMembers(): Promise<User[]> {
       return this.members;
     }
-
-    // async getInvitedUsers(): Promise<User[]> {
-    //     return this.invitedUsers;
-    //   }
-
       async getAdmins(): Promise<User[]> {
         return this.admins;
       }

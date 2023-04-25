@@ -126,13 +126,14 @@ function Messenger2() {
 
   }
 
-  function addMemberAsAdmin(userNameToAddasAdmin: string)
+  function addAdmin(userNameToAddasAdmin: string)
   {
     const payload = {
+      channelName: currentChat.chatName,
       AdminId: AuthService.getId(),
-      userNameToAdd : userNameToAddasAdmin,
+      username : userNameToAddasAdmin,
     };
-    socketRef?.current?.emit("add to Admins list", payload);  //member to remove a envoyer a la database pour modif
+    socketRef?.current?.emit("add admin", payload);  //member to remove a envoyer a la database pour modif
   }
 
   function RemoveMemberFromAdmins(userNameToRemoveasAdmin: string)
@@ -267,9 +268,18 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         const chatState = { ...currentChat };
 
         // Add new member(s) to the members array
-        chatState.members = [...chatState.members, members];
-        chatState.admins = [...chatState.admins, admins];
+        // chatState.members = [...chatState.members, members];
+        // chatState.admins = [...chatState.admins, admins];
 
+        // if(!chatState.admins) {
+        //   chatState.admins = []
+        // }
+        // chatState.admins.push(admin)
+
+        // if(!chatState.members) {
+        //   chatState.members = []
+        // }
+        // chatState.members.push(member)
         // Update the state
         setCurrentChat(chatState);
 
@@ -321,7 +331,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         members={members}
         admins={admins}
         addMember={addMember}
-        addMemberAsAdmin={addMemberAsAdmin}
+        addAdmin={addAdmin}
         RemoveMemberFromAdmins={RemoveMemberFromAdmins}
         removeMember={removeMember}
         joinRoom={joinRoom}

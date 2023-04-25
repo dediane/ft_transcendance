@@ -79,41 +79,6 @@ export class UserService {
     .getOne();
     return user;
   }
-  // async findAll() {
-  //   // const users = await this.userRepository.find();
-
-  //   const users = await this.userRepository.find({
-  //     // relations: ['id', 'username', 'message', 'channels', 'invitedChannels', 'adminChannels']
-  //     relations: ['message', 'channels', 'invitedChannels', 'adminChannels']
-  //   });
-  //   return users;
-  // }
-
-  // async findOnebyId(id: number): Promise<User | undefined> {
-  //   const user = await this.userRepository
-  //     .createQueryBuilder('user')
-  //     .leftJoinAndSelect('user.channels', 'channel')
-  //     .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
-  //     .leftJoinAndSelect('user.adminChannels', 'adminChannel')
-  //     .where('user.id = :id', { id })
-  //     .getOne();
-  //   return user;
-  // }
-
-
-
-
-  // async findOnebyId(id : number) : Promise<User | undefined> {
-  //   const user = await this.userRepository
-  //   .createQueryBuilder('user')
-  //   .select('user')
-  //   .where('user.id = :id', {id})
-  //   .getOne();
-  //   return user;
-  // }
-
-
-
 
   async findOneChannelByName(userId: number, channelName: string): Promise<Channel | undefined> {
     const user = await this.userRepository.findOne({

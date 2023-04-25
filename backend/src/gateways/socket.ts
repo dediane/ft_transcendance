@@ -215,14 +215,15 @@ async handleAddMember(socket: Socket, payload: any) {
   await this.channelService.addMember(channelName, AdminId, username);
 }
 
+
 @SubscribeMessage('add admin')
 async handleAddAdmin(socket: Socket, payload: any) {
   const { channelName, AdminId, username } = payload;
-
     console.log(channelName, AdminId, username)
- const channel = await this.channelService.findOneByName(channelName);
-  await this.channelService.addAdmin(AdminId, username, channel.id);
+  const chan = await this.channelService.findOneByName(channelName);
+  await this.channelService.addAdmin(channelName, AdminId, username);
 }
+
 
 @SubscribeMessage('remove member')
 async handleRemoveMember(socket: Socket, payload: any) {

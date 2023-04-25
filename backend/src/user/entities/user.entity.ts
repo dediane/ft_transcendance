@@ -61,13 +61,6 @@ export class User {
 @JoinColumn()
 messages: Message[];
 
-// @ManyToMany(() => Channel, (channel) => channel.members)
-// @JoinTable()
-// channels: Channel[];
-
-// @ManyToMany(() => Channel, (channel) => channel.admins)
-// @JoinTable()
-// adminChannels: Channel[];
 
 @ManyToMany(() => Channel, channels => channels.admins)
 adminChannels: Channel[];
@@ -76,29 +69,12 @@ adminChannels: Channel[];
 // @JoinTable()
 channels: Channel[];
 
-// @ManyToMany(() => Channel, channels => channels.invitedUsers)
-// invitedChannels: Channel[];
 
 @OneToMany(() => Channel, channel => channel.owner)
 ownedChannels: Channel[];
-
-
-// @ManyToMany(() => Channel, (channel) => channel.invitedUsers)
-// @JoinTable()
-// invitedChannels: Channel[];
 
   async getChannels(): Promise<Channel[]> {
     return this.channels;
   }
 
-  // async getInvitedChannels(): Promise<Channel[]> {
-  //   return this.invitedChannels;
-  // }
-
-
-  // async getadminChannels(): Promise<Channel[]> {
-  //   return this.adminChannels;
-  // }
-  // @ManyToMany(() => Channel, channel => channel.users)
-  // memberships: ChannelMembership[];
 }
