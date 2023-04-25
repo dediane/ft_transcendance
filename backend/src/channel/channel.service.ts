@@ -53,9 +53,9 @@ export class ChannelService {
       .leftJoinAndSelect('channel.members', 'member')
       // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
       .leftJoinAndSelect('channel.admins', 'admin')
-      .select(['channel.name', 'channel.name', 'member.username', 'admin.username'])
+      // .select(['channel.name', 'channel.id', 'member.username', 'admin.username'])
       .leftJoinAndSelect('channel.messages', 'message')
-      .select(['channel.name', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'message.content'])
+      .select(['channel.name', 'channel.id', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'message.content'])
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();
     return channels;
@@ -93,12 +93,28 @@ export class ChannelService {
 	// }
   
   
+  // //Cannot query across many-to-many for property users
+  // async findOneByName(name: string): Promise<Channel | undefined> {
+  //   const channel = await this.channelRepository
+  //     .createQueryBuilder('channel')
+  //     .leftJoinAndSelect('channel.members', 'members')
+  //     .where('channel.name = :name', { name })
+  //     // .leftJoinAndSelect('channel.id', 'id')
+  //     // .select(['channel.name', 'members.username'])
+  //     .select(['channel.id', 'channel.name', 'members.username'])
+  //     .getOne();
+  //     // .getMany();
+  
+  //   return channel;
+  // }
+  
   async findOneByName(name: string): Promise<Channel | undefined> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')
       .leftJoinAndSelect('channel.members', 'members')
       .where('channel.name = :name', { name })
-      .select(['channel.name', 'members.username'])
+      .leftJoinAndSelect('channel.admins', 'admins')
+      .select(['channel.id', 'channel.name', 'members', 'admins'])
       .getOne();
   
     return channel;
@@ -241,7 +257,9 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
 // }
 
 
-async addMember(channelName: string, adminId: number, username: string) {
+async addMember(channelName: string, adminId: number, username: string)
+// : Promise<Channel | undefined> 
+{
   const channel = await this.findOneByName(channelName);
   const admin = await this.userService.findOnebyId(adminId);
 
@@ -261,7 +279,11 @@ async addMember(channelName: string, adminId: number, username: string) {
     // await this.update(channel.id, {
     //         members: [ ...channel.members, user]
     //       });
-        // }
+    //     }
+
+        // await this.channelRepository.update(channel.id, {
+        //   members: [ ...channel.members, user]
+        // });
 
 
   if(!channel.members) {
@@ -269,7 +291,7 @@ async addMember(channelName: string, adminId: number, username: string) {
   }
   channel.members.push(user)
   const result = await this.channelRepository.save(channel);
-    return user;
+    return result;
   }
 // async addMember(channelId: number, user: User): Promise<void> {
 // async addMember(channel: Channel, adminId: number, username: string) {

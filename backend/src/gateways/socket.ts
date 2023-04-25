@@ -180,8 +180,11 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 @SubscribeMessage('remove chan')
 async handleRemoveChannel(socket: Socket, channelName: string) {
 
+  console.log('removing channel', channelName)
   const existingChannel = await this.channelService.findOneByName(channelName);
   if (existingChannel) {
+  console.log('existing channel', existingChannel.name, existingChannel.id)
+
     // await Promise.all(existingChannel.messages.map(async (msg) => {
     //   await this.messageService.remove(msg.id);
     // }));

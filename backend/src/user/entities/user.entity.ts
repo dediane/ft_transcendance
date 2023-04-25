@@ -73,6 +73,7 @@ messages: Message[];
 adminChannels: Channel[];
 
 @ManyToMany(() => Channel, channels => channels.members)
+// @JoinTable()
 channels: Channel[];
 
 // @ManyToMany(() => Channel, channels => channels.invitedUsers)
