@@ -5,6 +5,7 @@ import Modal from "react-modal";
 import PopupModal from "./PopUpModal"
 import CustomPopup from "./CustomPopup"
 import { m } from 'framer-motion';
+import Link from 'next/link';
 
 // const initialRooms = [
 //     "general",
@@ -361,18 +362,29 @@ function handlePasswordToggle(event) {
 
 
     
-    function renderRooms(room){
-        const currentChat = {
-            chatName: room,
-            isChannel: true,
-            receiverId: "",
-        };
-        return (
-            <Row onClick={() => props.toggleChat(currentChat)} key={room}>
-                {room}
-            </Row>
-        )
-    }
+    // function renderRooms(room){
+    //     const currentChat = {
+    //         chatName: room,
+    //         isChannel: true,
+    //         receiverId: "",
+    //     };
+    //     return (
+    //         <Row onClick={() => props.toggleChat(currentChat)} key={room}>
+    //             {room}
+    //         </Row>
+    //     )
+    // }
+
+
+
+function renderRooms(room) {
+  const chatName = encodeURIComponent(room);
+  return (
+    <Link href={`/${chatName}`}>
+      <div key={room}>{room}</div>
+    </Link>
+  );
+}
 
     function renderUser(user){
         console.log("render user");
@@ -472,7 +484,7 @@ function handlePasswordToggle(event) {
     
 
     let body;
-    if(!props.currentChat.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
+    if(!props.currentChat?.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
         body = (
             <Messages>
                 {props.messages?.map(renderMessages)}
