@@ -76,55 +76,37 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     console.log(user, 'just joined server');
   }
     
-    // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
-    const usr = await this.userService.findOnebyId(userdata.id);
-    // const channels = await usr.getChannels();
-    // console.log('are there any', channels)
-    const channels = await this.channelService.findAll();
-    console.log('are there any', channels)
+  // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
 
-    const chans =  await this.channelService.findAll();
-    const channelNames = chans.map(channel => channel.name);
-    console.log(channelNames);
-    this.server.emit('all chans',channelNames);
-    this.server.emit('connected users', this.users);
+  // const channels = await this.channelService.findAll();
+  const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
 
-    if (channels) {
-      const channelNames = channels.map(channel => channel.name);
-      const channelNamesStr = channelNames.join(', ');
-      for (const channel of channels) {
-        const channelName = channel.name;
-        const channelMessages =  await this.channelService.findMessagesByChatname(channelName);
-       const members =   channel.members.map(user => user.username)
-       const admins =   channel.admins.map(user => user.username)
-        socket.join(channelName);
-        if (!this.messages[channelName]) {
-          this.messages[channelName] = []; // add new room if it doesn't exist
-        }
-        console.log(
-          socket.id,
-          'just joined rooOOOOm',
-          channelName,
-          channelMessages,
-        );
-        this.messages[channelName].push(...channelMessages);
-        console.log("members and admins AAAAAAARE", admins, members)
-        console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
-        // socket.emit('join room', this.messages[channelName]); // send all messages for all rooms
-          // this.server.emit('join room', this.messages[channelName]); // send all messages for all rooms
-          // this.server.emit('join room', { room: channelName, messages: channelMessages}); // send all messages for all rooms
-         
-        //  if(channel)
-        //   console.log("il y a bien une dataabassseeeeeeeeuh")
-          this.server.emit('join room', { room: channelName, messages: channelMessages, members: members, admins: admins }); // send all messages for all rooms
-        
-        }
-    
-   
-  
+  if (channels) {
+  const channelNames = channels.map(channel => channel.name);
+  console.log(channelNames);
+  this.server.emit('all chans',channelNames);
+  this.server.emit('connected users', this.users);
+    for (const channel of channels) {
+      const channelName = channel.name;
+      const channelMessages = await this.channelService.findMessagesByChatname(channelName);
+      const members = channel.members?.map(user => user.username);
+      const admins = channel.admins?.map(user => user.username);
+      socket.join(channelName);
+      if (!this.messages[channelName]) {
+        this.messages[channelName] = []; // add new room if it doesn't exist
+      }
+      console.log(
+        socket.id,
+        'just joined rooOOOOm',
+        channelName,
+        channelMessages,
+      );
+      this.messages[channelName].push(...channelMessages);
+      console.log("members and admins AAAAAAARE", admins, members)
+      console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
+      this.server.emit('join room', { room: channelName, messages: channelMessages, members: members, admins: admins }); // send all messages for all rooms
+    }
   }
-  
- 
 }
 
 

@@ -31,18 +31,18 @@ export class Channel {
     @JoinTable()
     members: User[];
 
+    // @ManyToMany(() => User, user => user.ismuted)
+    // @JoinTable()
+    // mutedmembers: User[];
+
     @ManyToMany(() => User, user => user.ismuted)
     @JoinTable()
-    mutedmembers: User[];
+    mutedMembers: Array<{ user: User, mutedUntil: Date }>;
+  
 
     @ManyToMany(() => User, user => user.isbanned)
     @JoinTable()
     bannedUsers: User[];
 
-    async getMembers(): Promise<User[]> {
-      return this.members;
-    }
-      async getAdmins(): Promise<User[]> {
-        return this.admins;
-      }
+
 }

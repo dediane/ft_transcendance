@@ -80,26 +80,63 @@ export class ChannelService {
   async findOneByName(name: string): Promise<Channel | undefined> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')
+      .where('channel.name = :name', { name })
       .leftJoinAndSelect('channel.members', 'members')
       .leftJoinAndSelect('channel.bannedUsers', 'bannedUsers')
       .leftJoinAndSelect('channel.admins', 'admins')
       .leftJoinAndSelect('channel.mutedMembers', 'mutedMembers')
       .leftJoinAndSelect('channel.owner', 'owner')
-      .where('channel.name = :name', { name })
       .select(['channel.id', 'channel.name', 'members', 'bannedUsers', 'admins', 'mutedMembers', 'owner'])
       .getOne();
   
     return channel;
   }
   
+  
+
+  // async isUserMuted(channelName: string, user: User): Promise<boolean> {
+  //   const channel = await this.findOneByName(channelName);
+  //   if (!channel) {
+  //     return false;
+  //   }
+  //   return channel.mutedMembers.some(mutedMember => mutedMember.id === user.id);
+  // }
+  
 
   async isUserMuted(channelName: string, user: User): Promise<boolean> {
-    const channel = await this.findOneByName(channelName);
+    // const channel = await this.findOneByName(channelName);
+    const channel = await this.channelRepository.findOne({ where: { name: channelName }, relations: ['mutedMembers'] });
     if (!channel) {
-      return false;
+      throw new Error(`Channel ${channelName} not found`);
     }
-    return channel.mutedmembers.some(mutedmember => mutedmember.id === user.id);
+  
+    const now = new Date();
+    for (const mutedMember of channel.mutedMembers) {
+      if (mutedMember.user.id === user.id && mutedMember.mutedUntil > now) {
+        // code here
+        //return true
+      }
+      
+    }
+  
+    return false;
   }
+
+  async muteUser(channelName: string, user: User, muteDurationMinutes: number): Promise<void> {
+    const channel = await this.channelRepository.findOne({ where: { name: channelName }, relations: ['mutedMembers'] });
+    if (!channel) {
+      throw new Error(`Channel ${channelName} not found`);
+    }
+  
+    const now = new Date();
+    const muteUntil = new Date(now.getTime() + muteDurationMinutes * 60 * 1000);
+  
+    channel.mutedMembers.push({ user, mutedUntil: muteUntil });
+  
+    await this.channelRepository.save(channel);
+
+  }
+  
   
   async isUserBanned(channelName: string, user: User): Promise<boolean> {
     const channel = await this.findOneByName(channelName);
@@ -222,6 +259,18 @@ async getPublicChannels(): Promise<Channel[]> {
   return channels;
 }
 
+
+async getChannelsforUser(userId: number): Promise<Channel[]> {
+  const channels = await this.channelRepository.createQueryBuilder('channel')
+    // .where('channel.dm = false') // exclude DMs
+    // .andWhere('channel.password IS NULL') // exclude password-protected channels
+    .leftJoin('channel.members', 'members')
+    .andWhere('members.id = :userId', { userId })
+    .select(['channel.id', 'channel.name'])
+    .getMany();
+
+  return channels;
+}
 
 
 async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {

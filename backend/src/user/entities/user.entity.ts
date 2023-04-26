@@ -70,7 +70,7 @@ adminChannels: Channel[];
 channels: Channel[];
 
 
-@ManyToMany(() => Channel, channels => channels.mutedmembers)
+@ManyToMany(() => Channel, channels => channels.mutedMembers)
 ismuted: Channel[];
 
 @ManyToMany(() => Channel, channels => channels.bannedUsers)
