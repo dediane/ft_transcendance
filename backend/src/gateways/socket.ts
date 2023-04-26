@@ -123,6 +123,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
    
   
   }
+  
  
 }
 
@@ -197,6 +198,23 @@ async handleRemoveChannel(socket: Socket, channelName: string) {
   }
 }
 
+// @SubscribeMessage('toggle chat')
+// async handleChatPassword(socket: Socket, data: any) {
+// const channel = await this.channelRepository.findOneByName(channelName);
+
+// if (!channel) {
+// // handle error: channel not found
+// } else if (channel.password && !this.channelRepository.isChannelPasswordCorrect(channelName, userInput)) {
+// // handle error: incorrect channel password
+// } else if (channel.bannedusers.includes(user)) {
+// // handle error: user is banned from the channel
+// } else {
+// // the channel is either public or the correct password was provided
+// // add the user to the channel's members array
+// await addMember(channel, user);
+// // send a success response to the client
+// }
+// }
 
 @SubscribeMessage('change password')
 async handleChatPassword(socket: Socket, data: any) {

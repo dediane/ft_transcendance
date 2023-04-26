@@ -449,25 +449,25 @@ function handlePasswordToggle(event) {
     }
     
 
-    function renderUser(user){
-          return (
-              <Row key={user.username}>
-                  You: {user.username}
-              </Row>
-          );
-      const currentChat = {
-          chatName : user.username,
-          isChannel: false,
-          receiverId: user.username,
-      };
-      // return(
-      //     <Row onClick={() => {
-      //         props.toggleChat(currentChat);
-      //     }} key={user.username}>
-      //         {user.username}
-      //     </Row>
-      // )
-  }
+  //   function renderUser(user){
+  //         return (
+  //             <Row key={user.username}>
+  //                 You: {user.username}
+  //             </Row>
+  //         );
+  //     const currentChat = {
+  //         chatName : user.username,
+  //         isChannel: false,
+  //         receiverId: user.username,
+  //     };
+  //     // return(
+  //     //     <Row onClick={() => {
+  //     //         props.toggleChat(currentChat);
+  //     //     }} key={user.username}>
+  //     //         {user.username}
+  //     //     </Row>
+  //     // )
+  // }
 
     
 
@@ -523,9 +523,12 @@ function handlePasswordToggle(event) {
                 <h3>Channels</h3>
                 {/* {props.rooms?.map(renderRooms)} */}
                 {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)}
+                {/* {props.currentChat.members && Array.isArray(props.currentChat.members) && props.currentChat.members.map(renderUser)} */}
 
         <h3>All connected Users</h3>
         {props.allUsers?.map(renderUser)}
+
+        <h3> Send DM to user/friend</h3>
      </SideBar>
 
      <ChatPanel>

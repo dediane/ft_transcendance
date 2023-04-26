@@ -31,6 +31,14 @@ export class Channel {
     @JoinTable()
     members: User[];
 
+    @ManyToMany(() => User, user => user.ismuted)
+    @JoinTable()
+    mutedmembers: User[];
+
+    @ManyToMany(() => User, user => user.isbanned)
+    @JoinTable()
+    bannedUsers: User[];
+
     async getMembers(): Promise<User[]> {
       return this.members;
     }

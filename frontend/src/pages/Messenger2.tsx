@@ -12,7 +12,7 @@ function Messenger2() {
     isChannel: true,
     chatName: "",
     receiverId: "",
-    members: [],
+    members: [""],
     admins: [],
   });
   const [connectedRooms, setConnectedRooms] = useState(["general"]);
@@ -69,22 +69,6 @@ function Messenger2() {
   }
 
 
-  function inviteMember()
-  {
-    const payload = {
-      AdminId: AuthService.getId(), //check si tout le monde peut inviter non admin y compris
-      username : username,
-      chatName : currentChat.chatName
-    };
-    socketRef?.current?.emit("invite to chan", payload); //member invited a envoyer a la database pour modif
-    setInvitedMembers((prevRooms) => {
-      if (!prevInvitedMembers.includes(username)) {
-        return [...prevInvitedMembers, username];
-      }
-      return prevInvitedMembers;
-    });
-
-  }
   
 
 
@@ -107,7 +91,13 @@ function Messenger2() {
       username : username,
     };
     socketRef?.current?.emit("add member", payload);  //member to remove a envoyer a la database pour modif
+    const chatState = { ...currentChat };
 
+  // if (!chatState.members) {
+  //   chatState.members = [];
+  // }
+  // chatState.members.push(username);
+  // setCurrentChat(chatState);
   }
 
   function addAdmin(userNameToAddasAdmin: string)
@@ -205,6 +195,8 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
 
 
   function toggleChat(currentChat) {
+
+    
     if (!messages[currentChat.chatName]) {
       const newMessages = immer(messages, (draft) => {
         draft[currentChat.chatName] = [];
@@ -212,6 +204,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       setMessages(newMessages);
     }
     setCurrentChat(currentChat);
+    //send toggle chat
   }
 
   // useEffect(() => {

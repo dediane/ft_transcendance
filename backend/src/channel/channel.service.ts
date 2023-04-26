@@ -64,18 +64,68 @@ export class ChannelService {
     return channel;
   }
 
+  // async findOneByName(name: string): Promise<Channel | undefined> {
+  //   const channel = await this.channelRepository
+  //     .createQueryBuilder('channel')
+  //     .leftJoinAndSelect('channel.members', 'members')
+  //     .where('channel.name = :name', { name })
+  //     .leftJoinAndSelect('channel.admins', 'admins')
+  //     .select(['channel.id', 'channel.name', 'members', 'admins'])
+  //     .getOne();
+  
+  //   return channel;
+  // }
+
+  /*check pour owner admins and mutedMembers bannedUsers */
   async findOneByName(name: string): Promise<Channel | undefined> {
     const channel = await this.channelRepository
       .createQueryBuilder('channel')
       .leftJoinAndSelect('channel.members', 'members')
-      .where('channel.name = :name', { name })
+      .leftJoinAndSelect('channel.bannedUsers', 'bannedUsers')
       .leftJoinAndSelect('channel.admins', 'admins')
-      .select(['channel.id', 'channel.name', 'members', 'admins'])
+      .leftJoinAndSelect('channel.mutedMembers', 'mutedMembers')
+      .leftJoinAndSelect('channel.owner', 'owner')
+      .where('channel.name = :name', { name })
+      .select(['channel.id', 'channel.name', 'members', 'bannedUsers', 'admins', 'mutedMembers', 'owner'])
       .getOne();
   
     return channel;
   }
   
+
+  async isUserMuted(channelName: string, user: User): Promise<boolean> {
+    const channel = await this.findOneByName(channelName);
+    if (!channel) {
+      return false;
+    }
+    return channel.mutedmembers.some(mutedmember => mutedmember.id === user.id);
+  }
+  
+  async isUserBanned(channelName: string, user: User): Promise<boolean> {
+    const channel = await this.findOneByName(channelName);
+    if (!channel) {
+      return false;
+    }
+    return channel.bannedUsers.some(banneduser => banneduser.id === user.id);
+  }
+
+
+  async isUserAdmin(channelName: string, user: User): Promise<boolean> {
+    const channel = await this.findOneByName(channelName);
+    if (!channel) {
+      return false;
+    }
+    return channel.admins.some(admin => admin.id === user.id);
+  }
+
+
+  async isUserOwner(channelName: string, user: User): Promise<boolean> {
+    const channel = await this.findOneByName(channelName);
+    if (!channel || !channel.owner) {
+      return false;
+    }
+    return channel.owner.id === user.id;
+  }
   // //Cannot query across many-to-many for property users
   // async findOneByName(name: string): Promise<Channel | undefined> {
   //   const channel = await this.channelRepository
@@ -145,12 +195,6 @@ async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
   return this.channelRepository.save(channel);
 }
 
-async isChannelPasswordCorrect(channelName: string, userInput: string): Promise<boolean> {
-  const channelPassword = await this.getChannelPassword(channelName);
-  return channelPassword === userInput;
-} //if returns bool=true then addMember function is called. <= do so in socket.ts
-
-
 async getChannelPassword(name: string) { 
   const channel = await this.channelRepository.createQueryBuilder('channel')
     .select('channel.password')
@@ -160,6 +204,25 @@ async getChannelPassword(name: string) {
 
   return channel.password;
 }
+
+async isChannelPasswordCorrect(channelName: string, userInput: string): Promise<boolean> {
+  const channelPassword = await this.getChannelPassword(channelName);
+  return channelPassword === userInput;
+} //if returns bool=true then addMember function is called. <= do so in socket.ts
+
+
+async getPublicChannels(): Promise<Channel[]> {
+  const channels = await this.channelRepository.createQueryBuilder('channel')
+    .where('channel.dm = false') // exclude DMs
+    // .andWhere('channel.password IS NULL') // exclude password-protected channels
+    .leftJoinAndSelect('channel.members', 'members')
+    .select(['channel.id', 'channel.name', 'members'])
+    .getMany();
+
+  return channels;
+}
+
+
 
 async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {
   // Check if user is the owner of the channel
