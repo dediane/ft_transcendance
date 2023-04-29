@@ -30,14 +30,10 @@ export class Channel {
     @ManyToMany(() => User, user => user.channels)
     @JoinTable()
     members: User[];
-
-    // @ManyToMany(() => User, user => user.ismuted)
-    // @JoinTable()
-    // mutedmembers: User[];
-
+  
     @ManyToMany(() => User, user => user.ismuted)
     @JoinTable()
-    mutedMembers: Array<{ user: User, mutedUntil: Date }>;
+    mutedMembers: User[];
   
 
     @ManyToMany(() => User, user => user.isbanned)

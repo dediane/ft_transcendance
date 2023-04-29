@@ -12,18 +12,17 @@ function Messenger2() {
     isChannel: true,
     chatName: "",
     receiverId: "",
-    members: [""],
-    admins: [],
+    // members: [""],
+    // admins: [],
   });
   const [connectedRooms, setConnectedRooms] = useState(["general"]);
 
-  const [members, setMembers] = useState([]);
   const [invitedMembers, setinvitedMembers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [message, setMessage] = useState("");
   const socketRef = useRef();
-
+  const [newMember, setNewMember] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
 
 
@@ -32,6 +31,7 @@ function Messenger2() {
   }
 
   const [messages, setMessages] = useState({});
+  const [members, setMembers] = useState({});
 
  
   function createNewChannel(data: any) {
@@ -52,6 +52,9 @@ function Messenger2() {
       ...prevMessages,
       [data.chatName]: [],
     }));
+
+  
+    
   }
   
   function removeChannel(channelName: string) {
@@ -91,13 +94,12 @@ function Messenger2() {
       username : username,
     };
     socketRef?.current?.emit("add member", payload);  //member to remove a envoyer a la database pour modif
-    const chatState = { ...currentChat };
-
-  // if (!chatState.members) {
-  //   chatState.members = [];
-  // }
-  // chatState.members.push(username);
-  // setCurrentChat(chatState);
+    const updatedMembers = [...members[currentChat.chatName], newMember];
+    setMembers((prevMembers) => ({
+      ...prevMembers,
+      [currentChat.chatName]: updatedMembers,
+    }));
+    setNewMember("");
   }
 
   function addAdmin(userNameToAddasAdmin: string)
@@ -130,10 +132,47 @@ function Messenger2() {
       AdminId: AuthService.getId(),
       username : userNameToRemoveasMember,
     };
-    // setMembers((prevUsers) => {
-    //   return prevUsers.filter((user) => user !== username);
-    // });
+    const updatedMembers = members[currentChat.chatName].filter(
+      (member) => member !== userNameToRemoveasMember
+    );
+    setMembers((prevMembers) => ({
+      ...prevMembers,
+      [currentChat.chatName]: updatedMembers,
+    }));
     socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
+  }
+
+  function banMember(userNameToRemoveasMember: string)
+  {
+    console.log("to remove in messenger2", userNameToRemoveasMember)
+    console.log("currentchatName", currentChat.chatName)
+    const payload = {
+      channelName: currentChat.chatName,
+      AdminId: AuthService.getId(),
+      username : userNameToRemoveasMember,
+    };
+    const updatedMembers = members[currentChat.chatName].filter(
+      (member) => member !== userNameToRemoveasMember
+    );
+    setMembers((prevMembers) => ({
+      ...prevMembers,
+      [currentChat.chatName]: updatedMembers,
+    }));
+    socketRef?.current?.emit("ban member", payload);  //member to remove a envoyer a la database pour modif
+  }
+  
+
+  function muteMember(userToMute: string)
+  {
+    console.log("to remove in messenger2", userToMute)
+    console.log("currentchatName", currentChat.chatName)
+    const payload = {
+      channelName: currentChat.chatName,
+      AdminId: AuthService.getId(),
+      username : userToMute,
+    };
+  
+    socketRef?.current?.emit("mute member", payload);  //member to remove a envoyer a la database pour modif
   }
   
 function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
@@ -146,12 +185,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     setConnectedRooms(newConnectedRooms);
     const username = AuthService.getUsername();
 
-    setMembers((prevMembers) => {
-      if (!prevMembers.includes(username)) {
-        return [...prevMembers, username];
-      }
-      return prevMembers;
-    });
+
   }
 
   function sendMessage() {
@@ -253,11 +287,26 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         ...prevMessages,
         [room]: messages,
       }));
+
+      setMembers((prevMembers) => ({
+        ...prevMembers,
+        [room]: members,
+      }));
+      // setMembers((prevMembers) => ({
+      //   ...prevMembers,
+      //   [room]: members,
+      // }));
+
+
+      // const updatedChat = { ...currentChat, members: [...currentChat.members, ...members] };
+      // setCurrentChat(updatedChat);
+
+      
         // setMembers(members);
         // setAdmins(admins);
 
         // Get the current state
-        const chatState = { ...currentChat };
+        // const chatState = { ...currentChat };
 
         // Add new member(s) to the members array
         // chatState.members = [...chatState.members, members];
@@ -273,7 +322,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         // }
         // chatState.members.push(member)
         // Update the state
-        setCurrentChat(chatState);
+        // setCurrentChat(chatState);
 
     });
     
@@ -320,12 +369,14 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         // yourId={socketRef.current ? socketRef.current.id : ""}
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
-        members={members}
+        // members={members}
         admins={admins}
         addMember={addMember}
         addAdmin={addAdmin}
         removeAdmin={removeAdmin}
         removeMember={removeMember}
+        banMember={banMember}
+        muteMember={muteMember}
         joinRoom={joinRoom}
         rooms={rooms}
         createNewChannel={createNewChannel}
@@ -334,6 +385,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         currentChat={currentChat}
         toggleChat={toggleChat}
         messages={messages[currentChat.chatName]}
+        members={members[currentChat.chatName]}
       />
     );
   }

@@ -41,11 +41,13 @@ export class ChannelService {
       .createQueryBuilder('channel')
       .leftJoinAndSelect('channel.owner', 'owner')
       .leftJoinAndSelect('channel.members', 'member')
+      .leftJoinAndSelect('channel.bannedUsers', 'bannedUser')
+      .leftJoinAndSelect('channel.mutedMembers', 'mutedMember')
       // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
       .leftJoinAndSelect('channel.admins', 'admin')
       // .select(['channel.name', 'channel.id', 'member.username', 'admin.username'])
       .leftJoinAndSelect('channel.messages', 'message')
-      .select(['channel.name', 'channel.id', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'message.content'])
+      .select(['channel.name', 'channel.id', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'bannedUser.username', 'mutedMember.username',  'message.content'])
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();
     return channels;
@@ -103,39 +105,26 @@ export class ChannelService {
   // }
   
 
-  async isUserMuted(channelName: string, user: User): Promise<boolean> {
-    // const channel = await this.findOneByName(channelName);
-    const channel = await this.channelRepository.findOne({ where: { name: channelName }, relations: ['mutedMembers'] });
-    if (!channel) {
-      throw new Error(`Channel ${channelName} not found`);
-    }
+  // async isUserMuted(channelName: string, user: User): Promise<boolean> {
+  //   // const channel = await this.findOneByName(channelName);
+  //   const channel = await this.channelRepository.findOne({ where: { name: channelName }, relations: ['mutedMembers'] });
+  //   if (!channel) {
+  //     throw new Error(`Channel ${channelName} not found`);
+  //   }
   
-    const now = new Date();
-    for (const mutedMember of channel.mutedMembers) {
-      if (mutedMember.user.id === user.id && mutedMember.mutedUntil > now) {
-        // code here
-        //return true
-      }
+  //   const now = new Date();
+  //   for (const mutedMember of channel.mutedMembers) {
+  //     if (mutedMember.user.id === user.id && mutedMember.mutedUntil > now) {
+  //       // code here
+  //       //return true
+  //     }
       
-    }
+  //   }
   
-    return false;
-  }
+  //   return false;
+  // }
 
-  async muteUser(channelName: string, user: User, muteDurationMinutes: number): Promise<void> {
-    const channel = await this.channelRepository.findOne({ where: { name: channelName }, relations: ['mutedMembers'] });
-    if (!channel) {
-      throw new Error(`Channel ${channelName} not found`);
-    }
-  
-    const now = new Date();
-    const muteUntil = new Date(now.getTime() + muteDurationMinutes * 60 * 1000);
-  
-    channel.mutedMembers.push({ user, mutedUntil: muteUntil });
-  
-    await this.channelRepository.save(channel);
 
-  }
   
   
   async isUserBanned(channelName: string, user: User): Promise<boolean> {
@@ -178,6 +167,40 @@ export class ChannelService {
   //   return channel;
   // }
   
+async isChanPublic(channelName: string): Promise<boolean> {
+  const channel = await this.channelRepository.createQueryBuilder('channel')
+    .where('channel.name = :channelName', { channelName })
+    .andWhere('channel.password IS NULL') // exclude password-protected channels
+    .getOne();
+
+  return !!channel && !channel.dm;
+}
+
+
+async isChanPasswordProtected(channelName: string): Promise<boolean> {
+  const channel = await this.channelRepository
+    .createQueryBuilder('channel')
+    .where('channel.name = :name', { name: channelName })
+    .andWhere('channel.password IS NOT NULL')
+    .select('channel.id')
+    .getOne();
+
+  return !!channel;
+}
+
+async isChanPrivate(channelName: string): Promise<boolean> {
+  const channel = await this.channelRepository
+    .createQueryBuilder('channel')
+    .where('channel.name = :name', { name: channelName })
+    .andWhere('channel.dm = true') // include DMs
+    .leftJoinAndSelect('channel.members', 'members')
+    .select(['channel.id', 'channel.name', 'members'])
+    .getOne();
+
+  return !!channel && channel.members.length > 0;
+}
+
+
  
   
 
@@ -200,6 +223,35 @@ export class ChannelService {
       };
     });
   }
+
+/*
+The function now takes an additional parameter, senderId, which is the ID of the user who wants to retrieve messages. It then joins the channel.bannedUsers table and filters out messages sent by users who are present in this table with the ID of the sender. This ensures that messages sent by blocked users are not retrieved.
+*/
+  // async indmessagesfromNOTblockedusers(chatname: string, senderId: number): Promise<{ content: string, chatName: string, sender: string }[]> {
+  //   const messages = await this.messageRepository
+  //   .createQueryBuilder('message')
+  //   .leftJoin('message.channel', 'channel')
+  //   .leftJoin('message.sender', 'sender')
+  //   .leftJoin('channel.bannedUsers', 'blockedUser', 'blockedUser.id = :senderId', { senderId })
+  //   .select(['message.content', 'channel.name', 'sender.username'])
+  //   .where('channel.name = :chatname', { chatname })
+  //   .andWhere('blockedUser.id IS NULL')
+  //   .getMany();
+    
+  //   kotlin
+  //   Copy code
+  //   return messages.map(message => {
+  //     const { content, channel } = message;
+  //     const sender = message.sender ? message.sender.username : null;
+  //     return {
+  //       content,
+  //       chatName: channel.name,
+  //       sender,
+  //     };
+  //   });
+  //   }
+    
+    
   
 
   async findAdmins(channel: Channel): Promise<User[]> {
@@ -425,6 +477,31 @@ async removeMember(channelName: string, adminId: number, username: string){
     }
     await this.channelRepository.save(channel);
   }
+}
+
+async banMember(channelName: string, adminId: number, username: string){
+
+  console.log("BAN MEMBER CALLED SERVICE")
+  const channel = await this.findOneByName(channelName);
+
+  if(channel.members) {
+    for (var k = 0; k < channel.members.length; k++)
+    {
+      if (channel.members[k].username === username)
+      channel.members.splice(k, 1)
+    }
+    await this.channelRepository.save(channel);
+  }
+
+  const user = await this.userService.findOneByName(username);
+ 
+  if(!channel.bannedUsers) {
+    channel.bannedUsers = []
+  }
+  channel.bannedUsers.push(user)
+  const result = await this.channelRepository.save(channel);
+    return result;
+  
 
   // const admin = await this.userService.findOnebyId(adminId);
 
@@ -449,8 +526,150 @@ async removeMember(channelName: string, adminId: number, username: string){
   // return user;
 }
 
+
+
+
+// async muteMember(channelName: string, adminId: number, username: string){
+
+//   console.log("MUTE MEMBER CALLED SERVICE")
+//   const channel = await this.findOneByName(channelName);
+//   const user = await this.userService.findOneByName(username);
+  
+//   if (!channel) {
+//     throw new Error(`Channel ${channelName} not found`);
+//   }
+
+//   if (!user) {
+//     throw new Error(`User ${username} not found`);
+//   }
+
+//   const mutedUntil = new Date(Date.now() + 60 * 1000); // 1 minute, change to 120000 for 2 minutes
+// console.log(user.username, "mutedUntil",  mutedUntil)
+//   if (!channel.mutedMembers) {
+//     channel.mutedMembers = [];
+//     console.log("no muted members yet")
+//   }
+
+//   // channel.mutedMembers.push({ user, mutedUntil });
+//   channel.mutedMembers.push(user);
+
+//   await this.channelRepository.save(channel);
+//   // return result;
+  
+
+//   // const admin = await this.userService.findOnebyId(adminId);
+
+//   // // Check if the admin is in the channel's list of admins
+//   // const isAdmin = channel.admins.some(admin => admin.id === userId);
+//   // if (!isAdmin){
+//   //   throw new Error("Only admins are authorized to remove members from the channel.");
+//   // }
+
+//   // try {
+//   //   await this.removeAdmin(channel, userId);
+//   // } catch (e) {}
+
+//   // const user = await this.userService.findOnebyId(userId);
+//   // const userRemovedList = channel.members.filter((chanUser) => {
+//   //   return chanUser.id !== user.id;
+//   // });
+
+//   // await this.channelRepository.update(channel.id, {
+//   //   members: userRemovedList,
+//   // });
+//   // return user;
+// }
+
+
+
+
+
+async muteMember(channelName: string, adminId: number, username: string){
+  console.log("MUTE MEMBER CALLED SERVICE");
+  const channel = await this.findOneByName(channelName);
+  const user = await this.userService.findOneByName(username);
+  
+  if (!channel) {
+    throw new Error(`Channel ${channelName} not found`);
+  }
+
+  if (!user) {
+    throw new Error(`User ${username} not found`);
+  }
+
+  const mutedUntil = new Date(Date.now() + 60 * 1000); // 1 minute, change to 120000 for 2 minutes
+  console.log(user.username, "mutedUntil", mutedUntil);
+
+  if (!channel.mutedMembers) {
+    channel.mutedMembers = [];
+    console.log("no muted members yet");
+  }
+
+  channel.mutedMembers.push(user);
+
+  await this.channelRepository.save(channel);
+
+  setTimeout(() => {
+    this.removeMutedMember(channel, user);
+  }, 60 * 1000); // 1 minute, change to 120000 for 2 minutes
+}
+
+private removeMutedMember(channel: Channel, user: User) {
+  const index = channel.mutedMembers.findIndex((mutedUser) => mutedUser.id === user.id);
+
+  if (index >= 0) {
+    channel.mutedMembers.splice(index, 1);
+    this.channelRepository.save(channel);
+  }
+}
+
+
+
+
+
+async createDmChat(user1: User, user2: User) {
+  // const dm = await  thisfindOneDm(user1, user2);
+  // if (dm)
+  //   return dm;
+  //   const channelDto: CreateChannelDto = {
+  //     name: `${user1.username}_${user2.username}`,
+  //     owner: user1,
+  //     password: password,
+  //     dm: true,
+  //     members: [user1, user2],
+  //     admins: [user1],
+  //   };
+  
+  //   const newChannel = await this.channelService.createChannel(channelDto);
+  
+  //   return newChannel;
+  }
+  
+  async findOneDm(user1Id: number, user2Id: number)
+  /*: Promise<Channel | undefined> */
+  {
+    // Find all channels where the privacy is “dm” and the number of members is exactly 2
+  // const privateChannels = await this.channelRepository.find({
+  //   where: (qb: SelectQueryBuilder<Channel>) => {
+  //     qb.where('channel.isDM = :isDM', { isDM: true });
+  //   },
+  //   relations: ['members'],
+  // });
+    
+  //   // Look for a private channel with exactly two members matching the given user IDs
+  //   const dm = privateChannels.find(channel => {
+  //     const memberIds = channel.members.map(member => member.id);
+  //     return memberIds.includes(user1Id) && memberIds.includes(user2Id) && memberIds.length === 2;
+  //   });
+  
+    // return dm;
+  }
+
+
   async remove(id: number): Promise<void> {
     await this.channelRepository.delete(id);
   }
+
+
 }
 

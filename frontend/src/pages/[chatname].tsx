@@ -1,10 +1,21 @@
 import { useRouter } from "next/router";
+import styled from "styled-components";
 
-function ChatRoom() {
-  const router = useRouter();
-  const { chatname } = router.query;
-
-  return <div>Chat Room: {chatname}</div>;
+const Messages = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+`;
+function ChatRoom(props) {
+  // your ChatRoom component logic here
+  return (
+    <div>
+      {/* <button onClick={() => props.renderMessages(props.currentChat)}>Toggle Chat</button>
+      // your chat room UI here */}
+       <Messages>
+                {props.messages?.map(props.renderMessages)}
+       </Messages>
+    </div>
+  );
 }
-
 export default ChatRoom;

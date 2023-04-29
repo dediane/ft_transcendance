@@ -78,9 +78,9 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     
   // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
 
-  // const channels = await this.channelService.findAll();
-  const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
-
+  const channels = await this.channelService.findAll();
+  // const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
+//aussi a GET LES PUBLIC CHANS 
   if (channels) {
   const channelNames = channels.map(channel => channel.name);
   console.log(channelNames);
@@ -244,6 +244,26 @@ async handleRemoveMember(socket: Socket, payload: any) {
   await this.channelService.removeMember(channelName, AdminId, username);
 }
 
+
+@SubscribeMessage('ban member')
+async handleBanMember(socket: Socket, payload: any) {
+  console.log("socket remove member")
+  const { channelName, AdminId, username } = payload;
+
+    console.log(channelName, AdminId, username)
+  const chan = await this.channelService.findOneByName(channelName);
+  await this.channelService.banMember(channelName, AdminId, username);
+}
+
+@SubscribeMessage('mute member')
+async handleMuteMember(socket: Socket, payload: any) {
+  console.log("socket mute member")
+  const { channelName, AdminId, username } = payload;
+
+    console.log(channelName, AdminId, username)
+  const chan = await this.channelService.findOneByName(channelName);
+  await this.channelService.muteMember(channelName, AdminId, username);
+}
 
   @SubscribeMessage('join room')
   async handleJoinRoom(socket: Socket, roomName: string) {

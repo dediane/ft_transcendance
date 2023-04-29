@@ -6,6 +6,8 @@ import PopupModal from "./PopUpModal"
 import CustomPopup from "./CustomPopup"
 import { m } from 'framer-motion';
 import Link from 'next/link';
+import MemberList from './MemberList';
+// import ChatRoom from '@/pages/[chatname]';
 
 // const initialRooms = [
 //     "general",
@@ -132,20 +134,19 @@ const CloseButton = styled.button`
 function Chat(props) {
     const [rooms, setRooms] = React.useState(props.rooms);
     // const [rooms, setRooms] = React.useState(Array.from(new Set(props.rooms)));
-
 // const [rooms, setRooms] = useState<string[]>(props.rooms);
 
-    const [newRoomName, setNewRoomName] = React.useState('');
-    const [showModal, setShowModal] = useState(false);
-    const [roomName, setRoomName] = useState('');
-    const [usersToAdd, setUsersToAdd] = useState('');
-    const [chatName, setChatName] = useState("");
-    const [chatMembers, setChatMembers] = useState([]);
-    const [requirePassword, setRequirePassword] = useState(false);
-    const [showModal2, setShowModal2] = useState(false);
+  const [newRoomName, setNewRoomName] = React.useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [roomName, setRoomName] = useState('');
+  const [usersToAdd, setUsersToAdd] = useState('');
+  const [chatName, setChatName] = useState("");
+  const [chatMembers, setChatMembers] = useState([]);
+  const [requirePassword, setRequirePassword] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
     
 
-    const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [showAddUserPopup, setShowAddUserPopup] = useState(false);
   const [showAddAdminPopup, setShowAddAdminPopup] = useState(false);
   const [password, setPassword] = useState('');
@@ -291,6 +292,34 @@ function Chat(props) {
 const [showPopup, setShowPopup] = useState(false);
 
 
+// const kickMember = (member) => {
+//   console.log(`Kicking out ${member}`);
+// };
+
+const kickMember  = (member) => {
+  props.removeMember(member);
+
+    // do something with the new user
+    closeRemoveMemberModal();
+  };
+
+const banMember = (member) => {
+  console.log(`Banning ${member}`);
+
+  props.banMember(member);
+
+  // do something with the new user
+  closeRemoveMemberModal();
+};
+
+const muteMember = (member) => {
+  console.log(`Muting ${member}`);
+  props.muteMember(member);
+
+  // do something with the new user
+  closeRemoveMemberModal();
+};
+
 function handleChatNameKeyPress(event) {
   if (event.key === "Enter" || event.key === "Next") {
     event.preventDefault();
@@ -362,29 +391,30 @@ function handlePasswordToggle(event) {
 
 
     
-    // function renderRooms(room){
-    //     const currentChat = {
-    //         chatName: room,
-    //         isChannel: true,
-    //         receiverId: "",
-    //     };
-    //     return (
-    //         <Row onClick={() => props.toggleChat(currentChat)} key={room}>
-    //             {room}
-    //         </Row>
-    //     )
-    // }
 
 
+// function renderRooms(room) {
+//   const chatName = encodeURIComponent(room);
+//   return (
+//     <Link href={`/${chatName}`}>
+//       <div key={room}>{room}</div>
+//     </Link>
+//   );
+// }
 
-function renderRooms(room) {
-  const chatName = encodeURIComponent(room);
-  return (
-    <Link href={`/${chatName}`}>
-      <div key={room}>{room}</div>
-    </Link>
-  );
-}
+    function renderRooms(room){
+        const currentChat = {
+            chatName: room,
+            isChannel: true,
+            receiverId: "",
+        };
+        return (
+            <Row onClick={() => props.toggleChat(currentChat)} key={room}>
+                {room}
+            </Row>
+        )
+    }
+
 
     function renderUser(user){
         console.log("render user");
@@ -400,13 +430,6 @@ function renderRooms(room) {
             isChannel: false,
             receiverId: user.username,
         };
-        return(
-            <Row onClick={() => {
-                props.toggleChat(currentChat);
-            }} key={user.username}>
-                {user.username}
-            </Row>
-        )
     }
 
     function renderMessages(message, index){
@@ -419,70 +442,6 @@ function renderRooms(room) {
     }
 
 
-    function renderMembersOfTheRoom(room) {
-      console.log("member array", props.currentChat.members);
-      return (
-        <div>
-          <h3>Members of this channel:</h3>
-          <ul>
-            {props.currentChat.members.map((member, index) => (
-              <li key={index}>{member}</li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-    function handleRemoveFromChan(member: any): void {
-      throw new Error('Function not implemented.');
-    }
-
-    function handleMakeAdmin(member: any): void {
-      throw new Error('Function not implemented.');
-    }
-
-
-    function changeMembersOfTheRoom(room) {
-      console.log("member array", props.currentChat.members);
-   
-      return (
-        <div>
-          <h3>Members of this channel:</h3>
-          <ul>
-            {props.currentChat.members.map((member, index) => (
-              <li key={index}>
-                {member}
-                <button onClick={() => handleRemoveFromChan(member)}>Remove from Chan</button>
-                <button onClick={() => handleMakeAdmin(member)}>Make Admin</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-    
-
-  //   function renderUser(user){
-  //         return (
-  //             <Row key={user.username}>
-  //                 You: {user.username}
-  //             </Row>
-  //         );
-  //     const currentChat = {
-  //         chatName : user.username,
-  //         isChannel: false,
-  //         receiverId: user.username,
-  //     };
-  //     // return(
-  //     //     <Row onClick={() => {
-  //     //         props.toggleChat(currentChat);
-  //     //     }} key={user.username}>
-  //     //         {user.username}
-  //     //     </Row>
-  //     // )
-  // }
-
-    
-
     let body;
     if(!props.currentChat?.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
         body = (
@@ -490,9 +449,11 @@ function renderRooms(room) {
                 {props.messages?.map(renderMessages)}
             </Messages>
         )
-    } else
+    }
+    else
     {
-        body = (
+        body =
+        (
             <button onClick={() => props.joinRoom(props.currentChat.chatName)}> Join {props.currentChat.chatName}</button>
         )
     }
@@ -533,8 +494,9 @@ function renderRooms(room) {
 </ModalContainer>
                 )}
                 <h3>Channels</h3>
-                {/* {props.rooms?.map(renderRooms)} */}
-                {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)}
+                
+                {props.rooms?.map(renderRooms)}
+                {/* {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)} */}
                 {/* {props.currentChat.members && Array.isArray(props.currentChat.members) && props.currentChat.members.map(renderUser)} */}
 
         <h3>All connected Users</h3>
@@ -546,7 +508,9 @@ function renderRooms(room) {
      <ChatPanel>
         <ChannelInfo>
             {props.currentChat.chatName}    
-            {props.currentChat?.members?.map(renderMembersOfTheRoom)} 
+            {/* {props.currentChat.members?.map(renderMembersOfTheRoom)}  */}
+            {/* {props.members?.map(renderMembersOfTheRoom)} */}
+            <p>{props.members?.join(', ')}</p>
 
             {/* {props.currentChat.members}     a ajouter */}
             {/* <button onClick={openModal2}> Parameters : Add members, block, kick, change password</button> */}
@@ -555,22 +519,21 @@ function renderRooms(room) {
             </button>
         </ChannelInfo>
         <BodyContainer>
+        <div>
+      {/* <h1>Chat Page - {props.currentChat.chatName}</h1> */}
+      {/* <ChatRoom renderMessages={props.renderMessages} /> */}
+      {/* <ChatRoom messages={props.messages} /> */}
+    </div>
         {/* <Popup open={showPopup} onClose={() => setShowPopup(false)}>
   <div>The room has been deleted</div>
 </Popup> */}
 {showModal2 && (
   <ModalContainer2>
     <CloseButton onClick={closeModal2}>X</CloseButton>
-    {props.currentChat?.members?.map(changeMembersOfTheRoom)} 
-            
-{/* ADMIN :
-    - Remove member
-    - change a member to admin
-    - remove an admin
-     // a rechecker
-    */}
-    {/* <h3>Members of this chan</h3> */}
-        {/* {props.members?.map(renderMembersOfTheRoom)}  */}
+    
+    <div>
+      <MemberList members={props.members} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
+    </div>
     <div>
       <button onClick={openPasswordModal}>Change password of the chat</button>
       <PopupModal
@@ -596,7 +559,7 @@ function renderRooms(room) {
         modalId="add-user-modal"
         buttonText="Add User"
       />
-{/*si l'admin n'est membre encore a ajouter dans la liste des membres avant !!donc je changerais ca pour que toggle une liste des membres et ne peut cliquer que sur membre pour admin adding */}
+{/* a mettre uniquement pour l'owner et sous forme de coche de la toggled member list */}
 <button onClick={openAddAdminModal}>Add admin to Chat</button> 
       <PopupModal
         isOpen={showAddAdminPopup}
@@ -621,7 +584,7 @@ function renderRooms(room) {
         modalId="Remove-user-modal"
         buttonText="Remove User"
       />
-      <button onClick={openRemoveMemberModal}>Remove Member from Chan</button> 
+      {/* <button onClick={openRemoveMemberModal}>Remove Member from Chan</button> 
       <PopupModal
         isOpen={showRemoveMemberPopup}
         onRequestClose={closeRemoveMemberModal}
@@ -632,7 +595,7 @@ function renderRooms(room) {
         placeholder="Enter username here"
         modalId="Remove-user-modal"
         buttonText="Remove User"
-      />
+      /> */}
 
 
     </div>
