@@ -16,6 +16,7 @@ import { UserService } from './user/user.service';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { Game } from './game/entities/game.entity';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { Game } from './game/entities/game.entity';
     UserModule,
     ChannelModule,
     MessageModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService, EventsGateway],
