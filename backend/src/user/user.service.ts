@@ -37,20 +37,61 @@ export class UserService {
       .leftJoinAndSelect('user.channels', 'memberOfChannel')
       .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
       .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
-      // .leftJoinAndSelect('user.invitedChannels', 'invitedChannel')
-      // .leftJoinAndSelect('user.adminChannels', 'adminChannel')
-      // .leftJoinAndSelect('channel.messages', 'message')
       .select(['user.username', 'memberOfChannel.name',  'adminOfChannel.name',  'ownerOfChannel.name'])
-      // .select(['user.id', 'user.username', 'message.id', 'channel.name', 'invitedChannel.name', 'adminChannel.name'])
       .getMany();
   
     return users;
   }
+
+
+  // async findAll(): Promise<User[]> {
+  //   const users = await this.userRepository.createQueryBuilder('user')
+  //     .leftJoinAndSelect('user.channels', 'memberOfChannel')
+  //     .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
+  //     .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
+  //     .leftJoinAndSelect('user.blockedUsers', 'blockedUser')
+  //     .select(['user.username', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username'])
+  //     .getMany();
   
+  //   return users;
+  // }
+  
+  
+  // async findOneByName(username: string): Promise<User> {
+  //   const user = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .select('user')
+  //     .where('user.username = :username', { username })
+  //     .getOne();
+  
+  //   if (!user) {
+  //     throw new Error(`User with username ${username} not found.`);
+  //   }
+  
+  //   return user;
+  // }
+
+  // async findOneByName(username: string): Promise<User> {
+  //   const user = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .leftJoin('user.blockedUsers', 'blockedUsers')
+  //     .select(['user', 'blockedUsers.username'])
+  //     .where('user.username = :username', { username })
+  //     .getOne();
+  
+  //   if (!user) {
+  //     throw new Error(`User with username ${username} not found.`);
+  //   }
+  
+  //   return user;
+  // }
+
   async findOneByName(username: string): Promise<User> {
     const user = await this.userRepository
       .createQueryBuilder('user')
+      // .leftJoinAndSelect('user.blockedUsers', 'blockedUsers')
       .select('user')
+      // .addSelect('blockedUsers')
       .where('user.username = :username', { username })
       .getOne();
   
@@ -60,6 +101,7 @@ export class UserService {
   
     return user;
   }
+  
   
 
   async findOne(email: string) : Promise<User | undefined> {
@@ -79,6 +121,19 @@ export class UserService {
     .getOne();
     return user;
   }
+
+  // async findOnebyId(id : number): Promise<User | undefined> {
+  //   const user = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .leftJoinAndSelect('user.blockedUsers', 'blockedUsers')
+  //     .select('user')
+  //     .addSelect('blockedUsers')
+  //     .where('user.id = :id', { id })
+  //     .getOne();
+  
+  //   return user;
+  // }
+  
 
   async findOneChannelByName(userId: number, channelName: string): Promise<Channel | undefined> {
     const user = await this.userRepository.findOne({
@@ -101,26 +156,6 @@ export class UserService {
       .getOne();
     return user;
   }
-  
-
-  async addSocketId(userId: number, socketId: string): Promise<User> {
-    const user = await this.findOnebyId(userId);
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-    user.socketids = user.socketids ? [...user.socketids, socketId] : [socketId];
-    return this.userRepository.save(user);
-  }
-
-  async removeSocketId(userId: number, socketId: string): Promise<User> {
-    const user = await this.findOnebyId(userId);
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-    user.socketids = user.socketids?.filter(id => id !== socketId);
-    return this.userRepository.save(user);
-  }
-  
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;

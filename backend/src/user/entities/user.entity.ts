@@ -66,7 +66,6 @@ messages: Message[];
 adminChannels: Channel[];
 
 @ManyToMany(() => Channel, channels => channels.members)
-// @JoinTable()
 channels: Channel[];
 
 
@@ -78,6 +77,9 @@ isbanned: Channel[];
 
 @OneToMany(() => Channel, channel => channel.owner)
 ownedChannels: Channel[];
+
+@ManyToMany(() => User, user => user.blockedUsers)
+blockedUsers: User[];
 
   async getChannels(): Promise<Channel[]> {
     return this.channels;

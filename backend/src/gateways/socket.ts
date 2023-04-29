@@ -88,6 +88,14 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   this.server.emit('connected users', this.users);
     for (const channel of channels) {
       const channelName = channel.name;
+    const user = await this.userService.findOnebyId(userdata.id);
+
+      // const user = await this.userService.findOneByName(userdata.name);
+      const blockedUsers = user.blockedUsers;
+
+      // const channelMessages = await this.channelService.findMessagesByChatname(channelName, blockedUsers);
+
+
       const channelMessages = await this.channelService.findMessagesByChatname(channelName);
       const members = channel.members?.map(user => user.username);
       const admins = channel.admins?.map(user => user.username);
@@ -115,11 +123,10 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     const { creator, roomName, password } = datachan;
     if (roomName == null) { // check if roomName is null or undefined
       socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
-    return;
+      return;
     }
     console.log(`attempting (${roomName}) room creation`)
     const usr = await this.userService.findOnebyId(datachan.creator);
-
     const existingChannel = await this.channelService.findOneByName(roomName);
     if (!existingChannel) {
       console.log(`room (${roomName})  doesn't exist so let's create it`)
@@ -134,31 +141,9 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
     const newChannel = await this.channelService.createChannel(channelDto);
     this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
-
-          // // Add the new channel to the creator user's channels
-          // if (usr.channels) {
-          //   usr.channels.push(newChannel);
-          //   await this.userService.save(usr);
-          // } else {
-          //   console.log("user chan bug")
-          //   // handle the case where usr.channels is undefined
-          // }
-          
       
     }
   }
-  
-
-//   @SubscribeMessage('remove chan')
-// async handleRemoveChannel(socket: Socket, channelName: string) {
-//   const existingChannel = await this.channelService.findOneByName(channelName);
-//   if (existingChannel) {
-//     await this.channelService.remove(existingChannel.id);
-//     this.server.emit('chan removed', channelName); // broadcast to all connected sockets
-//   } else {
-//     socket.emit('error', `Channel ${channelName} does not exist.`);
-//   }
-// }
 
 @SubscribeMessage('remove chan')
 async handleRemoveChannel(socket: Socket, channelName: string) {
@@ -179,24 +164,6 @@ async handleRemoveChannel(socket: Socket, channelName: string) {
     socket.emit('error', `Channel ${channelName} does not exist.`);
   }
 }
-
-// @SubscribeMessage('toggle chat')
-// async handleChatPassword(socket: Socket, data: any) {
-// const channel = await this.channelRepository.findOneByName(channelName);
-
-// if (!channel) {
-// // handle error: channel not found
-// } else if (channel.password && !this.channelRepository.isChannelPasswordCorrect(channelName, userInput)) {
-// // handle error: incorrect channel password
-// } else if (channel.bannedusers.includes(user)) {
-// // handle error: user is banned from the channel
-// } else {
-// // the channel is either public or the correct password was provided
-// // add the user to the channel's members array
-// await addMember(channel, user);
-// // send a success response to the client
-// }
-// }
 
 @SubscribeMessage('change password')
 async handleChatPassword(socket: Socket, data: any) {
