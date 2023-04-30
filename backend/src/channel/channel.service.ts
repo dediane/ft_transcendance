@@ -203,37 +203,40 @@ async isChanPrivate(channelName: string): Promise<boolean> {
 
  
   
-
-  async findMessagesByChatname(chatname: string): Promise<{ content: string, chatName: string, sender: string }[]> {
-    const messages = await this.messageRepository
-      .createQueryBuilder('message')
-      .leftJoin('message.channel', 'channel')
-      .leftJoin('message.sender', 'sender')
-      .select(['message.content', 'channel.name', 'sender.username'])
-      .where('channel.name = :chatname', { chatname })
-      .getMany();
-  
-    return messages.map(message => {
-      const { content, channel } = message;
-      const sender = message.sender ? message.sender.username : null;
-      return {
-        content,
-        chatName: channel.name,
-        sender,
-      };
-    });
-  }
-  //Messsages from NON BLOCKED USERS <= a tester
-  // async findMessagesByChatname(chatname: string, blockedUsers: User[]): Promise<{ content: string, chatName: string, sender: string }[]> {
+//OK
+  // async findMessagesByChatname(chatname: string): Promise<{ content: string, chatName: string, sender: string }[]> {
   //   const messages = await this.messageRepository
   //     .createQueryBuilder('message')
   //     .leftJoin('message.channel', 'channel')
   //     .leftJoin('message.sender', 'sender')
   //     .select(['message.content', 'channel.name', 'sender.username'])
   //     .where('channel.name = :chatname', { chatname })
-  //     .andWhere('sender NOT IN (:...blockedUsers)', { blockedUsers: blockedUsers })
   //     .getMany();
   
+  //   return messages.map(message => {
+  //     const { content, channel } = message;
+  //     const sender = message.sender ? message.sender.username : null;
+  //     //filter sender here        if (blockedUsers.some(user => user.id === message.sender?.id)
+  //     return {
+  //       content,
+  //       chatName: channel.name,
+  //       sender,
+  //     };
+  //   });
+  // }
+
+  //Messages from NON BLOCKED USERS
+  // async findMessagesByChatname(chatname: string, senderId: number): Promise<{ content: string, chatName: string, sender: string }[]> {
+  //   const messages = await this.messageRepository
+  //   .createQueryBuilder('message')
+  //   .leftJoin('message.channel', 'channel')
+  //   .leftJoin('message.sender', 'sender')
+  //   .leftJoin('channel.bannedUsers', 'blockedUser', 'blockedUser.id = :senderId', { senderId })
+  //   .select(['message.content', 'channel.name', 'sender.username'])
+  //   .where('channel.name = :chatname', { chatname })
+  //   .andWhere('blockedUser.id IS NULL')
+  //   .getMany();
+    
   //   return messages.map(message => {
   //     const { content, channel } = message;
   //     const sender = message.sender ? message.sender.username : null;
@@ -243,8 +246,29 @@ async isChanPrivate(channelName: string): Promise<boolean> {
   //       sender,
   //     };
   //   });
-  // }
+  //   }
+  //Messsages from NON BLOCKED USERS <= a tester
+  async findMessagesByChatname(chatname: string, blockedUsers: User[]): Promise<{ content: string, chatName: string, sender: string }[]> {
+    const messages = await this.messageRepository
+    .createQueryBuilder('message')
+    .leftJoin('message.channel', 'channel')
+    .leftJoin('message.sender', 'sender')
+    .select(['message.content', 'channel.name', 'sender.username', 'sender.id'])
+    .where('channel.name = :chatname', { chatname })
+    .getMany();
   
+  return messages
+    .filter(message => !blockedUsers.some(user => user.id === message.sender?.id))
+    .map(message => {
+      const { content, channel } = message;
+      const sender = message.sender ? message.sender.username : null;
+      return {
+        content,
+        chatName: channel.name,
+        sender,
+      };
+    });
+  }
 
   async findAdmins(channel: Channel): Promise<User[]> {
     const admins = await this.channelRepository

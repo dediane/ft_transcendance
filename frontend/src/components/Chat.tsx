@@ -9,12 +9,7 @@ import Link from 'next/link';
 import MemberList from './MemberList';
 // import ChatRoom from '@/pages/[chatname]';
 
-// const initialRooms = [
-//     "general",
-//     "random",
-//     "jokes",
-//     "javascript"
-// ];
+
 const TextBox = styled.textarea`
     height: 15%;
     width: 100%;
@@ -53,11 +48,6 @@ const BodyContainer = styled.div`
     border-bottom: 1px solid black;
 `;
 
-// const TextBox = styled.textarea`
-//     height: 15%;
-//     width: 100%;
-// `;
-
 const ChannelInfo = styled.div`
     height: 10%;
     width: 100%;
@@ -78,18 +68,6 @@ height: 100%;
 border-right: 1px solid black;
 `;
 
-
-// const ModalContainer2 = styled.div`
-//   height: 100%;
-//   width: 15%;
-//   border-left: 1px solid black;
-//   position: absolute;
-//   top: 0;
-//   right: 0;
-//   display: flex;
-
-// `;
-
 const ModalContainer2 = styled.div`
   height: 100%;
   width: 20%;
@@ -100,19 +78,6 @@ const ModalContainer2 = styled.div`
   right: 0;
   z-index: 1;
   padding: 20px;
-`;
-
-
-const RoomNameSection = styled.div`
-  /* styles for the room name section */
-`;
-
-const UsersSection = styled.div`
-  /* styles for the users section */
-`;
-
-const Input = styled.input`
-  /* styles for the input fields */
 `;
 
 const Button = styled.button`
@@ -153,6 +118,7 @@ function Chat(props) {
   const [member, setMember] = useState('');
   const [admin, setAdmin] = useState('');
 
+  
   // const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   setPassword(event.target.value);
   // };
@@ -226,6 +192,57 @@ function Chat(props) {
   }
 
 
+  const [blockUsername, setBlockUser] = useState('');
+  const [showBlockUserPopup, setBlockUserPopup] = useState(false);
+
+  const openBlockUserModal = () => {
+    setBlockUserPopup(true);
+  };
+
+  const closeBlockUserModal = () => {
+    setBlockUserPopup(false);
+    setBlockUser('');
+  };
+  
+  const blockUser = () => {
+  props.blockUser(blockUsername);
+    // do something with the new user
+    closeBlockUserModal();
+  };
+
+  function handleBlockUserChange(event) {
+    setBlockUser(event.target.value);
+  }
+
+ 
+
+  const [UnblockUsername, setUnblockUser] = useState('');
+
+  const [showUnblockUserPopup, setUnblockUserPopup] = useState(false);
+
+
+
+
+  const openUnblockUserModal = () => {
+    setUnblockUserPopup(true);
+  };
+
+  const closeUnblockUserModal = () => {
+    setUnblockUserPopup(false);
+    setUnblockUser('');
+  };
+  
+  const UnblockUser = () => {
+  props.unblockUser(UnblockUsername);
+
+    // do something with the new user
+    closeUnblockUserModal();
+  };
+
+  function handleUnblockUserChange(event) {
+    setUnblockUser(event.target.value);
+  }
+
 
   
   const [AdmintoRemove, setAdmintoRemove] = useState('');
@@ -263,7 +280,6 @@ function Chat(props) {
 
   const closeRemoveMemberModal = () => {
     setShowRemoveMemberPopup(false);
-    // setPassword('');
   };
 
   const removeMember = () => {
@@ -291,15 +307,9 @@ function Chat(props) {
 
 const [showPopup, setShowPopup] = useState(false);
 
-
-// const kickMember = (member) => {
-//   console.log(`Kicking out ${member}`);
-// };
-
 const kickMember  = (member) => {
   props.removeMember(member);
 
-    // do something with the new user
     closeRemoveMemberModal();
   };
 
@@ -308,7 +318,6 @@ const banMember = (member) => {
 
   props.banMember(member);
 
-  // do something with the new user
   closeRemoveMemberModal();
 };
 
@@ -316,7 +325,6 @@ const muteMember = (member) => {
   console.log(`Muting ${member}`);
   props.muteMember(member);
 
-  // do something with the new user
   closeRemoveMemberModal();
 };
 
@@ -330,9 +338,6 @@ function handleChatNameKeyPress(event) {
           chatName: chatName,
           password: requirePassword ? password : null
         };
-        // setRooms([...rooms, newRoom]);
-        // props.createNewChannel(newRoom);
-
         setRooms([...rooms, chatName]);
         props.createNewChannel(newRoom);
       } else {
@@ -366,41 +371,6 @@ function handlePasswordToggle(event) {
         setShowModal2(false);
       }
 
-      function handleRoomNameSubmit() {
-        // add the new room to the list of rooms
-       
-        setRooms([...rooms, roomName]);
-        // reset the room name state variable
-        setRoomName('');
-      }
-      
-      function handleUsersToAddSubmit() {
-        // add the new users to the room
-        // code to add users here...
-        // reset the users to add state variable
-        setUsersToAdd('');
-      }
-
-    // function addRoom() {
-    //     setNewRoomName('');
-    //     const newRoomName = window.prompt('Enter the name of the new room');
-    //     if (newRoomName !== null && newRoomName !== '') {
-    //         setRooms([...rooms, newRoomName]);
-    //     }
-    // }
-
-
-    
-
-
-// function renderRooms(room) {
-//   const chatName = encodeURIComponent(room);
-//   return (
-//     <Link href={`/${chatName}`}>
-//       <div key={room}>{room}</div>
-//     </Link>
-//   );
-// }
 
     function renderRooms(room){
         const currentChat = {
@@ -481,7 +451,11 @@ function handlePasswordToggle(event) {
   <div>
     <input type="checkbox" id="password-checkbox" onChange={handlePasswordToggle} />
     <label htmlFor="password-checkbox">Require Password</label>
+  
   </div>
+
+  
+  
   {requirePassword && (
     <TextBox
       value={password}
@@ -489,6 +463,8 @@ function handlePasswordToggle(event) {
       placeholder="Enter password here"
     />
   )}
+  {/* <button>Create Group</button> */}
+  
                    
   <button onClick={() => closeModal()}>Close Modal</button>
 </ModalContainer>
@@ -503,30 +479,47 @@ function handlePasswordToggle(event) {
         {props.allUsers?.map(renderUser)}
 
         <h3> Send DM to user/friend</h3>
+        <div>
+      <button onClick={openBlockUserModal}>Block a user</button>
+      <PopupModal
+        isOpen={showBlockUserPopup}
+        onRequestClose={closeBlockUserModal}
+        onSave={blockUser}
+        onCancel={closeBlockUserModal}
+        value={blockUsername}
+        onChange={handleBlockUserChange}
+        placeholder="Enter the username of the person you want to block"
+        modalId="block-user-modal"
+        buttonText="Save"
+      />
+      <button onClick={openUnblockUserModal}>Unblock a user</button>
+      <PopupModal
+        isOpen={showUnblockUserPopup}
+        onRequestClose={closeUnblockUserModal}
+        onSave={UnblockUser}
+        onCancel={closeUnblockUserModal}
+        value={UnblockUsername}
+        onChange={handleUnblockUserChange}
+        placeholder="Enter the username of the person you want to Unblock"
+        modalId="Unblock-user-modal"
+        buttonText="Save"
+      />
+        </div>
+
      </SideBar>
 
      <ChatPanel>
         <ChannelInfo>
             {props.currentChat.chatName}    
-            {/* {props.currentChat.members?.map(renderMembersOfTheRoom)}  */}
-            {/* {props.members?.map(renderMembersOfTheRoom)} */}
             <p>{props.members?.join(', ')}</p>
 
-            {/* {props.currentChat.members}     a ajouter */}
-            {/* <button onClick={openModal2}> Parameters : Add members, block, kick, change password</button> */}
             <button onClick={openModal2}>
                Parameters : Add members, block, kick, change password
             </button>
         </ChannelInfo>
         <BodyContainer>
         <div>
-      {/* <h1>Chat Page - {props.currentChat.chatName}</h1> */}
-      {/* <ChatRoom renderMessages={props.renderMessages} /> */}
-      {/* <ChatRoom messages={props.messages} /> */}
     </div>
-        {/* <Popup open={showPopup} onClose={() => setShowPopup(false)}>
-  <div>The room has been deleted</div>
-</Popup> */}
 {showModal2 && (
   <ModalContainer2>
     <CloseButton onClick={closeModal2}>X</CloseButton>
@@ -584,26 +577,12 @@ function handlePasswordToggle(event) {
         modalId="Remove-user-modal"
         buttonText="Remove User"
       />
-      {/* <button onClick={openRemoveMemberModal}>Remove Member from Chan</button> 
-      <PopupModal
-        isOpen={showRemoveMemberPopup}
-        onRequestClose={closeRemoveMemberModal}
-        onSave={removeMember} //attention: plutot call invite que Remove non ? appelle Remove apres premiere connexion?? en consideration des chats prives
-        onCancel={closeRemoveMemberModal}
-        value={MemberToRemove}
-        onChange={handleMemberRemoveing}
-        placeholder="Enter username here"
-        modalId="Remove-user-modal"
-        buttonText="Remove User"
-      /> */}
 
 
     </div>
 
     <Button onClick={() => {
       props.removeChannel(props.currentChat.chatName);
-      // setShowPopup(true); // set showPopup to true to display the popup
-      // closeModal2(); // close the modal
     }}>	
       Remove Channel
 

@@ -1,5 +1,6 @@
 function MemberList({ members, kickFunction, banFunction, muteFunction }) {
-
+if (!members)
+  return;
     const handleKickClick = (memberName) => {
       kickFunction(memberName);
     };
@@ -14,7 +15,7 @@ function MemberList({ members, kickFunction, banFunction, muteFunction }) {
   
     return (
       <ul>
-        {members.map((member, index) => (
+        {members?.map((member, index) => (
           <li key={index}>
             {member}
         {/* if member affiché est l'owner ne pas afficher ces boutons */}

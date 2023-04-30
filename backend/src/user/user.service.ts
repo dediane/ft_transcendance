@@ -31,18 +31,100 @@ export class UserService {
   //   const users = await this.userRepository.find();
   //   return users;
   // }
+  // async findAll(): Promise<User[]> {
+  //   const users = await this.userRepository.createQueryBuilder('user')
+  //     .leftJoinAndSelect('user.channels', 'memberOfChannel')
+  //     .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
+  //     .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
+  //     .select(['user.username', 'memberOfChannel.name',  'adminOfChannel.name',  'ownerOfChannel.name'])
+  //     .getMany();
   
+  //   return users;
+  // }
+
   async findAll(): Promise<User[]> {
     const users = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.channels', 'memberOfChannel')
       .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
       .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
-      .select(['user.username', 'memberOfChannel.name',  'adminOfChannel.name',  'ownerOfChannel.name'])
+      .leftJoinAndSelect('user.blockedUsers', 'blockedUser')
+      .select(['user.username', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username'])
       .getMany();
   
     return users;
   }
-
+  
+  async blockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
+    // Find the user who is blocking
+    const blocker = await this.userRepository.findOne({
+      where: { id: blockerUserId },
+      relations: ['blockedUsers'],
+    });
+  
+    if (!blocker) {
+      throw new Error(`User with id ${blockerUserId} not found`);
+    }
+  
+    // Find the user who is being blocked
+    const blockee = await this.userRepository.findOne({
+      where: { username: blockeeUsername },
+    });
+  
+    if (!blockee) {
+      throw new Error(`User with username ${blockeeUsername} not found`);
+    }
+  
+    // Add the blockee to the blocker's list of blocked users
+    blocker.blockedUsers.push(blockee);
+  
+    // Save the blocker to the database
+    await this.userRepository.save(blocker);
+  }
+  
+  async unblockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
+    // Find the user who is blocking
+    console.log("unblock user SERVICE")
+    const blocker = await this.userRepository.findOne({
+      where: { id: blockerUserId },
+      relations: ['blockedUsers'],
+    });
+  
+    if (!blocker) {
+      throw new Error(`User with id ${blockerUserId} not found`);
+    }
+  
+    // Find the user who is being blocked
+    const blockee = await this.userRepository.findOne({
+      where: { username: blockeeUsername },
+    });
+  
+    if (!blockee) {
+      throw new Error(`User with username ${blockeeUsername} not found`);
+    }
+  
+    // Remove the blockee from the blocker's list of blocked users
+    blocker.blockedUsers = blocker.blockedUsers.filter(user => user.id !== blockee.id);
+  
+    // Save the blocker to the database
+    await this.userRepository.save(blocker);
+  }
+  
+  async getBlockedUsers(userId: number): Promise<User[]> {
+    // Find the user who is blocking
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['blockedUsers'],
+    });
+  
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+  
+    // Return the list of blocked users
+    return user.blockedUsers;
+  }
+  
+  
 
   // async findAll(): Promise<User[]> {
   //   const users = await this.userRepository.createQueryBuilder('user')
@@ -121,7 +203,21 @@ export class UserService {
     .getOne();
     return user;
   }
-
+  async findBlockedUsers(userId: number): Promise<User[]> {
+    const user = await this.userRepository
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.blockedUsers", "blockedUser")
+      .where("user.id = :id", { id: userId })
+      .getOne();
+  
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found.`);
+    }
+  
+    return user.blockedUsers;
+  }
+  
+  
   // async findOnebyId(id : number): Promise<User | undefined> {
   //   const user = await this.userRepository
   //     .createQueryBuilder('user')

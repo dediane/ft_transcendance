@@ -78,7 +78,14 @@ isbanned: Channel[];
 @OneToMany(() => Channel, channel => channel.owner)
 ownedChannels: Channel[];
 
+// @ManyToMany(() => User, user => user.blockedUsers)
+// blockedUsers: User[];
+
 @ManyToMany(() => User, user => user.blockedUsers)
+@JoinTable()
+blockedBy: User[];
+
+@ManyToMany(() => User, user => user.blockedBy)
 blockedUsers: User[];
 
   async getChannels(): Promise<Channel[]> {

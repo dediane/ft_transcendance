@@ -60,6 +60,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 @SubscribeMessage('join server')
 async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   console.log('join server');
+  // socket.userid = userdata.id;
+  // socket.username = userdata.name;
   const userIndex = this.users.findIndex((u) => u.id === userdata.id);
   if (userIndex >= 0) {
     // User already exists, add new socket to their existing array of sockets
@@ -88,15 +90,20 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   this.server.emit('connected users', this.users);
     for (const channel of channels) {
       const channelName = channel.name;
-    const user = await this.userService.findOnebyId(userdata.id);
+    // const user = await this.userService.findOnebyId(userdata.id);
 
       // const user = await this.userService.findOneByName(userdata.name);
-      const blockedUsers = user.blockedUsers;
+      // const blockedUsers = user.blockedUsers;
+      // const blockedUsers = user.getBlockedUsers();
+      // const blockedUsers =  await this.userService.findBlockedUsers(userdata.id);
+      //A TESTER
 
-      // const channelMessages = await this.channelService.findMessagesByChatname(channelName, blockedUsers);
 
+      const blockedUsers =  await this.userService.getBlockedUsers(userdata.id);
+      const channelMessages = await this.channelService.findMessagesByChatname(channelName, blockedUsers);
 
-      const channelMessages = await this.channelService.findMessagesByChatname(channelName);
+      // const channelMessages = await this.channelService.findMessagesByChatname(channelName);
+      // const channelMessages = await this.channelService.findMessagesByChatname(channelName, userdata.id);
       const members = channel.members?.map(user => user.username);
       const admins = channel.admins?.map(user => user.username);
       socket.join(channelName);
@@ -210,6 +217,25 @@ async handleRemoveMember(socket: Socket, payload: any) {
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeMember(channelName, AdminId, username);
 }
+
+@SubscribeMessage('block user')
+async handleBlockUser(socket: Socket, payload: any) {
+  console.log("socket block user")
+  const { UserWhoCantAnymore, usernameToBlock } = payload;
+
+    console.log(UserWhoCantAnymore, usernameToBlock)
+  await this.userService.blockUser(UserWhoCantAnymore, usernameToBlock);
+}
+
+@SubscribeMessage('unblock user')
+async handleUnblockUser(socket: Socket, payload: any) {
+  console.log("socket unblock user")
+  const { UserWhoCantAnymore, usernameToBlock } = payload;
+
+    console.log(UserWhoCantAnymore, usernameToBlock)
+  await this.userService.unblockUser(UserWhoCantAnymore, usernameToBlock);
+}
+
 
 
 @SubscribeMessage('ban member')

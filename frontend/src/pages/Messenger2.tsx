@@ -174,6 +174,30 @@ function Messenger2() {
   
     socketRef?.current?.emit("mute member", payload);  //member to remove a envoyer a la database pour modif
   }
+
+
+  function blockUser(usertoBlock: string)
+  {
+    console.log("user to block ::: ", usertoBlock)
+    const payload = {
+      UserWhoCantAnymore: AuthService.getId(),
+      usernameToBlock : usertoBlock,
+    };
+  
+    socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
+  }
+
+
+  function unblockUser(usertoBlock: string)
+  {
+    console.log("user to unblock ::: ", usertoBlock)
+    const payload = {
+      UserWhoCantAnymore: AuthService.getId(),
+      usernameToBlock : usertoBlock,
+    };
+  
+    socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
+  }
   
 function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
     const newConnectedRooms = immer(connectedRooms, (draft) => {
@@ -249,13 +273,25 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     // const initialRooms = ["general", "random", "jokes", "javascript"];
     // initialRooms.forEach((room) => createNewChannel(room));
 
+    // socketRef.current = io("http://localhost:8000");
+
+    const token =  AuthService.getToken();
+
+    if (!token) {
+      // Redirect to the login page
+      window.location.href = "/login";
+    }
+
+
     const userdata = {
       id: AuthService.getId(),
       name: AuthService.getUsername(),
     };
 
-    socketRef.current = io("http://localhost:8000");
 
+ socketRef.current  = io("http://localhost:8000", {
+  query: { token },
+});
     socketRef.current.on("connect", () => {
       console.log("connected to server");
       setConnected(true);
@@ -377,6 +413,8 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         removeMember={removeMember}
         banMember={banMember}
         muteMember={muteMember}
+        blockUser={blockUser}
+        unblockUser={unblockUser}
         joinRoom={joinRoom}
         rooms={rooms}
         createNewChannel={createNewChannel}
