@@ -180,6 +180,9 @@ function Chat(props) {
     // setPassword('');
   };
 
+
+
+  
   const addAdmin = () => {
   props.addAdmin(admin);
 
@@ -208,6 +211,8 @@ function Chat(props) {
   props.blockUser(blockUsername);
     // do something with the new user
     closeBlockUserModal();
+  // location.reload();
+
   };
 
   function handleBlockUserChange(event) {
@@ -234,6 +239,7 @@ function Chat(props) {
   
   const UnblockUser = () => {
   props.unblockUser(UnblockUsername);
+  
 
     // do something with the new user
     closeUnblockUserModal();
@@ -328,6 +334,17 @@ const muteMember = (member) => {
   closeRemoveMemberModal();
 };
 
+
+const handleRoomCreation = () => {
+  const newRoom = {
+    chatName: chatName,
+    password: requirePassword ? password : null
+  };
+  props.createNewChannel(newRoom);
+    // do something with the new user
+    // closeAddAdminModal();
+  };
+
 function handleChatNameKeyPress(event) {
   if (event.key === "Enter" || event.key === "Next") {
     event.preventDefault();
@@ -350,6 +367,7 @@ function handleChatNameKeyPress(event) {
     setShowModal(false);
   }
 }
+
 
 function handlePasswordToggle(event) {
   setRequirePassword(event.target.checked);
@@ -413,20 +431,36 @@ function handlePasswordToggle(event) {
 
 
     let body;
-    if(!props.currentChat?.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
-        body = (
-            <Messages>
-                {props.messages?.map(renderMessages)}
-            </Messages>
-        )
+    // // if(!props.currentChat?.isChannel || props.connectedRooms.includes(props.currentChat.chatName)){
+    //     body = (
+    //         <Messages>
+    //             {props.messages?.map(renderMessages)}
+    //         </Messages>
+    //     )
+    // // }
+    // else
+    // {
+        // body =
+        // (
+        //     <button onClick={() => props.joinRoom(props.currentChat.chatName)}> Join {props.currentChat.chatName}</button>
+        // )
+    // }
+
+    if (props.currentChat?.isChannel && !props.connectedRooms.includes(props.currentChat.chatName)) {
+      body = (
+        <>
+          <input type="password" placeholder="Enter password" onChange={(e) => setPassword(e.target.value)} />
+          <button onClick={() => props.joinRoom(props.currentChat.chatName, password)}>Join {props.currentChat.chatName}</button>
+        </>
+      );
+    } else {
+      body = (
+        <Messages>
+          {props.messages?.map(renderMessages)}
+        </Messages>
+      );
     }
-    else
-    {
-        body =
-        (
-            <button onClick={() => props.joinRoom(props.currentChat.chatName)}> Join {props.currentChat.chatName}</button>
-        )
-    }
+    
 
     function handleKeyPress(e){
         if(e.key === "Enter"){
@@ -437,34 +471,44 @@ function handlePasswordToggle(event) {
     return (
         <Container>
             <SideBar>
+              
                 <Button onClick={openModal}>Add Room</Button>
                 {showModal && (
                     
 <ModalContainer>
-  <TextBox
-    value={chatName}
-    onChange={handleChatNameChange}
-    onKeyPress={handleChatNameKeyPress}
-    placeholder="Enter chat name here"
-  />
+<form onSubmit={handleRoomCreation}>
+      <label htmlFor="chatNameInput">Chat Name:</label>
+      <input
+        id="chatNameInput"
+        type="text"
+        value={chatName}
+        onChange={handleChatNameChange}
+        placeholder="Enter chat name here"
+        required
+      />
 
-  <div>
-    <input type="checkbox" id="password-checkbox" onChange={handlePasswordToggle} />
-    <label htmlFor="password-checkbox">Require Password</label>
-  
-  </div>
+      <div>
+        <input
+          id="passwordCheckbox"
+          type="checkbox"
+          checked={requirePassword}
+          onChange={handlePasswordToggle}
+        />
+        <label htmlFor="passwordCheckbox">Require Password</label>
+      </div>
 
-  
-  
-  {requirePassword && (
-    <TextBox
-      value={password}
-      onChange={handlePasswordChange}
-      placeholder="Enter password here"
-    />
-  )}
-  {/* <button>Create Group</button> */}
-  
+      {requirePassword && (
+        <><label htmlFor="passwordInput">Password:</label><input
+                    id="passwordInput"
+                    type="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter password here"
+                    required /></>
+      )}
+
+      <button type="submit">Create Group</button>
+    </form>
                    
   <button onClick={() => closeModal()}>Close Modal</button>
 </ModalContainer>
@@ -585,15 +629,15 @@ function handlePasswordToggle(event) {
       props.removeChannel(props.currentChat.chatName);
     }}>	
       Remove Channel
-
     </Button>	
 
-    ALL USERS:
-    - Block a member	
-    - Mute a member	
-    - Leave Chan
-
-
+{/*A TESTER, ALL MEMBERS*/}
+<Button onClick={() => {
+      props.removeMember(props.yourId);
+      closeRemoveMemberModal();
+    }}>	
+      Leave Chan
+    </Button>	
 
   </ModalContainer2>
 )}

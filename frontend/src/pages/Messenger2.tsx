@@ -40,6 +40,7 @@ function Messenger2() {
       roomName: data.chatName,
       password: data.password,
     };
+    console.log("TESESTTTTT CREATE CHAN ", data.chatName, data.password)
     socketRef?.current?.emit("create chan", datachan);
   
     setRooms((prevRooms) => {
@@ -309,6 +310,10 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     socketRef.current.on("all chans", (chans: SetStateAction<never[]>) => {
       console.log("all chans", chans);
       setRooms(chans);
+        setCurrentChat((prevState) => ({
+    ...prevState,
+    chatName: chans[0] || "",
+  }));
     
 
     // socketRef.current.on("join room", ({ room, messages }) => {
