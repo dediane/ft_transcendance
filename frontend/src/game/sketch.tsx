@@ -3,6 +3,8 @@ import Puck from "./puck";
 import Paddle from './paddle';
 import Confetti from 'react-confetti'
 import { useState, useEffect } from "react";
+import { io } from 'socket.io-client';
+
 
 export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
 

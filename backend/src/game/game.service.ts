@@ -23,4 +23,8 @@ export class GameService {
   remove(id: number) {
     return `This action removes a #${id} game`;
   }
+  startGame()
+  {
+    return 'This action begin a game';
+  }
 }

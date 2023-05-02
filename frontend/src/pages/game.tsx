@@ -34,7 +34,7 @@ export default function Game () {
   const [player2, setPlayer2] = useState<string>()
 
   const join = (username: string) => {
-    socket.emit("join_game", username)
+    //socket.emit("join_game", username)
   }
 
   const start = () => {
