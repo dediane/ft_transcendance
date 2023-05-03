@@ -7,7 +7,7 @@ export interface IGameContextProps {
 
 const defaultState: IGameContextProps = {
     isInRoom: false,
-    setInRoom: () => {}
+    setInRoom: () => {},
 }
 
 export default React.createContext(defaultState);

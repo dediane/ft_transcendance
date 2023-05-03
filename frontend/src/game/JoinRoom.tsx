@@ -70,8 +70,7 @@ export function JoinRoom(props: IJoinRoomProps)
     const joined = await gameService.joinGameRoom(socket).catch((err) => {
       alert(err);
     });
-    if (joined)
-      setInRoom(true);
+    if (joined) setInRoom(true);
     setJoining(false);
   }
 
