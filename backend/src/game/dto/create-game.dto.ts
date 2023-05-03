@@ -20,7 +20,4 @@ export class CreateGameDto {
 
     @IsOptional()
     score2: number;
-
-    @IsDate()
-    created_at: Date;
 }

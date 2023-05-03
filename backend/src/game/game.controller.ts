@@ -3,8 +3,7 @@ import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Socket, Server } from 'socket.io';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
-import { OnMessage, SocketController, SocketIO } from "socket-controllers"
+import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
 
 
 @Controller('game')
@@ -36,8 +35,8 @@ export class GameController {
     return this.gameService.remove(+id);
   }
 
-  @OnMessage("join_game")
-  public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any){
+  @SubscribeMessage("join_game")
+  public async joinGame(io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any){
     console.log("IN GAME CONTROLER")
     console.log("New User joinning the room: ", message);
 
@@ -58,7 +57,6 @@ export class GameController {
 
 
 /*
-import { ConnectedSocket, OnConnect, SocketController, SocketIO } from "socket-controllers";
 import { Socket, Server } from "socket.io";
 import { Controller } from "@nestjs/common";
 import { WebSocketGateway } from "@nestjs/websockets";

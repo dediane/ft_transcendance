@@ -8,8 +8,8 @@ class SocketService {
     public connect(url: string): Promise<Socket<DefaultEventsMap, DefaultEventsMap>> {
         return new Promise((rs, rj) => {
             this.socket = io(url);
-            if (!this.socket)
-                return (rj());
+            if (!this.socket) return (rj());
+            console.log("this socket exist ", this.socket.id);
             this.socket.on("connect", () => {
                 rs(this.socket as Socket)
             })

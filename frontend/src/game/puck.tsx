@@ -1,31 +1,9 @@
 import { P5CanvasInstance } from 'react-p5-wrapper';
 import Paddle from './paddle';
+import { useEffect } from 'react';
 
-
-
-
-
-
-/*
-import useSound from 'use-sound';
-
-import dynamic from 'next/dynamic';
-
-import "react-p5-wrapper/node_modules/p5/lib/addons/p5.dom";
-import p5 from "p5"; 
-(window as any).p5 = p5;
-const sound = dynamic(import("p5/lib/addons/p5.sound"));
-const load = async () => {
-    await import("p5/lib/addons/p5.sound");
-};
-
-(async () => { await import("p5/lib/addons/p5.sound"); // Make sure you have used await inside an asynchronous function
-// ....
-})();
-*/
 
 export default class Puck {
-    
     // variable in my class
     p: P5CanvasInstance;
     x: number;
@@ -41,13 +19,13 @@ export default class Puck {
     // constructor
     constructor(pfive: P5CanvasInstance, width: number, height: number) {
         this.p = pfive;
-        this.width = width; 
-        this.height = height;
+        this.width = width;     //init in back 
+        this.height = height;   //init in back
         this.r = 12;
-        this.x = width / 2;
-        this.y = height / 2;
-        this.angle = this.p.random(-this.p.PI / 4, this.p.PI / 4);
+        this.x = width / 2;     //init in back
+        this.y = height / 2;    //init in back
         this.puck_speed = 8;
+        this.angle = this.p.random(-this.p.PI / 4, this.p.PI / 4);
         this.xspeed = this.puck_speed * this.p.cos(this.angle);
         this.yspeed = this.puck_speed * this.p.sin(this.angle);
     };

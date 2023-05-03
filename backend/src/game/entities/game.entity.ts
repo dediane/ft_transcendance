@@ -17,7 +17,4 @@ export class Game {
     
     @Column('int')
     score2 : number;
-
-    @CreateDateColumn()
-    created_at: Date;
 }

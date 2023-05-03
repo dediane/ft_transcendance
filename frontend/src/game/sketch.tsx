@@ -4,9 +4,30 @@ import Paddle from './paddle';
 import Confetti from 'react-confetti'
 import { useState, useEffect } from "react";
 import { io } from 'socket.io-client';
+import { useRef } from 'react';
+import  AuthService from "../services/authentication-service"
+
 
 
 export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
+
+  const socketRef = useRef();
+
+  useEffect(() => {
+
+    const userdata = {
+      id: AuthService.getId(),
+      name: AuthService.getUsername(),
+    };
+
+    socketRef.current.on("update ball", () => { // receive from back
+      console.log("connected to server");
+    });
+
+    socketRef.current.emit("launch ball"); // envoie au back
+    console.log(`Received message from server:`);
+
+  }, []);
 
 
   // Puck Class

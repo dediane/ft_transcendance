@@ -50,14 +50,14 @@ const JoinButton = styled.button`
 
 export function JoinRoom(props: IJoinRoomProps) 
 {
-  // const [roomName, setRoomName] = useState("");
+  const [roomName, setRoomName] = useState("");
   const [isJoining, setJoining] = useState(false);
 
   const { setInRoom, isInRoom } = useContext(GameContext);
 
   const handleRoomName = (e: React.ChangeEvent<any>) => {
     const value = e.target.value;
-    // setRoomName(value);
+    setRoomName(value);
   }
 
   const joinRoom = async (e: React.FormEvent) => {
@@ -66,8 +66,9 @@ export function JoinRoom(props: IJoinRoomProps)
     if (!socket)
       return ;
     setJoining(true);
+    setRoomName("Game Room");
 
-    const joined = await gameService.joinGameRoom(socket).catch((err) => {
+    const joined = await gameService.joinGameRoom(socket, roomName).catch((err) => {
       alert(err);
     });
     if (joined) setInRoom(true);
@@ -80,7 +81,7 @@ export function JoinRoom(props: IJoinRoomProps)
         {/* <RoomIdInput 
         placeholder="Room ID" 
         value={roomName} 
-        onChange={handleRoomName}/> * changement pour lancer la game */}
+        onChange={handleRoomName}/> /* changement pour lancer la game */ }
         <JoinButton type="submit" disabled={isJoining} onClick={joinRoom}>{isJoining ? "Joining ... " : "Join" }</JoinButton>
       </JoinRoomContainer>
   </div>
