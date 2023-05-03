@@ -135,6 +135,11 @@ const Activate2fa = ({qrcode}: any) => {
     const enable2fa = async() => {
         console.log("Code = ", inputValues.twoFactorAuthenticationCode)
         const result = await userService.activate2fa(inputValues.twoFactorAuthenticationCode);
+        if(result.status) {
+            console.log("2FA ACTIVATED")
+            //Logout
+            //Redirect to login
+        }
     }
 
     const disable2fa = async() => {

@@ -18,11 +18,7 @@ constructor(
   async login(@Request() req :any) {
     if (!req.user.status){
       return (req.user)}
-    if(!req.user.is2fa) {
-      return await this.authService.login(req.user.user);
-    } else {
-      return {status: true, otp_active: true}
-    }
+    return await this.authService.login(req.user.user);
   }
 
   @Get('42')
@@ -56,29 +52,37 @@ constructor(
   @Post('2fa/turn-on')
   @UseGuards(JwtAuthGuard)
   async turnOnTwoFactorAuthentication(@Request() req, @Body() body) {
-    const isCodeValid =
+    const isCodeValid = await
       this.authService.isTwoFactorAuthenticationCodeValid(
         body.twoFactorAuthenticationCode,
         req.user,
       );
     if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong authentication code');
+      return ({status: false, message: "2FA code is invalid"})
+       throw new UnauthorizedException('Wrong authentication code');
+
     }
     await this.userService.turnOnTwoFactorAuthentication(req.user.id);
+    return ({status: true, message: "2FA is now active"})
   }
 
   @Post('2fa/turn-off')
   @UseGuards(JwtAuthGuard)
   async turnOffTwoFactorAuthentication(@Request() req, @Body() body) {
-    const isCodeValid =
+    const isCodeValid = await
       this.authService.isTwoFactorAuthenticationCodeValid(
         body.twoFactorAuthenticationCode,
         req.user,
       );
+
     if (!isCodeValid) {
+      return ({status: false, message: "2FA code is invalid"})
       throw new UnauthorizedException('Wrong authentication code');
+
     }
     await this.userService.turnOffTwoFactorAuthentication(req.user.id);
+    return ({status: true, message: "2FA is disabled"})
+
   }
 
 
@@ -86,10 +90,9 @@ constructor(
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   async authenticate(@Request() request, @Body() body) {
-    console.log(body)
-    console.log(request.user)
+    console.log("OTP attemps")
     
-    const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(
+    const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(
       body.twoFactorAuthenticationCode,
       request.user,
     );

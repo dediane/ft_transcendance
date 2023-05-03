@@ -6,8 +6,23 @@ import { useEffect, useState } from 'react'
 import userService from '@/services/user-service'
 import { useRouter } from 'next/router' 
 import authenticationService from '@/services/authentication-service'
-import axiosService from '@/services/axios-service'
 import Confetti from 'react-dom-confetti';                                                                  
+
+const ConnectOTP = () => {
+  const [otp, setOtp] = useState('')
+  const otpLoad = (code) => {
+    setOtp(code)
+    if(code.length === 6) {
+      const result = userService.authenticate2fa(otp)
+      console.log("OTP LOGIN RES", result)
+    }
+  }
+  return (
+    <div>
+      <input onChange={(e) => otpLoad(e.target.value)} title="otp" placeholder='Enter OTP'/>
+    </div>
+  )
+}
 
 export default function Login () {
     return <>
@@ -34,18 +49,28 @@ export const Authentication = () => {
   )
 }
 
-const handleLogin = async ({email, password, setError, router} : {email :string, password :string, setError :any, router :any},) => {
+const handleLogin = async ({email, password, setError, setRequireOtp, router} : {email :string, password :string, setError :any, setRequireOtp: any, router :any},) => {
   if (!email || !password){
       setError('Missing credential')
       return
   }
+
+  //Reset setRequireOtp(false) to false if new login attempts ?
+  
+  
   const result = await userService.login(email, password)
   console.log(result);
   if (!result.status) {
-    setError(result.error)}
+    setError(result.error)
+  }
+
   if(result.access_token) {
     authenticationService.saveToken(result.access_token)
-    
+    if(result.otp_active) {
+      console.log("QUERY CODE")
+      setRequireOtp(true)
+      return
+    }
     //Redirect if 2FA disabled 
     if(!result.otp_active) {
       router.push("/profile");
@@ -53,11 +78,12 @@ const handleLogin = async ({email, password, setError, router} : {email :string,
   }
 }  
 
-
 export const LoginForm = ({setRegister} : {setRegister: any}) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [requireOtp, setRequireOtp] = useState(false)
+
   const router = useRouter()
 
   useEffect(() => {
@@ -75,12 +101,12 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
         <InputBox setData={setEmail} title="email" label="Email" placeholder='Enter email'/>
         <InputBox setData={setPassword} title="password" label="Password" placeholder='Enter password'/>
         <div className={styles.error}>{error}</div>
-        <button onClick={() => handleLogin({email, password, setError, router})} className={styles.button}>
+        <button onClick={() => handleLogin({email, password, setError, setRequireOtp,  router})} className={styles.button}>
             Log in
         </button>
         <Connect42 />
         {/* Add 2FA Input only display if state is active */}
-
+        {requireOtp && <ConnectOTP/>}
       <p className="text-center text-sm text-gray-500">
         No account? 
         <a className="underline" onClick={() => setRegister(true)}> Register</a>

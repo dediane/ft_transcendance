@@ -25,7 +25,8 @@ export class AuthService {
 
     async login(user: any) {
         return {
-            access_token: this.jwtService.sign({...user}), 
+            access_token: this.jwtService.sign({...user}),
+            otp_active: user.is2fa ? true : false, 
             status: true
         };
     }
@@ -55,11 +56,11 @@ export class AuthService {
       }
 
       async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
-        //const db_user = await this.usersService.findOnebyEmail(user.email)
+        const db_user = await this.usersService.findOnebyEmail(user.email)
         //console.log("LO<g",twoFactorAuthenticationCode, user.secret2fa)
-        return authenticator.verify({
+        return  authenticator.verify({
           token: twoFactorAuthenticationCode,
-          secret: user.secret2fa,
+          secret: db_user.secret2fa,
         });
       }
 
