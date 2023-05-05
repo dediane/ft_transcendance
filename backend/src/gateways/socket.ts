@@ -7,7 +7,7 @@ import {
     OnGatewayDisconnect
 } from '@nestjs/websockets'
 import { Socket, Server } from 'socket.io';
-import { OnMessage } from 'socket-controllers';
+// import { OnMessage } from 'socket-controllers';
 
 import { Controller } from "@nestjs/common";
 import { ConnectedSocket } from '@nestjs/websockets'

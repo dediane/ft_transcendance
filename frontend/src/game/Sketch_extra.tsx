@@ -48,27 +48,33 @@ const socket = () => {
   console.log("clienbtHeight", p5WrapperDiv?.clientHeight)
 
   let puck = new Puck(p5, width, height);
-  let paddle_left = new Paddle(p5, width, height, true);
-  let paddle_right = new Paddle(p5, width, height, false);
+  let paddle_left = new Paddle(p5, width, height, true, true);
+  let paddle_right = new Paddle(p5, width, height, false, true);
   let left_score: number = 0;
   let right_score: number = 0;
   let stop: number = 1;
+  let score: number = 5;
+  let speed: number = 1;
+
+
 
   window.addEventListener('resize', windowResized);
   p5.setup = () => {
     p5.createCanvas(width, height);
+
   }
 
-  p5.draw = () => {
-    p5.background(0);
 
-    if (left_score == 3 || right_score == 3) {
-      if (left_score == 3) {
+  p5.draw = () => {
+    p5.background(p5.color('#dad6ff'));
+
+    if (left_score == score || right_score == score) {
+      if (left_score == score) {
         p5.text("FINISH", width / 2 - 100, height / 2 - 50);
         p5.text("LEFT PLAYER WIN", width / 2 - 225, height / 2 + 50)
         return (<Confetti width={1440} height={150} />)
       }
-      if (right_score == 3) {
+      if (right_score == score) {
         p5.text("FINISH", width / 2 - 100, height / 2 - 50);
         p5.text("RIGHT PLAYER WIN", width / 2 - 225, height / 2 + 50)
         return (<Confetti width={1440} height={150} />)
@@ -77,12 +83,12 @@ const socket = () => {
     else {
       center_bar();
 
-      puck.checkPaddleLeft(paddle_left);
-      puck.checkPaddleRight(paddle_right);
+      speed = puck.checkPaddleLeft(paddle_left, true, speed);
+      speed = puck.checkPaddleRight(paddle_right, true, speed);
 
       // show and update the paddles
-      paddle_left.show();
-      paddle_right.show();
+      paddle_left.show(true);
+      paddle_right.show(true);
       paddle_left.update();
       paddle_right.update();
 
@@ -115,9 +121,9 @@ const socket = () => {
   }
   p5.keyPressed = () => {
     if (p5.key == 'a')
-      paddle_left.move(-10);
+      paddle_left.move(-10 * speed);
     else if (p5.key == 'z') {
-      paddle_left.move(10);
+      paddle_left.move(10 * speed);
     }
     if (p5.key == 'j')
       paddle_right.move(-10);

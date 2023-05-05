@@ -47,8 +47,8 @@ const socket = () => {
   console.log("clienbtHeight", p5WrapperDiv?.clientHeight)
 
   let puck = new Puck(p5, width, height);
-  let paddle_left = new Paddle(p5, width, height, true);
-  let paddle_right = new Paddle(p5, width, height, false);
+  let paddle_left = new Paddle(p5, width, height, true, false);
+  let paddle_right = new Paddle(p5, width, height, false, false);
   let left_score: number = 0;
   let right_score: number = 0;
   let stop: number = 1;
@@ -76,12 +76,12 @@ const socket = () => {
     else {
       center_bar();
 
-      puck.checkPaddleLeft(paddle_left);
-      puck.checkPaddleRight(paddle_right);
+      puck.checkPaddleLeft(paddle_left, false, 0);
+      puck.checkPaddleRight(paddle_right, false, 0);
 
       // show and update the paddles
-      paddle_left.show();
-      paddle_right.show();
+      paddle_left.show(false);
+      paddle_right.show(false);
       paddle_left.update();
       paddle_right.update();
 

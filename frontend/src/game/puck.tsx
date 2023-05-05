@@ -92,7 +92,7 @@ export default class Puck {
         this.x = w / 2;
         this.y = h / 2;
     }
-    checkPaddleLeft(p: Paddle)
+    checkPaddleLeft(p: Paddle, e: boolean, speed: number) : number
     {
         if (this.y < p.y + p.h / 2 && this.y > p.y - p.h / 2 && this.x - this.r < p.x + p.w / 2) {
             if (this.x > p.x)
@@ -100,14 +100,23 @@ export default class Puck {
                 let diff : number = this.y - (p.y - p.h / 2);
                 let rad : number = this.p.radians(45);
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
-                this.xspeed = this.puck_speed * this.p.cos(angle);
-                this.yspeed = this.puck_speed * this.p.sin(angle);
                 this.x = p.x + p.w / 2 + this.r;
+                if (true)
+                {
+                    speed += 0.5;
+                    this.xspeed = (this.puck_speed * this.p.cos(angle)) * speed;
+                    this.yspeed = (this.puck_speed * this.p.sin(angle)) * speed;
+                }
+                else {
+                    this.xspeed = this.puck_speed * this.p.cos(angle);
+                    this.yspeed = this.puck_speed * this.p.sin(angle);
+                }
             }
         }
+        return (speed)
     }
     
-    checkPaddleRight(p: Paddle)
+    checkPaddleRight(p: Paddle, e: boolean, speed: number) : number
     {
         if (this.y < p.y + p.h / 2 && this.y > p.y - p.h / 2 && this.x + this.r > p.x - p.w / 2) {
             if (this.x < p.x)
@@ -118,8 +127,18 @@ export default class Puck {
                 this.xspeed = this.puck_speed * this.p.cos(angle);
                 this.yspeed = this.puck_speed * this.p.sin(angle);
                 this.x = p.x - p.w / 2 - this.r;
+                if (e == true)
+                {
+                    this.xspeed = this.puck_speed * this.p.cos(angle) * speed;
+                    this.yspeed = this.puck_speed * this.p.sin(angle) * speed;
+                }
+                else {
+                    this.xspeed = this.puck_speed * this.p.cos(angle);
+                    this.yspeed = this.puck_speed * this.p.sin(angle);
+                }
             }
         }
+        return (speed);
     }
 
 // end bracket of the Puck class

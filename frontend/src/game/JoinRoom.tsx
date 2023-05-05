@@ -77,7 +77,7 @@ export function JoinRoom(props: IJoinRoomProps)
 
   return <div>
       <JoinRoomContainer >
-        <h4> Join the {props.mode} pong game </h4>
+        <h4> Join the {props.mode} Pong game </h4>
         {/* <RoomIdInput 
         placeholder="Room ID" 
         value={roomName} 
