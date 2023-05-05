@@ -40,8 +40,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     
 
     
-    //@SubscribeMessage("join_game")
-  
+    @SubscribeMessage("join_game")
     public async joinGame( 
         io: Server, socket: Socket,
         @MessageBody() message: any) 
@@ -53,7 +52,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if (socket)
             console.log("socket exist");
             else
-            console.log("not exist T-T");
+            console.log("not exist T-T , sockety");
             console.log("la 1");
             const connectedSockets = this.server.sockets.adapter.rooms.get(message.roomId);
             if (connectedSockets)
