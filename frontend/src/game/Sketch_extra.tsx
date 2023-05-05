@@ -29,7 +29,8 @@ const socket = () => {
       }, []);
       
   }
-      export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
+  
+  export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
 
 
 

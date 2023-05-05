@@ -14,6 +14,37 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { number } from '@hapi/joi';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Logger } from '@nestjs/common';
+/*
+@WebSocketGateway()
+export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  private logger: Logger = new Logger('GameGateway');
+
+  @SubscribeMessage('joinGame')
+  handleJoinGame(client: Socket, payload: any): void {
+    this.logger.log(`Player ${payload.username} has joined the game.`);
+    client.broadcast.emit('playerJoined', payload.username);
+  }
+
+  @SubscribeMessage('movePaddle')
+  handleMovePaddle(client: Socket, payload: any): void {
+    this.logger.log(`Player ${payload.username} moved their paddle to ${payload.position}.`);
+    client.broadcast.emit('paddleMoved', payload);
+  }
+
+  afterInit(server: any): void {
+    this.logger.log('Initialized socket server.');
+  }
+
+  handleConnection(client: Socket, ...args: any[]): void {
+    this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket): void {
+    this.logger.log(`Client disconnected: ${client.id}`);
+  }
+}
+*/
 
 type GameStruct = {
   id: number;
@@ -40,7 +71,7 @@ type puckd = {
 
 
 @WebSocketGateway({ cors: true })
-export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   
 
   constructor(
@@ -58,7 +89,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   afterInit() {} // for OnGatewayInit
 
   async handleConnection(socket: Socket) {
-    console.log('Socket connected:', socket.id);
+    console.log('Socket connected from game gateways:', socket.id);
   }
 
  async handleDisconnect(socket: Socket) {
