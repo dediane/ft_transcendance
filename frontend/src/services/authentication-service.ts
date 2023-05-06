@@ -75,6 +75,9 @@ class AuthService {
         const token = this.getToken();
         return (token && this.isValid(token));
     }
+    getUsername() {
+        return this.decode(this.getToken()).username;
+    }
 }
 
 export default new AuthService();

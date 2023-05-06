@@ -11,7 +11,10 @@ export class Game {
 
     @ManyToOne(() => User, (user) => user.gamePlayer2)
     player2: User;
-
-    @CreateDateColumn()
-    created_at: Date;
+    
+    @Column('int')
+    score1 : number;
+    
+    @Column('int')
+    score2 : number;
 }

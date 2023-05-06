@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import dynamic from "next/dynamic";
 import { P5CanvasInstance, P5WrapperProps } from 'react-p5-wrapper'
-import sketch from "@/game/Sketch";
+import sketch from "@/game/Sketch_extra";
 //import styles from "../styles/ReactP5Wrapper.module.css"
 import styles from "../styles/Game.module.css"
 
