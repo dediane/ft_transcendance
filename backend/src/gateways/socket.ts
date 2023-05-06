@@ -90,6 +90,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   this.server.emit('connected users', this.users);
     for (const channel of channels) {
       const channelName = channel.name;
+      const accessType = channel.accessType;
     // const user = await this.userService.findOnebyId(userdata.id);
 
       // const user = await this.userService.findOneByName(userdata.name);
@@ -113,13 +114,14 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       console.log(
         socket.id,
         'just joined rooOOOOm',
-        channelName,
+        channelName, 'access type:',
+        accessType,
         channelMessages,
       );
       this.messages[channelName].push(...channelMessages);
       console.log("members and admins AAAAAAARE", admins, members)
       console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
-      this.server.emit('join room', { room: channelName, messages: channelMessages, members: members, admins: admins }); // send all messages for all rooms
+      this.server.emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins }); // send all messages for all rooms
     }
   }
 }
@@ -127,12 +129,12 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
   @SubscribeMessage('create chan')
   async handleCreateNewChan(socket: Socket, datachan: any) {
-    const { creator, roomName, password } = datachan;
+    const { creator, roomName, accessType, password } = datachan;
     if (roomName == null) { // check if roomName is null or undefined
       socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
       return;
     }
-    console.log(`attempting (${roomName}) room creation. password is (${password}) and creator is (${datachan.creator})`)
+    console.log(`attempting (${roomName}) room (${accessType}) creation. password is (${password}) and creator is (${datachan.creator})`)
     const usr = await this.userService.findOnebyId(datachan.creator);
     const existingChannel = await this.channelService.findOneByName(roomName);
     if (!existingChannel) {
@@ -140,6 +142,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       const channelDto: CreateChannelDto = {
         name: roomName,
         owner: usr,
+        accessType: accessType,
         password: password,
         members: [usr],
         admins: [usr],
@@ -174,9 +177,32 @@ async handleRemoveChannel(socket: Socket, channelName: string) {
 @SubscribeMessage('change password')
 async handleChatPassword(socket: Socket, data: any) {
   const { userId, channelName, newPassword } = data;
-  const updateChannelDto: UpdateChannelDto = { password: newPassword, name: channelName };
+  const updateChannelDto: UpdateChannelDto = {password: newPassword, name: channelName };
 
-  await this.channelService.changeChannelPassword(userId, updateChannelDto);
+ await this.channelService.changeChannelPassword(userId, updateChannelDto);
+
+}
+
+@SubscribeMessage('remove password')
+async handleRemoveChatPassword(socket: Socket, data: any) {
+
+const { userId, channelName } = data;
+
+await this.channelService.removeChannelPassword(userId, channelName);
+
+}
+
+
+@SubscribeMessage('check password')
+async handlecheckChatPassword(socket: Socket, data: any) {
+  const { userId, channelName, userInput } = data;
+  // const updateChannelDto: UpdateChannelDto = { password: newPassword, name: channelName };
+
+  const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
+  console.log("channel pass is correct or not : ", bool);
+  this.server.emit('is userinput correct', bool);
+  
+
 }
 
 @SubscribeMessage('add member')

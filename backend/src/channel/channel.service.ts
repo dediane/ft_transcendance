@@ -47,7 +47,7 @@ export class ChannelService {
       .leftJoinAndSelect('channel.admins', 'admin')
       // .select(['channel.name', 'channel.id', 'member.username', 'admin.username'])
       .leftJoinAndSelect('channel.messages', 'message')
-      .select(['channel.name', 'channel.id', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'bannedUser.username', 'mutedMember.username',  'message.content'])
+      .select(['channel.name', 'channel.id', 'channel.accessType', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'bannedUser.username', 'mutedMember.username',  'message.content'])
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();
     return channels;
@@ -300,18 +300,19 @@ async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
   return this.channelRepository.save(channel);
 }
 
-async getChannelPassword(name: string) { 
+async getChannelPassword(name: string) : Promise<string>{ 
+  console.log("channel name", name);
   const channel = await this.channelRepository.createQueryBuilder('channel')
     .select('channel.password')
     .where('channel.name = :name', { name })
-    // .where('channel.id = :id', { id })
     .getOne();
 
-  return channel.password;
+  return channel ? channel.password : null;
 }
 
 async isChannelPasswordCorrect(channelName: string, userInput: string): Promise<boolean> {
   const channelPassword = await this.getChannelPassword(channelName);
+  console.log("userinput is ", userInput);
   return channelPassword === userInput;
 } //if returns bool=true then addMember function is called. <= do so in socket.ts
 
@@ -341,6 +342,27 @@ async getChannelsforUser(userId: number): Promise<Channel[]> {
 }
 
 
+async removeChannelPassword(userId: string, channelName: string): Promise<boolean> {
+  // Check if user is the owner of the channel
+  const channel = await this.channelRepository.createQueryBuilder('channel')
+    .leftJoin('channel.owner', 'owner')
+    .where('channel.name = :name', { name: channelName })
+    .andWhere('owner.id = :userId', { userId })
+    .getOne();
+
+  if (!channel) {
+    throw new Error('Channel not found or user is not the owner');
+  }
+
+  await this.channelRepository.update(channel.id, {
+    password: null,
+    accessType: 'public',
+  });
+
+  return true;
+}
+
+
 async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {
   // Check if user is the owner of the channel
   const channel = await this.channelRepository.createQueryBuilder('channel')
@@ -355,6 +377,7 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
 
   await this.channelRepository.update(channel.id, {
     password: updateChannelDto.password,
+    accessType: 'protected',
   });
 
   return true;

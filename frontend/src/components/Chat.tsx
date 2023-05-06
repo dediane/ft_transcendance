@@ -115,6 +115,7 @@ function Chat(props) {
   const [showAddUserPopup, setShowAddUserPopup] = useState(false);
   const [showAddAdminPopup, setShowAddAdminPopup] = useState(false);
   const [password, setPassword] = useState('');
+  const [userPassword, setUserPassword] = useState('');
   const [member, setMember] = useState('');
   const [admin, setAdmin] = useState('');
 
@@ -336,8 +337,14 @@ const muteMember = (member) => {
 
 
 const handleRoomCreation = () => {
+  // const newRoom = {
+  //   chatName: chatName,
+  //   password: requirePassword ? password : null
+  // };
+
   const newRoom = {
     chatName: chatName,
+    accessType: accessType,
     password: requirePassword ? password : null
   };
   props.createNewChannel(newRoom);
@@ -445,21 +452,27 @@ function handlePasswordToggle(event) {
         //     <button onClick={() => props.joinRoom(props.currentChat.chatName)}> Join {props.currentChat.chatName}</button>
         // )
     // }
-
-    if (props.currentChat?.isChannel && !props.connectedRooms.includes(props.currentChat.chatName)) {
+    const currentAccessType = props.accessType;
+    // [props.currentChat.chatName];
+    // if (props.currentChat?.isChannel && !props.connectedRooms.includes(props.currentChat.chatName)) {
+      console.log(currentAccessType, "currentAccessType")
+      if (currentAccessType === 'protected'){
       body = (
         <>
-          <input type="password" placeholder="Enter password" onChange={(e) => setPassword(e.target.value)} />
-          <button onClick={() => props.joinRoom(props.currentChat.chatName, password)}>Join {props.currentChat.chatName}</button>
-        </>
+        <input type="password" placeholder="Enter password" onChange={(e) => setUserPassword(e.target.value)} />
+        <button onClick={() => props.checkChatPassword(userPassword)}>Join {props.currentChat.chatName}</button>
+        {props.passwordError && <span style={{color: 'red'}}>Try again.</span>}
+        {!props.passwordError && <button onClick={() => props.joinRoom(props.currentChat.chatName)}>Join {props.currentChat.chatName}</button>}
+      </>
       );
-    } else {
+    } 
+    // else {
       body = (
         <Messages>
           {props.messages?.map(renderMessages)}
         </Messages>
       );
-    }
+    // }
     
 
     function handleKeyPress(e){
@@ -467,7 +480,15 @@ function handlePasswordToggle(event) {
             props.sendMessage();
         }
     }
-
+    const [accessType, setAccessType] = useState('public');
+    const handleAccessTypeChange = (e) => {
+      const selectedAccessType = e.target.value;
+      setAccessType(selectedAccessType);
+  
+      // Set requirePassword to true if the selected access type is 'protected'
+      setRequirePassword(selectedAccessType === 'protected');
+    };
+  
     return (
         <Container>
             <SideBar>
@@ -487,7 +508,7 @@ function handlePasswordToggle(event) {
         required
       />
 
-      <div>
+      {/* <div>
         <input
           id="passwordCheckbox"
           type="checkbox"
@@ -495,7 +516,15 @@ function handlePasswordToggle(event) {
           onChange={handlePasswordToggle}
         />
         <label htmlFor="passwordCheckbox">Require Password</label>
-      </div>
+      </div> */}
+
+
+      <label htmlFor="accessTypeSelect">  Type of chan </label>
+      <select id="accessTypeSelect" value={accessType} onChange={handleAccessTypeChange}>
+        <option value="public">Public</option>
+        <option value="protected">Protected</option>
+        <option value="private">Private</option>
+      </select>
 
       {requirePassword && (
         <><label htmlFor="passwordInput">Password:</label><input
@@ -572,7 +601,26 @@ function handlePasswordToggle(event) {
       <MemberList members={props.members} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
     </div>
     <div>
-      <button onClick={openPasswordModal}>Change password of the chat</button>
+
+
+{/* if chan is public
+  add password (same prop + accesstype a changer a public)
+if chan is protected
+  change password (same prop)
+  remove password (truc a ajoutern accesstype a changer a protected)
+  
+  add/change password (make chan protected)
+                  OU
+  remove password (make chan public)
+  
+  */}
+  {/* if chan protected affiche remove password */}
+    <Button onClick={() => {
+      props.removeChatPassword(props.currentChat.chatName);
+    }}>	
+     Make chan public (this action removes the password)
+    </Button>	
+      <button onClick={openPasswordModal}>Add/change password of the chat</button>
       <PopupModal
         isOpen={showPasswordPopup}
         onRequestClose={closePasswordModal}

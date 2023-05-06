@@ -8,6 +8,7 @@ import axios from 'axios';
 
 function Messenger2() {
   const [connected, setConnected] = useState(false);
+  const [passwordError , setPasswordError] = useState(false);
   const [currentChat, setCurrentChat] = useState({
     isChannel: true,
     chatName: "",
@@ -21,6 +22,7 @@ function Messenger2() {
   const [admins, setAdmins] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [message, setMessage] = useState("");
+  // const [accessType, setAccessType] = useState("");
   const socketRef = useRef();
   const [newMember, setNewMember] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
@@ -31,6 +33,9 @@ function Messenger2() {
   }
 
   const [messages, setMessages] = useState({});
+  const [accessType, setAccessType] = useState({});
+  // const [accessType, setAccessType] = useState({});
+
   const [members, setMembers] = useState({});
 
  
@@ -38,9 +43,10 @@ function Messenger2() {
     const datachan = {
       creator: AuthService.getId(),
       roomName: data.chatName,
+      accessType: data.accessType,
       password: data.password,
     };
-    console.log("TESESTTTTT CREATE CHAN ", data.chatName, data.password)
+    console.log("TESESTTTTT CREATE CHAN ", data.chatName,  data.accessType,  data.password)
     socketRef?.current?.emit("create chan", datachan);
   
     setRooms((prevRooms) => {
@@ -73,7 +79,14 @@ function Messenger2() {
   }
 
 
-  
+  function removeChatPassword(channelName: string)
+  {
+    const payload = {
+      userId: AuthService.getId(),
+      channelName: currentChat.chatName,
+    };
+    socketRef?.current?.emit("remove password", payload);  //member to remove a envoyer a la database pour modif
+  }
 
 
   function changeChatPassword(newpass: string)
@@ -85,6 +98,18 @@ function Messenger2() {
     };
     socketRef?.current?.emit("change password", payload);  //member to remove a envoyer a la database pour modif
   }
+
+
+  function checkChatPassword(userinput: string)
+  {
+    const payload = {
+      userId: AuthService.getId(),
+      channelName: currentChat.chatName,
+      userInput : userinput,
+    };
+    socketRef?.current?.emit("check password", payload);  //member to remove a envoyer a la database pour modif
+  }
+
 
 
   function addMember(username: string)
@@ -201,7 +226,13 @@ function Messenger2() {
   }
   
 function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
-    const newConnectedRooms = immer(connectedRooms, (draft) => {
+  // console.log(userpasstry, "boolean value", userpass)
+  // checkChatPassword(userpasstry);
+  // if (userpass == true)
+  // {
+
+  
+  const newConnectedRooms = immer(connectedRooms, (draft) => {
       draft.push(room);
     });
     socketRef.current.emit("join room", room, (messages: any) =>
@@ -210,6 +241,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     setConnectedRooms(newConnectedRooms);
     const username = AuthService.getUsername();
 
+  // }
 
   }
 
@@ -301,6 +333,14 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
 
     socketRef.current.emit("join server", userdata);
 
+    socketRef.current.on("is userinput correct", (isUserInputCorrectPass: boolean) => {
+      console.log("is user input correct?? setting passerror");
+      setPasswordError(!isUserInputCorrectPass);
+      // throw Error (isUserInputCorrectPass)
+
+    });
+    
+
   
     socketRef.current.on("connected users", (users: SetStateAction<never[]>) => {
       console.log("all users", users);
@@ -322,8 +362,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     //     [room]: messages,
     //   }));
     // });
-
-    socketRef.current.on("join room", ({ room, messages, members, admins }) => {
+    socketRef.current.on("join room", ({ room, accessType, messages, members, admins }) => {
       setMessages((prevMessages) => ({
         ...prevMessages,
         [room]: messages,
@@ -333,6 +372,14 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         ...prevMembers,
         [room]: members,
       }));
+
+      // const setAccessType = (roomName, accessType) => {
+        setAccessType((prevAccessType) => ({
+          ...prevAccessType,
+          [room]: accessType,
+        }));
+      // };
+      // setAccessType(accessType);
       // setMembers((prevMembers) => ({
       //   ...prevMembers,
       //   [room]: members,
@@ -404,14 +451,17 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     body = (
       <Chat
         message={message}
+        // userpass={userpass}
+        passwordError={passwordError}
         handleMessageChange={handleMessageChange}
         sendMessage={sendMessage}
         changeChatPassword={changeChatPassword}
+        removeChatPassword={removeChatPassword}
+        checkChatPassword={checkChatPassword}
         // yourId={socketRef.current ? socketRef.current.id : ""}
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         // members={members}
-        admins={admins}
         addMember={addMember}
         addAdmin={addAdmin}
         removeAdmin={removeAdmin}
@@ -428,7 +478,12 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
         currentChat={currentChat}
         toggleChat={toggleChat}
         messages={messages[currentChat.chatName]}
+        accessType={accessType[currentChat.chatName]}
         members={members[currentChat.chatName]}
+        // accessType={accessType}
+        admins={admins}
+
+
       />
     );
   }
@@ -437,3 +492,4 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
 }
 
 export default Messenger2;
+
