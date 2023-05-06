@@ -47,7 +47,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 */
 
 /// implement puck and paddle in backend position
-
+/*
 type GameStruct = {
   id: number;
   userA: Socket;
@@ -84,7 +84,7 @@ class Puckd {
 
 };
 
-
+*/
 @WebSocketGateway({ cors: true })
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   
@@ -115,11 +115,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 UpdateBall()
 {
   console.log("do something, I am a loop, in 1000 miliseconds, ill be run again")
-  if (isGamestart == false)
+  //if (isGamestart == false)
     return ;
-  else
+  //else
   {
-    puck.update();
+   // puck.update();
   }
 }
 @SubscribeMessage('init data puck')
@@ -131,7 +131,7 @@ async handleJoinServer(socket: Socket, w: number, h: number, a: number)
 }
 
 }
-
+/*
 // @WebSocketGateway()
 // export class GameGateway {
 //   constructor(private readonly GameService: GameService) {
@@ -183,3 +183,4 @@ async handleJoinServer(socket: Socket, w: number, h: number, a: number)
 //   }
 // }
 
+*/

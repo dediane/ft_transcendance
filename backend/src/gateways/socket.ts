@@ -30,20 +30,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit('message', message);
     }
 
-    // @SubscribeMessage('start')
-    // async join(@MessageBody() socket: Socket): Promise<void>{
-    //   console.log("just START the game in socket.ts!!");
-    //     // Find/Create game la 
-    //     //Broadcast to pending user gameid
-    //     //If 2 joined send start
-    // }
     
 
-    
+    //// Game Side
     @SubscribeMessage("join_game")
-    // public async joinGame( 
-    //     io: Server, socket: Socket,
-    //     @MessageBody() message: any) 
     public async joinGame( 
           socket: Socket,
           message: string) 
@@ -57,14 +47,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             else
               console.log("not exist T-T , sockety");
             console.log("la 1");
-            const connectedSockets = this.server.sockets.adapter.rooms.get(message.roomId);
+            const connectedSockets = this.server.sockets.adapter.rooms.get(message);
             if (connectedSockets)
             console.log("lalalala i existe");
             else
             console.log("no i dont want to existe")
             console.log("la 2");
             const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
-            console.log("la 3");
+            console.log("la existe");
             if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
             {
                 socket.emit("room_join_error, you gonna be a spectator", {
@@ -76,44 +66,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 
                 if (this.server.sockets.adapter.rooms.get(message).size === 2) 
                 { // si on a deux user start game 
+                    console.log("deux users");
                     socket.emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
                     socket.to(message)
                     .emit("start_game", { start: false, symbol: "o" });
                 }
             }
         }
-        /*
-        @SubscribeMessage("join_game")
-        @OnMessage('join_game')
-    async joinGame(io, socket, message) {
-    console.log('New User joining room: ', message);
-
-    const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
-    const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
-
-    if (socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2)) {
-      socket.emit('room_join_error', {
-        error: 'Room is full please choose another room to play!',
-      });
-    } else {
-      await socket.join(message.roomId);
-      socket.emit('room_joined');
-
-      if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
-        socket.emit('start_game', { start: true, symbol: 'x' });
-        socket.to(message.roomId).emit('start_game', { start: false, symbol: 'o' });
-      }
-    }
-  }*/
-
-
-
-
-
-
-
-
-
     @SubscribeMessage('launch ball')
     async handleJoinServer(socket: Socket, gamedata: {}) {
       console.log('launch ball');
@@ -121,5 +80,5 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.emit('update ball');
     
     }
-
+    ///// Game Side
 }
