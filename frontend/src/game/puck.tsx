@@ -61,6 +61,7 @@ export default class Puck {
         // here for sound
         
         if (this.y < 0 || this.y > this.height) {
+            let offset = this.yspeed < 0 ? 0 - this.y : this.height - (this.y + this.r)
             this.yspeed *= -1;
         }
         if (this.x - this.r > this.width)
@@ -101,7 +102,7 @@ export default class Puck {
                 let rad : number = this.p.radians(45);
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
                 this.x = p.x + p.w / 2 + this.r;
-                if (true)
+                if (e == true)
                 {
                     speed += 0.5;
                     this.xspeed = (this.puck_speed * this.p.cos(angle)) * speed;
