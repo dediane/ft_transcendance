@@ -41,18 +41,21 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     
     @SubscribeMessage("join_game")
+    // public async joinGame( 
+    //     io: Server, socket: Socket,
+    //     @MessageBody() message: any) 
     public async joinGame( 
-        io: Server, socket: Socket,
-        @MessageBody() message: any) 
+          socket: Socket,
+          message: string) 
         {
             console.log("IN SOCKET CONTROLER")
             console.log("New User joining room: ", message);
             this.server.emit('game');
-            console.log("room message id: ", message.roomId);
+            console.log("room message id: ", message);
             if (socket)
-            console.log("socket exist");
+              console.log("socket exist");
             else
-            console.log("not exist T-T , sockety");
+              console.log("not exist T-T , sockety");
             console.log("la 1");
             const connectedSockets = this.server.sockets.adapter.rooms.get(message.roomId);
             if (connectedSockets)
@@ -68,13 +71,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     error: "Room is full please choose another room to play!",
                 });
             } else {
-                await socket.join(message.roomId);
+                await socket.join(message);
                 socket.emit("room_joined");
                 
-                if (io.sockets.adapter.rooms.get(message.roomId).size === 2) 
+                if (this.server.sockets.adapter.rooms.get(message).size === 2) 
                 { // si on a deux user start game 
                     socket.emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
-                    socket.to(message.roomId)
+                    socket.to(message)
                     .emit("start_game", { start: false, symbol: "o" });
                 }
             }

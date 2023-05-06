@@ -46,6 +46,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 }
 */
 
+/// implement puck and paddle in backend position
+
 type GameStruct = {
   id: number;
   userA: Socket;
@@ -57,16 +59,29 @@ type GameStruct = {
   spectators: string[];
 }
 
-type puckd = {
-  width: number,
-  height: number,
-  x: number,
-  y: number,
-  r: 12,
-  angle: number,
-  xspeed: number,
-  yspeed: number,
-  puckspeed: number,
+///////////////  PUCK  ////////////////////
+class Puckd {
+
+  puck_data: {
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    r: 12;
+    angle: number;
+    xspeed: number;
+    yspeed: number;
+    puck_speed: 8;
+  }
+
+  constructor(){}
+
+  update() {
+    this.puck_data.x = this.puck_data.x + this.puck_data.xspeed;
+    this.puck_data.y = this.puck_data.y + this.puck_data.yspeed;
+    //socket.emit.("update ball", this.puck_data);
+  }
+
 };
 
 
@@ -97,6 +112,16 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   this.server.emit('disconnect users');
 }
 
+UpdateBall()
+{
+  console.log("do something, I am a loop, in 1000 miliseconds, ill be run again")
+  if (isGamestart == false)
+    return ;
+  else
+  {
+    puck.update();
+  }
+}
 @SubscribeMessage('init data puck')
 async handleJoinServer(socket: Socket, w: number, h: number, a: number)
 {

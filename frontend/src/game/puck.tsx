@@ -45,6 +45,7 @@ export default class Puck {
     }
 
     update() {
+        // socket.on("update ball", data_puck)
         this.x = this.x + this.xspeed;
         this.y = this.y + this.yspeed;
     }
