@@ -354,10 +354,8 @@ async handleMuteMember(socket: Socket, payload: any) {
 
             const connectedSockets = this.server.sockets.adapter.rooms.get(message);
             //this.server.emit('game');
-            
-            console.log("la 2");
+
             const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
-            console.log("la existe");
             if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
             {
               socket.emit("room_join_error, you gonna be a spectator", {
@@ -365,14 +363,13 @@ async handleMuteMember(socket: Socket, payload: any) {
               });
             } else {
               await socket.join(message);
-              socket.emit("room_joined");
+              this.server.emit("room_joined");
+              console.log("ici in size == 2")
               
               if (this.server.sockets.adapter.rooms.get(message).size === 2) 
               { // si on a deux user start game 
                 console.log("deux users");
-                socket.emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
-                socket.to(message)
-                .emit("start_game", { start: false, symbol: "o" });
+                this.server.to(message).emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
               }
             }
           }

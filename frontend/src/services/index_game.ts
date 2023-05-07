@@ -13,7 +13,15 @@ class GameService {
             // socket.emit("join_game", {message: roomId} ); // ici on lance la game envoie un socket au back sauf que la socket n'est pas recu par le back et quand on l'envoie pas ca crash car elle existe pas
             // socket.emit("join_game", roomId ); // ici on lance la game envoie un socket au back sauf que la socket n'est pas recu par le back et quand on l'envoie pas ca crash car elle existe pas
             socket.current?.emit("join_game", payload ); // ici on lance la game envoie un socket au back sauf que la socket n'est pas recu par le back et quand on l'envoie pas ca crash car elle existe pas
-            socket.current?.on("room_joined", () => rs(true))
+            socket.current?.on("start_game", () => {
+                console.log("connected with 2 people");
+                //socket.current?.emit("launch ball");
+                window.location.href = "/pong";
+              });
+            socket.current?.on("room_joined", () => 
+            {
+                console.log("has join " , AuthService.getId());
+            });
             socket.current?.on("room_join_error", ({error: any}) => rj(error))
             console.log("after emit");
         });
