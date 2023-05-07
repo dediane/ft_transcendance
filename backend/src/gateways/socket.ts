@@ -342,22 +342,18 @@ async handleMuteMember(socket: Socket, payload: any) {
   @SubscribeMessage("join_game")
     public async joinGame( 
           socket: Socket,
-          message: string) 
+          data : any)
+          // message: string) 
         {
+          const {message, userid, username} = data;
+          console.log(userid, username);
             console.log("IN SOCKET CONTROLER")
             console.log("New User joining room: ", message);
             this.server.emit('game');
             console.log("room message id: ", message);
-            if (socket)
-              console.log("socket exist");
-            else
-              console.log("not exist T-T , sockety");
             console.log("la 1");
             const connectedSockets = this.server.sockets.adapter.rooms.get(message);
-            if (connectedSockets)
-            console.log("lalalala i existe");
-            else
-            console.log("no i dont want to existe")
+
             console.log("la 2");
             const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
             console.log("la existe");

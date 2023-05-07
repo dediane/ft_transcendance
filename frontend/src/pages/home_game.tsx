@@ -62,7 +62,7 @@ function HomeGame() {
       <MainContainer>
         <ul>
           <JoinRoom mode="Classic"/>
-          <JoinRoom mode="Extra"/> 
+          {/* <JoinRoom mode="Extra"/>  */}
         </ul>
       </MainContainer>
     </HomeGameContainer>

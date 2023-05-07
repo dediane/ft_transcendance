@@ -5,6 +5,7 @@ import { useConst } from "@chakra-ui/react";
 import GameContext from "./GameContext";
 import socketService from "../services/index_socket_game"
 import gameService from "../services/index_game"
+import AuthService from "../services/authentication-service"
 
 interface IJoinRoomProps {
   mode : string;
@@ -59,10 +60,10 @@ export function JoinRoom(props: IJoinRoomProps)
     const value = e.target.value;
     setRoomName(value);
   }
-
+  
   const joinRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
     const socket = socketService.socket;
+    e.preventDefault();
     console.log("socket ", socketService.socket?.id)
     if (!socket)
       return ;
