@@ -48,7 +48,7 @@ export class UserService {
       .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
       .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
       .leftJoinAndSelect('user.blockedUsers', 'blockedUser')
-      .select(['user.username', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username'])
+      .select(['user.email','user.username', 'user.password', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username'])
       .getMany();
   
     return users;
@@ -258,7 +258,8 @@ export class UserService {
   } 
   
 
-  remove(id: number) {
+  async remove(id: number) {
+    await this.userRepository.delete(id)
     return `This action removes a #${id} user`;
   }
   async save(user: User): Promise<User> {

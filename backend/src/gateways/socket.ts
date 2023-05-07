@@ -28,6 +28,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private users: any[] = [];
+  private game: {
+
+  }
   private messages = {
     general: [],
     random: [],
@@ -344,43 +347,50 @@ async handleMuteMember(socket: Socket, payload: any) {
           socket: Socket,
           data : any)
           // message: string) 
-        {
-          const {message, userid, username} = data;
-          console.log(userid, username);
-            console.log("IN SOCKET CONTROLER")
-            console.log("New User joining room: ", message);
-            this.server.emit('game');
+          {
+            const {message, userid, username} = data;
+            console.log("user id is ", userid, " username", username);
             console.log("room message id: ", message);
-            console.log("la 1");
-            const connectedSockets = this.server.sockets.adapter.rooms.get(message);
 
+            const connectedSockets = this.server.sockets.adapter.rooms.get(message);
+            //this.server.emit('game');
+            
             console.log("la 2");
             const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
             console.log("la existe");
             if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
             {
-                socket.emit("room_join_error, you gonna be a spectator", {
-                    error: "Room is full please choose another room to play!",
-                });
+              socket.emit("room_join_error, you gonna be a spectator", {
+                error: "Room is full please choose another room to play!",
+              });
             } else {
-                await socket.join(message);
-                socket.emit("room_joined");
-                
-                if (this.server.sockets.adapter.rooms.get(message).size === 2) 
-                { // si on a deux user start game 
-                    console.log("deux users");
-                    socket.emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
-                    socket.to(message)
-                    .emit("start_game", { start: false, symbol: "o" });
-                }
+              await socket.join(message);
+              socket.emit("room_joined");
+              
+              if (this.server.sockets.adapter.rooms.get(message).size === 2) 
+              { // si on a deux user start game 
+                console.log("deux users");
+                socket.emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
+                socket.to(message)
+                .emit("start_game", { start: false, symbol: "o" });
+              }
             }
-        }
+          }
+        
+
     @SubscribeMessage('launch ball')
     async handleJoinnServer(socket: Socket, gamedata: {}) {
       console.log('launch ball');
 
       this.server.emit('update ball');
-    
     }
+    
+      @SubscribeMessage('remove user')
+      async RemoveUser(socket: Socket, userid :number)
+      {
+        console.log("receive from back userid")
+        await this.userService.remove(userid);
+      }
+
 
 }

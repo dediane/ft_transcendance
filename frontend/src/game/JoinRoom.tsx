@@ -7,9 +7,6 @@ import socketService from "../services/index_socket_game"
 import gameService from "../services/index_game"
 import AuthService from "../services/authentication-service"
 
-interface IJoinRoomProps {
-  mode : string;
-}
 
 const JoinRoomContainer = styled.div`
   width: 100%;
@@ -19,9 +16,9 @@ const JoinRoomContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 2em;
-`;
+  `;
 
-const RoomIdInput = styled.input`
+  const RoomIdInput = styled.input`
   height: 30px;
   width: 20em;
   font-size: 17px;
@@ -29,9 +26,9 @@ const RoomIdInput = styled.input`
   border: 1px solid #8e44ad;
   border-radius: 3px;
   padding: 0 10px;
-`;
+  `;
 
-const JoinButton = styled.button`
+  const JoinButton = styled.button`
   outline: none;
   background-color: #8e44ad;
   color: #fff;
@@ -49,6 +46,11 @@ const JoinButton = styled.button`
   }
 `;
 
+interface IJoinRoomProps {
+  mode : string;
+  socket : React.MutableRefObject<undefined>;
+}
+
 export function JoinRoom(props: IJoinRoomProps) 
 {
   const [roomName, setRoomName] = useState("GameRoom");
@@ -62,16 +64,16 @@ export function JoinRoom(props: IJoinRoomProps)
   }
   
   const joinRoom = async (e: React.FormEvent) => {
-    const socket = socketService.socket;
-    e.preventDefault();
-    console.log("socket ", socketService.socket?.id)
-    if (!socket)
+    // const socket = socketService.socket;
+    // e.preventDefault();
+    // console.log("socket ", socketService.socket?.id)
+    if (!props.socket)
       return ;
     setJoining(true);
     
     console.log("setting ", roomName);
     const joined = await gameService
-    .joinGameRoom(socket, roomName).catch((err) => {
+    .joinGameRoom(props.socket, roomName).catch((err) => {
       alert(err);
     });
     if (joined) setInRoom(true);
