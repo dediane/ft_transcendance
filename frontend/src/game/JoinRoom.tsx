@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { useConst } from "@chakra-ui/react";
-import GameContext from "./GameContext";
 import socketService from "../services/index_socket_game"
 import gameService from "../services/index_game"
 import AuthService from "../services/authentication-service"
+import {ContextGame} from '../game/GameContext'
 
 
 const JoinRoomContainer = styled.div`
@@ -48,7 +48,6 @@ const JoinRoomContainer = styled.div`
 
 interface IJoinRoomProps {
   mode : string;
-  socket : React.MutableRefObject<undefined>;
 }
 
 export function JoinRoom(props: IJoinRoomProps) 
@@ -56,7 +55,7 @@ export function JoinRoom(props: IJoinRoomProps)
   const [roomName, setRoomName] = useState("GameRoom");
   const [isJoining, setJoining] = useState(false);
 
-  const { setInRoom, isInRoom } = useContext(GameContext);
+  const {socket} = React.useContext(ContextGame);
 
   const handleRoomName = (e: React.ChangeEvent<any>) => {
     const value = e.target.value;
@@ -67,16 +66,15 @@ export function JoinRoom(props: IJoinRoomProps)
     // const socket = socketService.socket;
     // e.preventDefault();
     // console.log("socket ", socketService.socket?.id)
-    if (!props.socket)
+    if (!socket)
       return ;
     setJoining(true);
     
     console.log("setting ", roomName);
     const joined = await gameService
-    .joinGameRoom(props.socket, roomName).catch((err) => {
+    .joinGameRoom(socket, roomName).catch((err) => {
       alert(err);
     });
-    if (joined) setInRoom(true);
     setJoining(false);
   }
 

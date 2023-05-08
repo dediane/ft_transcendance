@@ -5,13 +5,10 @@ import styled from '@emotion/styled';
 import SocketService from "../services/index_socket_game"
 import { JoinRoom } from '@/game/JoinRoom';
 import { useState, useRef } from 'react';
-import GameContext from '@/game/GameContext';
-import { IGameContextProps} from '@/game/GameContext';
 import AuthService from "../services/authentication-service"
 import { io } from 'socket.io-client';
 import styles from '@/styles/Home_Game.module.css';
 import authenticationService from '../services/authentication-service';
-
 
 const HomeGameContainer = styled.div`
   width: 100%; 
@@ -38,7 +35,6 @@ const MainContainer = styled.div`
 
 function HomeGame() {
   
-  const [isInRoom, setInRoom ] = useState(false);
   
   
   // const connectSocket = async() => {
@@ -48,50 +44,23 @@ function HomeGame() {
       //     console.log("Error: ", err);
       //   })
       // }
+
       
-      useEffect(() => {
-        const token =  AuthService.getToken();
-        
-        if (!token) {
-          // Redirect to the login page
-          window.location.href = "/login";
-        }
-        
-        
-        const userdata = {
-          id: AuthService.getId(),
-          name: AuthService.getUsername(),
-        };
-        
-        
-        socketRef.current  = io("http://localhost:8000", {
-          query: { token },
-        })
-        //   connectSocket();
-      }, []);
-      
-      
-      
-      const socketRef = useRef();
-      
-      const gameContextValue: IGameContextProps = {
-        isInRoom,
-        setInRoom,
-      } 
+
+
+
       
     return (
-      <GameContext.Provider value={gameContextValue}>
     <HomeGameContainer>
       {/* <h1 style={{ color: 'Purple', fontWeight: 'bold', fontSize: "2rem"}}> Welcome to Pong games</h1> */}
       <WelcomeText style={{fontWeight: 'bold', fontSize: "2rem"}} >Welcome to Pong games</WelcomeText>
       <MainContainer>
         <ul>
-          <JoinRoom mode="Classic" socket={socketRef}/>
+          <JoinRoom mode="Classic"/>
           {/* <JoinRoom mode="Extra"/>  */}
         </ul>
       </MainContainer>
     </HomeGameContainer>
-    </GameContext.Provider> 
   )
 }
 export default HomeGame

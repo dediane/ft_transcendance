@@ -3,36 +3,28 @@ import Puck from "./puck";
 import Paddle from './paddle';
 import Confetti from 'react-confetti'
 import { useState, useEffect } from "react";
-import { io } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 import { useRef } from 'react';
-import  AuthService from "../services/authentication-service"
+import AuthService from '../services/authentication-service'
+import { MySketchProps } from '@/components/Game';
+import React from 'react';
 
 
-const socket = () => {
-  // socket.emit("start")
-  const socketRef = useRef();
-  
-  useEffect(() => {
+
+  export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
+
+    let socket = Socket;
+
+    p5.updateWithProps = props => {
+
+      if (props.socket) {
+       let socket = props.socket.current;
+       if (socket)
+        console.log("socket id ", socket.id)
+      }
+      // ici faire emit et on avec des appelle de function
+    };
     
-      const userdata = {
-          id: AuthService.getId(),
-          name: AuthService.getUsername(),
-        };
-      
-        socketRef.current.on("update ball", () => { // receive from back
-          console.log("connected to server");
-        });
-      
-        socketRef.current.emit("launch ball"); // envoie au back
-        console.log(`Received message from server:`);
-      
-      }, []);
-      
-  }
-      export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
-
-
-
   // Puck Class
   // Paddle Class
 
@@ -41,6 +33,9 @@ const socket = () => {
 
   //console.log("la width param %d, la height param %d", w, h);
   let p5WrapperDiv = document.getElementById("canvas_size")
+  const username = AuthService.getUsername();
+  console.log("socket username->", username);
+  //console.log("id socket -> ", socket.id);
   console.log("> Begin function canvas")
   let width = p5WrapperDiv?.clientWidth || window.innerWidth;
   let height = p5WrapperDiv?.clientHeight || window.innerHeight;
