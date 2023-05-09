@@ -13,22 +13,10 @@ export interface IGameContextProps { // type des variable set
 
 function create() : React.MutableRefObject<undefined> {
     useEffect(() => {
-        const token =  AuthService.getToken();
-        
-        if (!token) {
-          // Redirect to the login page
-          window.location.href = "/login";
-        }
-        
-        
-        const userdata = {
-          id: AuthService.getId(),
-          name: AuthService.getUsername(),
-        };
         
         
         socketRef.current  = io("http://localhost:8000", {
-          query: { token },
+          // query: { token },
         })
         //   connectSocket();
       }, []);

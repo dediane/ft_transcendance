@@ -13,6 +13,19 @@ import React from 'react';
 
   export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
 
+    const token =  AuthService.getToken();
+        
+    if (!token) {
+      // Redirect to the login page
+      window.location.href = "/login";
+    }
+    
+    
+    const userdata = {
+      id: AuthService.getId(),
+      name: AuthService.getUsername(),
+    };
+    
     let socket = Socket;
 
     p5.updateWithProps = props => {
