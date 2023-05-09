@@ -63,11 +63,13 @@ export default class Paddle {
     show(e: boolean){
         if (e == false){   
             this.p.fill(255);
+            this.p.rectMode(this.p.CENTER); // -> here to change center //
+            this.p.rect(this.x, this.y, this.w, this.h);
         } else {
             this.p.fill(this.p.color('#8d2bd2')); 
             this.p.noStroke();
+            this.p.rectMode(this.p.CENTER); // -> here to change center //
+            this.p.rect(this.x, this.y, this.w, this.h, 7);
         }
-        this.p.rectMode(this.p.CENTER); // -> here to change center //
-        this.p.rect(this.x, this.y, this.w, this.h);
     }
 }

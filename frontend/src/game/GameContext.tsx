@@ -16,9 +16,7 @@ function create() : React.MutableRefObject<undefined> {
         
         
         socketRef.current  = io("http://localhost:8000", {
-          // query: { token },
         })
-        //   connectSocket();
       }, []);
       
       
