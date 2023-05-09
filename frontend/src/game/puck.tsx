@@ -49,33 +49,21 @@ export default class Puck {
         this.x = this.x + this.xspeed;
         this.y = this.y + this.yspeed;
     }
-
     // move the puck
+
     edges(left_score: number, right_score: number) : [left_score: number, right_score:number] {
-    
-        //const [play] = useSound("./sound/win.mp3");
-        //let ding = this.p.loadSound("./sound/win.mp3");
-        
-        //let song = this.p.loadSound("./assets/hurry.mp3");
-        //let ding = new this.p.SoundFile(this.p.url("./sound/win.mp3"));
-        //const ding = this.p.loadSound(("./sound/win.mp3"));
-        // here for sound
         
         if (this.y < 0 || this.y > this.height) {
             let offset = this.yspeed < 0 ? 0 - this.y : this.height - (this.y + this.r)
-            this.yspeed *= -1;
+            this.yspeed *= -1 ;
         }
         if (this.x - this.r > this.width)
         {
-            //play;
-            //ding.play();
             left_score++;
             this.reset();
         }
         if (this.x + this.r < 0)
         {
-            //play;
-            //ding.play()
             right_score++;
             this.reset();
         }
@@ -94,6 +82,11 @@ export default class Puck {
         this.x = w / 2;
         this.y = h / 2;
     }
+
+    check(ax: number, ay: number, aw: number, ah: number, bx: number, by: number, bw: number, bh: number) {
+        return ax < bx+bw && ay < by+bh && bx < ax+aw && by < ay+ah;
+    };
+
     checkPaddleLeft(p: Paddle, e: boolean, speed: number) : number
     {
         if (this.y < p.y + p.h / 2 && this.y > p.y - p.h / 2 && this.x - this.r < p.x + p.w / 2) {
@@ -102,7 +95,7 @@ export default class Puck {
                 let diff : number = this.y - (p.y - p.h / 2);
                 let rad : number = this.p.radians(45);
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
-                this.x = p.x + p.w / 2 + this.r;
+                this.x = p.x + (p.w / 2) + this.r;
                 if (e == true)
                 {
                     speed += 0.5;
@@ -121,14 +114,14 @@ export default class Puck {
     checkPaddleRight(p: Paddle, e: boolean, speed: number) : number
     {
         if (this.y < p.y + p.h / 2 && this.y > p.y - p.h / 2 && this.x + this.r > p.x - p.w / 2) {
+           
             if (this.x < p.x)
             {
+                /*
                 let diff : number = this.y - (p.y - p.h / 2);
                 let rad : number = this.p.radians(135);
                 let angle : number = this.p.map(diff, 0, p.h, -rad, rad);
-                this.xspeed = this.puck_speed * this.p.cos(angle);
-                this.yspeed = this.puck_speed * this.p.sin(angle);
-                this.x = p.x - p.w / 2 - this.r;
+                this.x = p.x - (p.w / 2) - this.r;
                 if (e == true)
                 {
                     this.xspeed = this.puck_speed * this.p.cos(angle) * speed;
@@ -137,6 +130,16 @@ export default class Puck {
                 else {
                     this.xspeed = this.puck_speed * this.p.cos(angle);
                     this.yspeed = this.puck_speed * this.p.sin(angle);
+                }
+                */
+                if (e == true)
+                {
+                    this.xspeed = this.puck_speed * speed;
+                    this.yspeed = this.puck_speed * speed;
+                }
+                else {
+                    this.xspeed = this.puck_speed * -1;
+                    this.yspeed = this.puck_speed * -1;
                 }
             }
         }
