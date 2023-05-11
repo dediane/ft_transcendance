@@ -64,6 +64,8 @@ import React from 'react';
             
             puckx = payload.x; 
             pucky = payload.y;
+            left_score = payload.lscore;
+            right_score = payload.rscore;
             puck.show(puckx, pucky);
             console.log("on lance la ball avec data ", puckx, pucky)
             
@@ -89,13 +91,13 @@ import React from 'react';
   p5.draw = () => {
     p5.background(0);
 
-    if (left_score == 3 || right_score == 3) {
-      if (left_score == 3) {
+    if (left_score == 5 || right_score == 5) {
+      if (left_score == 5) {
         p5.text("FINISH", width / 2 - 100, height / 2 - 50);
         p5.text("LEFT PLAYER WIN", width / 2 - 225, height / 2 + 50)
         return (<Confetti width={1440} height={150} />)
       }
-      if (right_score == 3) {
+      if (right_score == 5) {
         p5.text("FINISH", width / 2 - 100, height / 2 - 50);
         p5.text("RIGHT PLAYER WIN", width / 2 - 225, height / 2 + 50)
         return (<Confetti width={1440} height={150} />)
@@ -139,20 +141,20 @@ import React from 'react';
 
   p5.keyReleased = () => {
     //emit.("move Realesed")
-    paddle_left.move(0);
-    paddle_right.move(0);
+    // paddle_left.move(0);
+    // paddle_right.move(0);
   }
   p5.keyPressed = () => {
-    if (p5.key == 'a')
-      paddle_left.move(-10);
-    else if (p5.key == 'z') {
-      paddle_left.move(10);
-    }
-    if (p5.key == 'j')
-      paddle_right.move(-10);
-    else if (p5.key == 'n') {
-      paddle_right.move(10);
-    }
+    // if (p5.key == 'a')
+    //   paddle_left.move(-10);
+    // else if (p5.key == 'z') {
+    //   paddle_left.move(10);
+    // }
+    // if (p5.key == 'j')
+    //   paddle_right.move(-10);
+    // else if (p5.key == 'n') {
+    //   paddle_right.move(10);
+    // }
   }
 
   function windowResized() {

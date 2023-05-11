@@ -12,25 +12,23 @@ export  class Puck {
     r: number;
     angle: number;
     puck_speed: number;
+    left_score: number;
+    right_score: number;
     
     // constructor
     constructor( width: number, height: number) {
         this.width = width;     //init in back 
         this.height = height;   //init in back
         this.r = 12;
-        console.log("Before in puck in backend  x", this.x)
-        console.log("Before in puck in backend  y", this.y)
         this.x = width / 2;     //init in back
         this.y = height / 2;    //init in back
-        console.log("After in puck in backend  x", this.x)
-        console.log("After in puck in backend  y", this.y)
         this.puck_speed = 8;
+        this.left_score = 0;
+        this.right_score = 0;
         //this.angle = Math.random(- Math.PI / 4, Math.PI / 4);
         this.angle = this.RandomNum(-Math.PI / 4, Math.PI / 4);
         this.xspeed = this.puck_speed * Math.cos(this.angle);
         this.yspeed = this.puck_speed * Math.sin(this.angle);
-        console.log("in back height", this.height)
-        console.log("in back width", this.width)
     };
 
     // function 
@@ -60,19 +58,6 @@ export  class Puck {
             this.xspeed *= -1;
     }
 
-    getx() : number {
-        return (this.x);
-    }
-    gety() : number {
-        return (this.y);
-    }
-
-    getwidth() : number {
-        return (this.width);
-    }
-    getheight() : number {
-        return (this.height);
-    }
     update() {
         // socket.on("update ball", data_puck)
         this.x = this.x + this.xspeed;
@@ -80,23 +65,25 @@ export  class Puck {
     }
     // move the puck
 
-    edges(left_score: number, right_score: number) : [left_score: number, right_score:number] {
-        
+    edges() {
+        console.log("edge puck back")
         if (this.y < 0 || this.y > this.height) {
             let offset = this.yspeed < 0 ? 0 - this.y : this.height - (this.y + this.r)
             this.yspeed *= -1 ;
         }
         if (this.x - this.r > this.width)
         {
-            left_score++;
+            console.log("RESET 1")
+            this.left_score++;
             this.reset();
         }
         if (this.x + this.r < 0)
         {
-            right_score++;
+            console.log("RESET 2")
+            this.right_score++;
             this.reset();
         }
-        return [left_score, right_score];
+
     }
 
 

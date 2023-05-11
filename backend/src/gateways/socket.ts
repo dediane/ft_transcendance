@@ -16,7 +16,37 @@ import { CreateMessageDto } from 'src/message/dto/create-message.dto';
 import { CreateChannelDto } from 'src/channel/dto/create-channel.dto';
 import { UpdateChannelDto } from 'src/channel/dto/update-channel.dto';
 import { Puck } from 'src/game/puck';
-import  Paddle  from 'src/game/paddle'
+import  Paddle  from 'src/game/paddle';
+
+
+/*
+interface pos {
+    x: number,
+    y: number,
+}
+
+type player = {
+    id: string;
+} & pos;
+
+type puck = pos;
+
+interface player2 extends pos {
+    id: string
+}
+
+// interfaces generiques
+interface coordinateTwo<T> {
+    x: number,
+    y: number,
+    data: T,
+}
+const player: coordinateTwo<string> = {
+  x: 20,
+  y: 40,
+  data: "hello world",
+}
+*/
 
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -25,7 +55,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly channelService: ChannelService,
     private readonly userService: UserService,
     // private readonly authService: AuthService,
-  ) {}
+    ) {}
 
   @WebSocketServer()
   server: Server;
@@ -350,6 +380,7 @@ async handleMuteMember(socket: Socket, payload: any) {
     await this.userService.remove(userid);
   }
 
+
   /////////////// GAME SIDE ///////////////
 
     room: string;
@@ -359,45 +390,41 @@ async handleMuteMember(socket: Socket, payload: any) {
     puck: Puck;
     paddle_left : Paddle;
     paddle_right : Paddle;
-    score = {
-      left: 0,
-      right: 0,
-    }
 
 
+      // join game from home page
   @SubscribeMessage("join_game")
     public async joinGame( 
           socket: Socket,
-          data : any)
-          // message: string) 
-          {
-            const {message, userid, username} = data;
-            console.log("user id is ", userid, " username", username);
-            console.log("room message id: ", message);
-            this.room = message;
-            const connectedSockets = this.server.sockets.adapter.rooms.get(message);
-            //this.server.emit('game');
+          data : any) 
+      {
+        const {message, userid, username} = data;
+        console.log("user id is ", userid, " username", username);
+        console.log("room message id: ", message);
+        this.room = message;
+        const connectedSockets = this.server.sockets.adapter.rooms.get(message);
+        //this.server.emit('game');
 
-            const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
-            if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
-            {
-              socket.emit("room_join_error", {
-                error: "Room is full please choose another room to play! you gonna be a spectator",
-              });
-            } else {
-              await socket.join(message);
-              this.server.emit("room_joined");
-              console.log("ici in size == 2")
-              
-              if (this.server.sockets.adapter.rooms.get(message).size === 2) 
-              { // si on a deux user start game 
-                this.server.to(message).emit("start_game", {});
-                // ici envoyer au front end change page in homegame et lancer le jeu
-              }
-            }
+        const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
+        if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
+        {
+          socket.emit("room_join_error", {
+            error: "Room is full please choose another room to play! you gonna be a spectator",
+          });
+        } else {
+          await socket.join(message);
+          this.server.emit("room_joined");
+          console.log("ici in size == 2")
+          
+          if (this.server.sockets.adapter.rooms.get(message).size === 2) 
+          { // si on a deux user start game 
+            this.server.to(message).emit("start_game", {});
+            // ici envoyer au front end change page in homegame et lancer le jeu
           }
+        }
+      }
           
-          
+          // start game from pong.txt 
           @SubscribeMessage('start game')
           async handleJoinnServer(socket: Socket, gamedata : any) {
             
@@ -425,13 +452,14 @@ async handleMuteMember(socket: Socket, payload: any) {
 
       updateBall(socket: Socket) {
         //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
-        if (!this.isGameStart || this.puck.getx() > this.puck.getwidth()) {
+        if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
           return;
         } else {
           if (this.puck) { // Check if this.puck is defined
             this.puck.update();
-            const payload = {x : this.puck.x, y : this.puck.y }
-            console.log("data of my puck, x and y: ", this.puck.getx(), this.puck.gety(), "New string senddddd");
+            this.puck.edges();
+            const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
+            //console.log("data of my puck, x and y: ", this.puck.getx(), this.puck.gety());
             //this.server.to(this.room).emit("puck_update", {});
             this.server.to(this.room).emit("puck update", (payload));
           }
