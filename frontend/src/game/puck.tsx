@@ -71,7 +71,6 @@ export default class Puck {
     }
 
     show(x: number, y: number) {
-        console.log("puck show")
         this.p.fill(255);
         this.p.ellipse(x, y, this.r * 2, this.r * 2);
     }

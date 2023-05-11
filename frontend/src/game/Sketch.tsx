@@ -59,7 +59,7 @@ import React from 'react';
     };
     
     let socket = Socket;
-    const payload = {width: width, height: height}
+    const payload = {width: width, height: height, id: userdata.id, name: userdata.name}
     
     p5.updateWithProps = props => {
       let socket = props.socket.current;
@@ -77,7 +77,7 @@ import React from 'react';
             left_score = payload.lscore;
             right_score = payload.rscore;
             //puck.show(puckx, pucky);
-            console.log("on lance la ball avec data ", puckx, pucky)
+            //console.log("on lance la ball avec data ", puckx, pucky)
             
             // need data for showwing the ball we need
             // puck.x, puck.y, puck.r
@@ -95,7 +95,7 @@ import React from 'react';
             padr_w = payload.prw;
             padr_h = payload.prh;
 
-            console.log("on lance la ball avec data ", puckx, pucky)
+            //console.log("on lance la ball avec data ", puckx, pucky)
             
             // need data for showwing the ball we need
             // puck.x, puck.y, puck.r
@@ -104,19 +104,22 @@ import React from 'react';
 
           // keyReleased and keyPressed for the gamers
           p5.keyReleased = () => {
+            console.log("player key relased ")
             socket?.emit("KeyReleased");
           }
+          const payloadm = {id: userdata.id}
           p5.keyPressed = () => {
-            if (p5.key == 'a')
-              socket?.emit("KeyPressed up left");
-            else if (p5.key == 'z') {
-              socket?.emit("KeyPressed down left");
-            }
+            console.log("keyPressed");
             if (p5.key == 'j')
-            socket?.emit("KeyPressed up right");
+              socket?.emit("KeyPressed", {id: userdata.id, key: 'j'});
             else if (p5.key == 'n') {
-              socket?.emit("KeyPressed down right");
+              socket?.emit("KeyPressed", {id: userdata.id, key: 'n'});
             }
+            // if (p5.key == 'j')
+            // socket?.emit("KeyPressed up right");
+            // else if (p5.key == 'n') {
+            //   socket?.emit("KeyPressed down right");
+            // }
           }
         }
       }
@@ -151,18 +154,6 @@ import React from 'react';
     else {
       center_bar();
 
-      /*
-      puck.checkPaddleLeft(paddle_left, false, 0);
-      puck.checkPaddleRight(paddle_right, false, 0);
-
-      // show and update the paddles
-      paddle_left.update();
-      paddle_right.update();
-      
-      // show and update the puck
-      [left_score, right_score] = puck.edges(left_score, right_score);
-      puck.update();
-      */
       paddle_left.show(false, padl_x, padl_y, padl_w, padl_h);
       paddle_right.show(false, padr_x, padr_y, padr_w, padr_h);
       puck.show(puckx, pucky);

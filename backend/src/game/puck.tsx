@@ -68,7 +68,7 @@ export  class Puck {
     // move the puck
 
     edges() {
-        console.log("edge puck back")
+        //console.log("edge puck back")
         if (this.y < 0 || this.y > this.height) {
             let offset = this.yspeed < 0 ? 0 - this.y : this.height - (this.y + this.r)
             this.yspeed *= -1 ;

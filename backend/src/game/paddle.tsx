@@ -9,10 +9,12 @@ export default class Paddle {
     h: number;
     width: number;
     height: number;
-    ychange: number
+    ychange: number;
+    id: number;
+    name: string;
 
     // constructor
-    constructor( width: number, height: number, left: boolean, e: boolean) {
+    constructor( width: number, height: number, left: boolean, e: boolean, id: number, name: string) {
         this.w = 20;
         if (e == true)
             this.h = 150;
@@ -32,8 +34,10 @@ export default class Paddle {
         this.xspeed = 3;
         this.yspeed = 4;
         this.ychange = 0;
-
-        console.log("paddle constructor type -->", left)
+        this.id = id;
+        this.name = name;
+        console.log("paddle constructor type --> ", left)
+        console.log("our player is ", this.id, this.name);
     };
 
     // fonction

@@ -72,12 +72,12 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   async handleConnection(socket: Socket) {
-    console.log('Socket connected:', socket.id);
+    //console.log('Socket connected:', socket.id);
     const users = await this.messageService.findAll();
   }
 
  async handleDisconnect(socket: Socket) {
-  console.log('Socket disconnected:', socket.id);
+  //console.log('Socket disconnected:', socket.id);
   const userIndex = this.users.findIndex((u) => u.sockets.includes(socket.id));
   if (userIndex >= 0) {
     // Remove the socket id from the user's array of sockets
@@ -433,8 +433,11 @@ async handleMuteMember(socket: Socket, payload: any) {
             this.height = gamedata.height;
             console.log('width and height in backend haha ', this.width, this.height)
             this.puck = new Puck(this.width, this.height);
-            this.paddle_left = new Paddle(this.width, this.height, true, false)
-            this.paddle_right = new Paddle(this.width, this.height, false, false)
+            if (!this.paddle_left)
+              this.paddle_left = new Paddle(this.width, this.height, true, false, gamedata.id, gamedata.name)
+            else
+              this.paddle_right = new Paddle(this.width, this.height, false, false, gamedata.id, gamedata.name)
+            console.log("---------- paddle left no creation!!!! ------------");
             console.log("deux users pour launch ball, puck instancier ");
             await socket.join(this.room);
             if (this.server.sockets.adapter.rooms.get(this.room).size === 2) 
@@ -452,29 +455,33 @@ async handleMuteMember(socket: Socket, payload: any) {
 
           @SubscribeMessage('KeyReleased')
           async KeyRealaesed(socket: Socket) {
+            console.log("keyRealesed touche back")
             this.paddle_left.move(0);
             this.paddle_right.move(0);
           }
 
-          @SubscribeMessage('KeyPressed up left')
-          async KeyPressedlu(socket: Socket) { 
-            this.paddle_left.move(-10);
+          @SubscribeMessage('KeyPressed')
+          async KeyPressedlu(socket: Socket, gamedata : any) { 
+            console.log("KEYPRESSED BACK")
+            if (gamedata.key == 'j')
+            {
+              console.log("back keyPressed up ", gamedata.id)
+              if (gamedata.id == this.paddle_left.id)
+              this.paddle_left.move(-10);
+              else if (gamedata.id == this.paddle_right.id)
+              this.paddle_right.move(-10);
+            }
+            else if (gamedata.key == 'n')
+            {
+              console.log("back keyPressed down ", gamedata.id)
+              if (gamedata.id == this.paddle_left.id)
+              this.paddle_left.move(-10);
+              else if (gamedata.id == this.paddle_right.id)
+              this.paddle_right.move(-10);
+            }
+            this.updatePaddle(socket);
           }
 
-          @SubscribeMessage('KeyPressed down left')
-          async KeyPressedld(socket: Socket) {
-            this.paddle_left.move(10);
-          }
-
-          @SubscribeMessage('KeyPressed up right')
-          async KeyPressedru(socket: Socket) { 
-            this.paddle_right.move(-10);
-          }
-
-          @SubscribeMessage('KeyPressed down rigth')
-          async KeyPressedrd(socket: Socket) { 
-            this.paddle_right.move(10);
-          }
           // function helper to game position
       updateBall(socket: Socket) {
         //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
@@ -491,19 +498,25 @@ async handleMuteMember(socket: Socket, payload: any) {
             //console.log("data of my puck, x and y: ", this.puck.getx(), this.puck.gety());
             //this.server.to(this.room).emit("puck_update", {});
             this.server.to(this.room).emit("puck update", (payload));
+            //this.server.to(this.room).emit("paddle update", (payloadp));
+          }
+          setTimeout(this.updateBall.bind(this, socket), 100); // Bind the `this` context to the function
+        }
+      }
+      
+      updatePaddle(socket: Socket) {
+        if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
+          return;
+        } else {
+          if (this.paddle_left && this.paddle_right)
+          {
+            this.paddle_left.update();
+            this.paddle_right.update();
+            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h}
             this.server.to(this.room).emit("paddle update", (payloadp));
           }
           setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
         }
       }
-
-      updatePaddle(socket: Socket) {
-        if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
-          return;
-        } else {
-          if (this.paddle_left)
-            
-      }
+      
     }
-
-}
