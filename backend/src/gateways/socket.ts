@@ -426,13 +426,15 @@ async handleMuteMember(socket: Socket, payload: any) {
           
           // start game from pong.txt 
           @SubscribeMessage('start game')
-          async handleJoinnServer(socket: Socket, gamedata : any) {
+          async handleJoinGameServer(socket: Socket, gamedata : any) {
             
             console.log('launch ball, ', this.room);
             this.width = gamedata.width;
             this.height = gamedata.height;
             console.log('width and height in backend haha ', this.width, this.height)
             this.puck = new Puck(this.width, this.height);
+            this.paddle_left = new Paddle(this.width, this.height, true, false)
+            this.paddle_right = new Paddle(this.width, this.height, false, false)
             console.log("deux users pour launch ball, puck instancier ");
             await socket.join(this.room);
             if (this.server.sockets.adapter.rooms.get(this.room).size === 2) 
@@ -448,8 +450,32 @@ async handleMuteMember(socket: Socket, payload: any) {
           }
     
 
-      // function helper to game position
+          @SubscribeMessage('KeyReleased')
+          async KeyRealaesed(socket: Socket) {
+            this.paddle_left.move(0);
+            this.paddle_right.move(0);
+          }
 
+          @SubscribeMessage('KeyPressed up left')
+          async KeyPressedlu(socket: Socket) { 
+            this.paddle_left.move(-10);
+          }
+
+          @SubscribeMessage('KeyPressed down left')
+          async KeyPressedld(socket: Socket) {
+            this.paddle_left.move(10);
+          }
+
+          @SubscribeMessage('KeyPressed up right')
+          async KeyPressedru(socket: Socket) { 
+            this.paddle_right.move(-10);
+          }
+
+          @SubscribeMessage('KeyPressed down rigth')
+          async KeyPressedrd(socket: Socket) { 
+            this.paddle_right.move(10);
+          }
+          // function helper to game position
       updateBall(socket: Socket) {
         //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
         if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
@@ -458,13 +484,26 @@ async handleMuteMember(socket: Socket, payload: any) {
           if (this.puck) { // Check if this.puck is defined
             this.puck.update();
             this.puck.edges();
+            this.puck.checkPaddleLeft(this.paddle_left, false, 0);
+            this.puck.checkPaddleRight(this.paddle_right, false, 0);
             const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
+            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h}
             //console.log("data of my puck, x and y: ", this.puck.getx(), this.puck.gety());
             //this.server.to(this.room).emit("puck_update", {});
             this.server.to(this.room).emit("puck update", (payload));
+            this.server.to(this.room).emit("paddle update", (payloadp));
           }
-          setTimeout(this.updateBall.bind(this, socket), 10); // Bind the `this` context to the function
+          setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
         }
       }
+
+      updatePaddle(socket: Socket) {
+        if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
+          return;
+        } else {
+          if (this.paddle_left)
+            
+      }
+    }
 
 }

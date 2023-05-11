@@ -32,6 +32,8 @@ export default class Paddle {
         this.xspeed = 3;
         this.yspeed = 4;
         this.ychange = 0;
+
+        console.log("paddle constructor type -->", left)
     };
 
     // fonction

@@ -33,10 +33,19 @@ import React from 'react';
     let right_score: number = 0;
     
     const token =  AuthService.getToken();
-    let start = false;
+    //let start = false;
     let puckx: number;
     let pucky: number
-    const string = "Old string";
+
+    let padr_x: number;
+    let padr_y: number;
+    let padr_w: number;
+    let padr_h: number;
+
+    let padl_x: number;
+    let padl_y: number;
+    let padl_w: number;
+    let padl_h: number;
 
     if (!token) {
       // Redirect to the login page
@@ -51,6 +60,7 @@ import React from 'react';
     
     let socket = Socket;
     const payload = {width: width, height: height}
+    
     p5.updateWithProps = props => {
       let socket = props.socket.current;
       
@@ -66,13 +76,48 @@ import React from 'react';
             pucky = payload.y;
             left_score = payload.lscore;
             right_score = payload.rscore;
-            puck.show(puckx, pucky);
+            //puck.show(puckx, pucky);
             console.log("on lance la ball avec data ", puckx, pucky)
             
             // need data for showwing the ball we need
             // puck.x, puck.y, puck.r
             // to show
           });
+
+          socket?.on("paddle update", (payload : any) => {
+            padl_x = payload.plx; 
+            padl_y = payload.ply;
+            padl_w = payload.plw;
+            padl_h = payload.plh;
+
+            padr_x = payload.prx; 
+            padr_y = payload.pry;
+            padr_w = payload.prw;
+            padr_h = payload.prh;
+
+            console.log("on lance la ball avec data ", puckx, pucky)
+            
+            // need data for showwing the ball we need
+            // puck.x, puck.y, puck.r
+            // to show
+          });
+
+          // keyReleased and keyPressed for the gamers
+          p5.keyReleased = () => {
+            socket?.emit("KeyReleased");
+          }
+          p5.keyPressed = () => {
+            if (p5.key == 'a')
+              socket?.emit("KeyPressed up left");
+            else if (p5.key == 'z') {
+              socket?.emit("KeyPressed down left");
+            }
+            if (p5.key == 'j')
+            socket?.emit("KeyPressed up right");
+            else if (p5.key == 'n') {
+              socket?.emit("KeyPressed down right");
+            }
+          }
         }
       }
       // ici faire emit et on avec des appelle de function
@@ -111,15 +156,15 @@ import React from 'react';
       puck.checkPaddleRight(paddle_right, false, 0);
 
       // show and update the paddles
-      paddle_left.show(false);
-      paddle_right.show(false);
       paddle_left.update();
       paddle_right.update();
-
+      
       // show and update the puck
       [left_score, right_score] = puck.edges(left_score, right_score);
       puck.update();
       */
+      paddle_left.show(false, padl_x, padl_y, padl_w, padl_h);
+      paddle_right.show(false, padr_x, padr_y, padr_w, padr_h);
       puck.show(puckx, pucky);
       // show scores
       p5.fill(255);
@@ -135,26 +180,6 @@ import React from 'react';
       p5.rect(width / 2 + 8, i, 10, 15);
       i += 10;
     }
-  }
-
-  // keyReleased and keyPressed for the gamers
-
-  p5.keyReleased = () => {
-    //emit.("move Realesed")
-    // paddle_left.move(0);
-    // paddle_right.move(0);
-  }
-  p5.keyPressed = () => {
-    // if (p5.key == 'a')
-    //   paddle_left.move(-10);
-    // else if (p5.key == 'z') {
-    //   paddle_left.move(10);
-    // }
-    // if (p5.key == 'j')
-    //   paddle_right.move(-10);
-    // else if (p5.key == 'n') {
-    //   paddle_right.move(10);
-    // }
   }
 
   function windowResized() {

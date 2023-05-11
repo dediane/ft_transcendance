@@ -29,6 +29,8 @@ export  class Puck {
         this.angle = this.RandomNum(-Math.PI / 4, Math.PI / 4);
         this.xspeed = this.puck_speed * Math.cos(this.angle);
         this.yspeed = this.puck_speed * Math.sin(this.angle);
+        
+        console.log("constructor puck --> ", false)
     };
 
     // function 
