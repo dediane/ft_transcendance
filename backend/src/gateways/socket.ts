@@ -15,6 +15,9 @@ import { AuthService } from 'src/auth/auth.service'
 import { CreateMessageDto } from 'src/message/dto/create-message.dto';
 import { CreateChannelDto } from 'src/channel/dto/create-channel.dto';
 import { UpdateChannelDto } from 'src/channel/dto/update-channel.dto';
+import { Puck } from 'src/game/puck';
+import  Paddle  from 'src/game/paddle'
+
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
@@ -28,15 +31,15 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private users: any[] = [];
-  private game: {
 
-  }
   private messages = {
     general: [],
     random: [],
     jokes: [],
     javascript: [],
   };
+
+
 
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
@@ -337,9 +340,29 @@ async handleMuteMember(socket: Socket, payload: any) {
   } else {
     console.log('Data parameter is undefined');
   }
+}
+
+  // remove user
+  @SubscribeMessage('remove user')
+  async RemoveUser(socket: Socket, userid :number)
+  {
+    console.log("receive from back userid")
+    await this.userService.remove(userid);
   }
-  
+
   /////////////// GAME SIDE ///////////////
+
+    room: string;
+    isGameStart = false;
+    width: number;
+    height: number;
+    puck: Puck;
+    paddle_left : Paddle;
+    paddle_right : Paddle;
+    score = {
+      left: 0,
+      right: 0,
+    }
 
 
   @SubscribeMessage("join_game")
@@ -351,15 +374,15 @@ async handleMuteMember(socket: Socket, payload: any) {
             const {message, userid, username} = data;
             console.log("user id is ", userid, " username", username);
             console.log("room message id: ", message);
-
+            this.room = message;
             const connectedSockets = this.server.sockets.adapter.rooms.get(message);
             //this.server.emit('game');
 
             const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
             if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
             {
-              socket.emit("room_join_error, you gonna be a spectator", {
-                error: "Room is full please choose another room to play!",
+              socket.emit("room_join_error", {
+                error: "Room is full please choose another room to play! you gonna be a spectator",
               });
             } else {
               await socket.join(message);
@@ -368,26 +391,52 @@ async handleMuteMember(socket: Socket, payload: any) {
               
               if (this.server.sockets.adapter.rooms.get(message).size === 2) 
               { // si on a deux user start game 
-                console.log("deux users");
-                this.server.to(message).emit("start_game", {}); // ici envoyer au front end change page in homegame et lancer le jeu
+                this.server.to(message).emit("start_game", {});
+                // ici envoyer au front end change page in homegame et lancer le jeu
               }
             }
           }
-        
-
-    @SubscribeMessage('launch ball')
-    async handleJoinnServer(socket: Socket, gamedata: {}) {
-      console.log('launch ball');
-
-      this.server.emit('update ball');
-    }
+          
+          
+          @SubscribeMessage('start game')
+          async handleJoinnServer(socket: Socket, gamedata : any) {
+            
+            console.log('launch ball, ', this.room);
+            this.width = gamedata.width;
+            this.height = gamedata.height;
+            console.log('width and height in backend haha ', this.width, this.height)
+            this.puck = new Puck(this.width, this.height);
+            console.log("deux users pour launch ball, puck instancier ");
+            await socket.join(this.room);
+            if (this.server.sockets.adapter.rooms.get(this.room).size === 2) 
+            { // si on a deux user start game 
+              this.isGameStart = true;
+              console.log("game start true");
+              this.updateBall(socket);
+              //this.server.to(room).emit("launch ball", {}); // ici envoyer au front end change page in homegame et lancer le jeu
+            }
+            else
+              console.log("no game started, size ", this.server.sockets.adapter.rooms.get(this.room).size)
+            //this.server.emit('update ball');
+          }
     
-      @SubscribeMessage('remove user')
-      async RemoveUser(socket: Socket, userid :number)
-      {
-        console.log("receive from back userid")
-        await this.userService.remove(userid);
-      }
 
+      // function helper to game position
+
+      updateBall(socket: Socket) {
+        //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
+        if (!this.isGameStart || this.puck.getx() > this.puck.getwidth()) {
+          return;
+        } else {
+          if (this.puck) { // Check if this.puck is defined
+            this.puck.update();
+            const payload = {x : this.puck.x, y : this.puck.y }
+            console.log("data of my puck, x and y: ", this.puck.getx(), this.puck.gety(), "New string senddddd");
+            //this.server.to(this.room).emit("puck_update", {});
+            this.server.to(this.room).emit("puck update", (payload));
+          }
+          setTimeout(this.updateBall.bind(this, socket), 10); // Bind the `this` context to the function
+        }
+      }
 
 }

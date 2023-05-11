@@ -13,8 +13,31 @@ import React from 'react';
 
   export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
 
+    // in CSS for p5 Wrapper set with and height
+    // like this it's can be responssive
+    
+    //console.log("la width param %d, la height param %d", w, h);
+    let p5WrapperDiv = document.getElementById("canvas_size")
+    const username = AuthService.getUsername();
+    console.log("socket username->", username);
+    //console.log("id socket -> ", socket.id);
+    console.log("> Begin function canvas")
+    let width = p5WrapperDiv?.clientWidth || window.innerWidth;
+    let height = p5WrapperDiv?.clientHeight || window.innerHeight;
+    console.log("clienbtHeight", width)
+    console.log("clienbtHeight", height)
+    let puck = new Puck(p5, width, height);
+    let paddle_left = new Paddle(p5, width, height, true, false);
+    let paddle_right = new Paddle(p5, width, height, false, false);
+    let left_score: number = 0;
+    let right_score: number = 0;
+    
     const token =  AuthService.getToken();
-        
+    let start = false;
+    let puckx: number;
+    let pucky: number
+    const string = "Old string";
+
     if (!token) {
       // Redirect to the login page
       window.location.href = "/login";
@@ -27,13 +50,28 @@ import React from 'react';
     };
     
     let socket = Socket;
-
+    const payload = {width: width, height: height}
     p5.updateWithProps = props => {
-
+      let socket = props.socket.current;
+      
       if (props.socket) {
-       let socket = props.socket.current;
-       if (socket)
-        console.log("socket id ", socket.id)
+        if (socket)
+        {
+          console.log("socket id ", socket.id)
+          socket?.emit("start game", payload);
+          
+          socket?.on("puck update", (payload : any) => {
+            
+            puckx = payload.x; 
+            pucky = payload.y;
+            puck.show(puckx, pucky);
+            console.log("on lance la ball avec data ", puckx, pucky)
+            
+            // need data for showwing the ball we need
+            // puck.x, puck.y, puck.r
+            // to show
+          });
+        }
       }
       // ici faire emit et on avec des appelle de function
     };
@@ -41,25 +79,7 @@ import React from 'react';
   // Puck Class
   // Paddle Class
 
-  // in CSS for p5 Wrapper set with and height
-  // like this it's can be responssive
 
-  //console.log("la width param %d, la height param %d", w, h);
-  let p5WrapperDiv = document.getElementById("canvas_size")
-  const username = AuthService.getUsername();
-  console.log("socket username->", username);
-  //console.log("id socket -> ", socket.id);
-  console.log("> Begin function canvas")
-  let width = p5WrapperDiv?.clientWidth || window.innerWidth;
-  let height = p5WrapperDiv?.clientHeight || window.innerHeight;
-  console.log("clienbtHeight", p5WrapperDiv?.clientHeight)
-
-  let puck = new Puck(p5, width, height);
-  let paddle_left = new Paddle(p5, width, height, true, false);
-  let paddle_right = new Paddle(p5, width, height, false, false);
-  let left_score: number = 0;
-  let right_score: number = 0;
-  let stop: number = 1;
 
   window.addEventListener('resize', windowResized);
   p5.setup = () => {
@@ -84,6 +104,7 @@ import React from 'react';
     else {
       center_bar();
 
+      /*
       puck.checkPaddleLeft(paddle_left, false, 0);
       puck.checkPaddleRight(paddle_right, false, 0);
 
@@ -94,10 +115,10 @@ import React from 'react';
       paddle_right.update();
 
       // show and update the puck
-      puck.update();
       [left_score, right_score] = puck.edges(left_score, right_score);
-      puck.show();
-
+      puck.update();
+      */
+      puck.show(puckx, pucky);
       // show scores
       p5.fill(255);
       p5.textSize(45);
@@ -117,6 +138,7 @@ import React from 'react';
   // keyReleased and keyPressed for the gamers
 
   p5.keyReleased = () => {
+    //emit.("move Realesed")
     paddle_left.move(0);
     paddle_right.move(0);
   }
@@ -151,8 +173,8 @@ import React from 'react';
 
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
-    paddle_left.update_resize(width, height, true);
-    paddle_right.update_resize(width, height, false);
+    //paddle_left.update_resize(width, height, true);
+    //paddle_right.update_resize(width, height, false);
     puck.update_resize(width, height);
   }
 }
