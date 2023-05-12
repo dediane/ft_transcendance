@@ -472,7 +472,7 @@ async handleMuteMember(socket: Socket, payload: any) {
             }
           }
 
-          @SubscribeMessage('KeyPressed left')
+          @SubscribeMessage('KeyPressed right')
           async KeyPressedl(socket: Socket, gamedata : any) { 
             console.log("KEYPRESSED BACK left")
             if (gamedata.key == 'w')
