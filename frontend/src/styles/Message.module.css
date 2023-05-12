@@ -1,0 +1,80 @@
+.message {
+    /* position: relative; */
+    /* overflow: scroll;  */
+    width: auto; 
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .messageTop
+  {
+    font-size:14px;
+    font-weight: 600;
+    position: relative;
+    top: 0;
+    left: 0;
+    text-align: left;
+    color: rgb(255, 253, 253);
+  }
+  
+
+  .messageText
+  {
+    font-size:17px;
+    font-weight: 30;
+    top: 0;
+    left: 0;
+    text-align: left;
+    color: rgb(255, 253, 253);
+    word-wrap: break-word;/* This will break long words to fit in the box */
+   
+  }
+  .messageBottom
+  {
+    font-size:12px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    text-align: right;
+    color: rgb(255, 253, 253);
+  }
+  
+  .messageImg{
+    width: 32px;
+    height: 32px;
+    border-radius: 50;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+  
+
+
+  
+
+
+  
+  .my-message {
+    float: right; 
+    align-self: flex-end;
+    justify-content: flex-end;
+    background-color: #caa2dd ;
+
+    border-radius: 10px;
+    color: #333;
+    margin: 10px;
+    max-width: 60%;
+    padding: 10px;
+    
+  }
+  
+  .friend-message {
+    float: left; 
+    align-self: flex-start;
+    justify-content: flex-start;
+    background-color: #e5e5e5;
+    border-radius: 10px;
+    color: #333;
+    margin: 10px;
+    max-width: 60%;
+    padding: 10px;
+  } 

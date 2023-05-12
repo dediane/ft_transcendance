@@ -34,11 +34,12 @@ export default function Game () {
   const [player2, setPlayer2] = useState<string>()
 
   const join = (username: string) => {
-    socket.emit("join_game", username)
+    // console.log("start game emit from game.tsx")
+    //socket.emit("join_game", username)
   }
-
+  
   const start = () => {
-    socket.emit("start")
+    // socket.emit("start")
   }
 
   const up = () => {

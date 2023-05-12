@@ -13,7 +13,7 @@ export const Navbar = () => {
           <a href="." className={styles.link}>Home</a>
         </li>
         <li>
-          <a href="pong" className={styles.link}>
+          <a href="home_game" className={styles.link}>
             Play</a>
         </li>
         <li>

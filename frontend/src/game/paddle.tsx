@@ -15,10 +15,13 @@ export default class Paddle {
     ychange: number
 
     // constructor
-    constructor(pfive: P5CanvasInstance, width: number, height: number, left: boolean) {
+    constructor(pfive: P5CanvasInstance, width: number, height: number, left: boolean, e: boolean) {
         this.p = pfive;
         this.w = 20;
-        this.h = 100;
+        if (e == true)
+            this.h = 150;
+        else
+            this.h = 100;
         // width and height of my paddle
 
         this.width = width;
@@ -57,8 +60,13 @@ export default class Paddle {
         this.ychange = steps;
     }
 
-    show(){
-        this.p.fill(255);
+    show(e: boolean){
+        if (e == false){   
+            this.p.fill(255);
+        } else {
+            this.p.fill(this.p.color('#8d2bd2')); 
+            this.p.noStroke();
+        }
         this.p.rectMode(this.p.CENTER); // -> here to change center //
         this.p.rect(this.x, this.y, this.w, this.h);
     }

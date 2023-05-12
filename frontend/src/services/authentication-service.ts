@@ -33,12 +33,34 @@ class AuthService {
         return moment.unix(exp);
     }
 
+    // getId() {
+    //     return this.decode(this.getToken()).id;
+    // }
     getId() {
-        return this.decode(this.getToken()).id;
-    }
+        // Check if the token exists
+        if (!this.getToken()) {
+          throw new Error("No token provided.");
+        }
+      
+        // Decode the token
+        const decodedToken = this.decode(this.getToken());
+      
+        // Check if the decoded token has an ID property
+        if (!decodedToken || !decodedToken.id) {
+          throw new Error("Invalid token.");
+        }
+      
+        // Return the decoded ID
+        return decodedToken.id;
+      }
+      
 
     getLogin() {
         return this.decode(this.getToken()).login;
+    }
+
+    getUsername() {
+        return this.decode(this.getToken()).username;
     }
 
     isLocal() {
@@ -52,6 +74,9 @@ class AuthService {
     isAuthentificated(){
         const token = this.getToken();
         return (token && this.isValid(token));
+    }
+    getUsername() {
+        return this.decode(this.getToken()).username;
     }
 }
 

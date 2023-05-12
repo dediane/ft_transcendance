@@ -1,10 +1,10 @@
 "use client";
 import React, {useState} from "react";
-import {PaperAirPlaneIcon} from "@heroicons/react/solid";
+// import {PaperAirPlaneIcon} from "@heroicons/react/solid";
 
-type Props ={
-    chatId: string;
-}
+// type Props ={
+//     chatId: string;
+// } 
 
 function MessageInput({send}: {send : (val: string) => void}) {
     const [prompt, setPrompt] = useState("");
@@ -30,7 +30,7 @@ function MessageInput({send}: {send : (val: string) => void}) {
     return (
       <div className="-bg-gray-700-50 text-gray-400 rounded-lg text-sm flex">
         <input
-        className="bg-transparent focus:outline-none flex-1"
+          className="bg-transparent focus:outline-none flex-1"
           onChange={handleInputChange}
           onKeyUp={handleInputKeyUp}
           placeholder={hasTyped ? "" : "Type your message here..."}
