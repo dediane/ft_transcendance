@@ -62,7 +62,7 @@ export default class Paddle {
     //     this.ychange = steps;
     // }
 
-    show(e: boolean, x: number, y: number, w: number, h: number){
+    show(e: boolean, x: number, y: number, w: number, h: number, n: string){
         if (e == false){   
             this.p.fill(255);
             this.p.rectMode(this.p.CENTER); // -> here to change center //
@@ -73,5 +73,6 @@ export default class Paddle {
             this.p.rectMode(this.p.CENTER); // -> here to change center //
             this.p.rect(x, y, w, h, 7);
         }
+        this.name = n;
     }
 }

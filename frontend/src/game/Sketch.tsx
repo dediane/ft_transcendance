@@ -146,27 +146,34 @@ import React from 'react';
 
     if (left_score == 5 || right_score == 5) {
       if (left_score == 5) {
-        p5.text("FINISH", width / 2 - 100, height / 2 - 50);
-        p5.text("LEFT PLAYER WIN", width / 2 - 225, height / 2 + 50)
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "Player " + paddle_left.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+
         return (<Confetti width={1440} height={150} />)
       }
       if (right_score == 5) {
-        p5.text("FINISH", width / 2 - 100, height / 2 - 50);
-        p5.text("RIGHT PLAYER WIN", width / 2 - 225, height / 2 + 50)
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "Player " + paddle_right.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
         return (<Confetti width={1440} height={150} />)
       }
     }
     else {
       center_bar();
 
-      paddle_left.show(false, padl_x, padl_y, padl_w, padl_h);
-      paddle_right.show(false, padr_x, padr_y, padr_w, padr_h);
+      paddle_left.show(false, padl_x, padl_y, padl_w, padl_h, padl_n);
+      paddle_right.show(false, padr_x, padr_y, padr_w, padr_h, padr_n);
       puck.show(puckx, pucky);
       // show scores
       p5.fill(255);
       p5.textSize(45);
       p5.text(left_score, width / 2 - 35, 40)
+      p5.text(paddle_left.name, 100, 40)
       p5.text(right_score, width / 2 + 30, 40)
+      p5.text(paddle_right.name, width - 100, 40)
     }
   };
 

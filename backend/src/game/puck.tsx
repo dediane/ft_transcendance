@@ -75,13 +75,11 @@ export  class Puck {
         }
         if (this.x - this.r > this.width)
         {
-            console.log("RESET 1")
             this.left_score++;
             this.reset();
         }
         if (this.x + this.r < 0)
         {
-            console.log("RESET 2")
             this.right_score++;
             this.reset();
         }
