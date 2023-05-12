@@ -64,13 +64,11 @@ export class User {
   gamePlayer2: Game[];
 
   @OneToMany(() => Message, (message) => message.sender)
-<<<<<<< .merge_file_XDQQeI
   message: Message[];
 
   @ManyToMany(() => User, (user) => user.id)
   @JoinTable()
   friends: User[];
-=======
 @JoinColumn()
 messages: Message[];
 
@@ -105,5 +103,4 @@ blockedUsers: User[];
     return this.channels;
   }
 
->>>>>>> .merge_file_JPgA2b
 }

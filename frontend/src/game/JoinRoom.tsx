@@ -2,13 +2,11 @@ import React, { useContext } from "react";
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { useConst } from "@chakra-ui/react";
-import GameContext from "./GameContext";
 import socketService from "../services/index_socket_game"
 import gameService from "../services/index_game"
+import AuthService from "../services/authentication-service"
+import {ContextGame} from '../game/GameContext'
 
-interface IJoinRoomProps {
-  mode : string;
-}
 
 const JoinRoomContainer = styled.div`
   width: 100%;
@@ -18,9 +16,9 @@ const JoinRoomContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 2em;
-`;
+  `;
 
-const RoomIdInput = styled.input`
+  const RoomIdInput = styled.input`
   height: 30px;
   width: 20em;
   font-size: 17px;
@@ -28,9 +26,9 @@ const RoomIdInput = styled.input`
   border: 1px solid #8e44ad;
   border-radius: 3px;
   padding: 0 10px;
-`;
+  `;
 
-const JoinButton = styled.button`
+  const JoinButton = styled.button`
   outline: none;
   background-color: #8e44ad;
   color: #fff;
@@ -48,22 +46,26 @@ const JoinButton = styled.button`
   }
 `;
 
+interface IJoinRoomProps {
+  mode : string;
+}
+
 export function JoinRoom(props: IJoinRoomProps) 
 {
   const [roomName, setRoomName] = useState("GameRoom");
   const [isJoining, setJoining] = useState(false);
 
-  const { setInRoom, isInRoom } = useContext(GameContext);
+  const {socket} = React.useContext(ContextGame);
 
   const handleRoomName = (e: React.ChangeEvent<any>) => {
     const value = e.target.value;
     setRoomName(value);
   }
-
+  
   const joinRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const socket = socketService.socket;
-    console.log("socket ", socketService.socket?.id)
+    // const socket = socketService.socket;
+    // e.preventDefault();
+    // console.log("socket ", socketService.socket?.id)
     if (!socket)
       return ;
     setJoining(true);
@@ -73,7 +75,6 @@ export function JoinRoom(props: IJoinRoomProps)
     .joinGameRoom(socket, roomName).catch((err) => {
       alert(err);
     });
-    if (joined) setInRoom(true);
     setJoining(false);
   }
 

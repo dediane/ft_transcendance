@@ -12,6 +12,14 @@ import MemberListModal from './MemberListModal';
 
 
 import Message from '@/components/Message';
+// import ChatRoom from '@/pages/[chatname]';
+
+
+const TextBox = styled.textarea`
+    height: 15%;
+    width: 100%;
+`;
+
 const Container = styled.div`
     height: 100vh;
     width: 100%;
