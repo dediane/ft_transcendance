@@ -143,22 +143,22 @@ import React from 'react';
 
   p5.draw = () => {
     p5.background(0);
-
-    if (left_score == 5 || right_score == 5) {
-      if (left_score == 5) {
+    let score = 5
+    if (left_score == score || right_score == score) {
+      if (left_score == score) {
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_left.name + " win !!"
         p5.fill(0, 102, 153);
         p5.text(str, width / 2 - 225, height / 2 + 50)
 
-        return (<Confetti width={1440} height={150} />)
+        return ;
       }
-      if (right_score == 5) {
+      if (right_score == score) {
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_right.name + " win !!"
         p5.fill(0, 102, 153);
         p5.text(str, width / 2 - 225, height / 2 + 50)
-        return (<Confetti width={1440} height={150} />)
+        return ;
       }
     }
     else {
@@ -199,12 +199,13 @@ import React from 'react';
       width = element.clientWidth;
       height = element.clientHeight;
     }
+    // send to back new width and height to upfate whith puck paddle
 
 
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
-    //paddle_left.update_resize(width, height, true);
-    //paddle_right.update_resize(width, height, false);
+    paddle_left.update_resize(width, height, true);
+    paddle_right.update_resize(width, height, false);
     puck.update_resize(width, height);
   }
 }

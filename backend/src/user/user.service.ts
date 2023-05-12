@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Channel } from 'src/channel/entities/channel.entity';
+import { UpdateChannelDto } from 'src/channel/dto/update-channel.dto';
 
 @Injectable()
 export class UserService {
@@ -48,7 +49,7 @@ export class UserService {
       .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
       .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
       .leftJoinAndSelect('user.blockedUsers', 'blockedUser')
-      .select(['user.email','user.username', 'user.password', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username'])
+      .select(['user.email','user.username', 'user.password', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username', 'user.wins','user.losses'])
       .getMany();
   
     return users;
@@ -172,7 +173,7 @@ export class UserService {
     const user = await this.userRepository
       .createQueryBuilder('user')
       // .leftJoinAndSelect('user.blockedUsers', 'blockedUsers')
-      .select('user')
+      .select(['user.username', 'user.wins', 'user.losses'])
       // .addSelect('blockedUsers')
       .where('user.username = :username', { username })
       .getOne();
@@ -253,7 +254,8 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    console.log("passe par userservice update")
     return `This action updates a #${id} user`;
   } 
   

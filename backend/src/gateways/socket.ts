@@ -17,6 +17,8 @@ import { CreateChannelDto } from 'src/channel/dto/create-channel.dto';
 import { UpdateChannelDto } from 'src/channel/dto/update-channel.dto';
 import { Puck } from 'src/game/puck';
 import  Paddle  from 'src/game/paddle';
+import { GameService } from 'src/game/game.service';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 
 
 /*
@@ -54,6 +56,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly messageService: MessageService, // Inject your MessageService here
     private readonly channelService: ChannelService,
     private readonly userService: UserService,
+    private readonly gameService: GameService,
     // private readonly authService: AuthService,
     ) {}
 
@@ -390,6 +393,7 @@ async handleMuteMember(socket: Socket, payload: any) {
     puck: Puck;
     paddle_left : Paddle;
     paddle_right : Paddle;
+    fscore = 5;
 
 
       // join game from home page
@@ -454,14 +458,12 @@ async handleMuteMember(socket: Socket, payload: any) {
 
           @SubscribeMessage('KeyReleased')
           async KeyRealaesed(socket: Socket) {
-            console.log("keyRealesed touche back")
             this.paddle_left.move(0);
             this.paddle_right.move(0);
           }
 
           @SubscribeMessage('KeyPressed')
           async KeyPressedr(socket: Socket, gamedata : any) { 
-            console.log("KEYPRESSED BACK")
             if (gamedata.name == this.paddle_left.name)
             {
               if (gamedata.key == 'j')
@@ -488,15 +490,56 @@ async handleMuteMember(socket: Socket, payload: any) {
             }
           }
 
-          @SubscribeMessage('KeyPressed right')
-          async KeyPressedl(socket: Socket, gamedata : any) { 
-            console.log("KEYPRESSED BACK left")
-        }
+          async addscore() {
+            console.log("PASSE PAR ADD SCORE BACK")
+            const luser = await this.userService.findOnebyId(this.paddle_left.id)
+            const ruser = await this.userService.findOnebyId(this.paddle_right.id)
+            const lwin = luser.wins;
+            const rlose = ruser.losses;
+            const llose = luser.losses;
+            const rwin = ruser.wins;
+            if (this.puck.left_score = this.fscore)
+            {              
+              luser.wins += 1;
+              ruser.losses += 1;
+              // const llose = luser.losses;
+              // const rwin = ruser.wins;
+              // const luserdto:  UpdateUserDto = {
+              //   wins: lwin
+              // };
+              // const ruserdto:  UpdateUserDto = {
+              //   losses: rlose
+              // }
+             
+            }
+            else if (this.puck.right_score = this.fscore)
+            { luser.losses += 1;
+              ruser.wins += 1;
+              // const rlose = ruser.losses;
+              // const lwin = luser.wins;
+              // const luserdto:  UpdateUserDto = {
+                //   losses: llose
+                // };
+                // const ruserdto:  UpdateUserDto = {
+                  //   wins: rwin
+                  // }
+                }
+                await this.userService.update(this.paddle_left.id, luser);
+                await this.userService.update(this.paddle_right.id, ruser);
+
+
+              // await this.userService.updateByName(this.paddle_left.name, lwin, llose)
+              // await this.userService.updateByName(this.paddle_right.name, rwin, rlose)
+              // await this.userService.updateByName(this.paddle_left.name, lwin, llose)
+              // await this.userService.updateByName(this.paddle_right.name, rwin, rlose)
+            
+          }
 
           // function helper to game position
       updateBall(socket: Socket) {
         //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
-        if (!this.isGameStart || this.puck.left_score == 100 || this.puck.right_score == 100) {
+        if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
+          this.addscore();
           return;
         } else {
           if (this.puck) { // Check if this.puck is defined
@@ -519,20 +562,4 @@ async handleMuteMember(socket: Socket, payload: any) {
           setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
         }
       }
-      /*
-      updatePaddle(socket: Socket) {
-        if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
-          return;
-        } else {
-          if (this.paddle_left && this.paddle_right)
-          {
-            this.paddle_left.update();
-            this.paddle_right.update();
-            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h}
-            this.server.to(this.room).emit("paddle update", (payloadp));
-          }
-          //setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
-        }
-      }*/
-      
     }

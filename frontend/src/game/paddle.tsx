@@ -48,12 +48,12 @@ export default class Paddle {
     //     // constrain the paddle to quit the canvas window //
     // }
 
-    update_resize(w:number, h:number, left: boolean, x: number)
+    update_resize(wi:number, h:number, left: boolean, x: number, w: number)
     {
         this.width = w;
         this.height = h;
         if (left == true)
-            this.x = this.w;
+            this.x = w;
         else 
             this.x = this.width - this.w;
     }
