@@ -12,7 +12,8 @@ export default class Paddle {
     h: number;
     width: number;
     height: number;
-    ychange: number
+    ychange: number;
+    name: string;
 
     // constructor
     constructor(pfive: P5CanvasInstance, width: number, height: number, left: boolean, e: boolean) {
@@ -36,6 +37,7 @@ export default class Paddle {
         this.xspeed = 3;
         this.yspeed = 4;
         this.ychange = 0;
+        this.name = "";
     };
 
     // fonction
@@ -64,12 +66,12 @@ export default class Paddle {
         if (e == false){   
             this.p.fill(255);
             this.p.rectMode(this.p.CENTER); // -> here to change center //
-            this.p.rect(this.x, this.y, this.w, this.h);
+            this.p.rect(x, y, w, h);
         } else {
             this.p.fill(this.p.color('#8d2bd2')); 
             this.p.noStroke();
             this.p.rectMode(this.p.CENTER); // -> here to change center //
-            this.p.rect(this.x, this.y, this.w, this.h, 7);
+            this.p.rect(x, y, w, h, 7);
         }
     }
 }

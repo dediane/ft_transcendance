@@ -36,7 +36,10 @@ export default class Paddle {
         this.ychange = 0;
         this.id = id;
         this.name = name;
-        console.log("paddle constructor type --> ", left)
+        if (left == false)
+            console.log("paddle constructor type --> right")
+        else
+            console.log("paddle constructor type --> false")
         console.log("our player is ", this.id, this.name);
     };
 

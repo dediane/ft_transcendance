@@ -41,11 +41,13 @@ import React from 'react';
     let padr_y: number;
     let padr_w: number;
     let padr_h: number;
-
+    let padr_n: string;
+    
     let padl_x: number;
     let padl_y: number;
     let padl_w: number;
     let padl_h: number;
+    let padl_n: string;
 
     if (!token) {
       // Redirect to the login page
@@ -85,15 +87,18 @@ import React from 'react';
           });
 
           socket?.on("paddle update", (payload : any) => {
+            console.log("update paddle");
             padl_x = payload.plx; 
             padl_y = payload.ply;
             padl_w = payload.plw;
             padl_h = payload.plh;
-
+            padl_n = payload.pln;
+            
             padr_x = payload.prx; 
             padr_y = payload.pry;
             padr_w = payload.prw;
             padr_h = payload.prh;
+            padr_n = payload.prn;
 
             //console.log("on lance la ball avec data ", puckx, pucky)
             
@@ -107,19 +112,19 @@ import React from 'react';
             console.log("player key relased ")
             socket?.emit("KeyReleased");
           }
-          const payloadm = {id: userdata.id}
+
           p5.keyPressed = () => {
             console.log("keyPressed");
             if (p5.key == 'j')
-              socket?.emit("KeyPressed", {id: userdata.id, key: 'j'});
+              socket?.emit("KeyPressed left", {name: padl_n, key: 'j'});
             else if (p5.key == 'n') {
-              socket?.emit("KeyPressed", {id: userdata.id, key: 'n'});
+              socket?.emit("KeyPressed left", {name: padl_n, key: 'n'});
             }
-            // if (p5.key == 'j')
-            // socket?.emit("KeyPressed up right");
-            // else if (p5.key == 'n') {
-            //   socket?.emit("KeyPressed down right");
-            // }
+            if (p5.key == 'w')
+            socket?.emit("KeyPressed right", {name: padr_n, key: 'w'});
+            else if (p5.key == 's') {
+              socket?.emit("KeyPressed right", {name: padr_n, key: 's'});
+            }
           }
         }
       }

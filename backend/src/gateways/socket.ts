@@ -437,7 +437,6 @@ async handleMuteMember(socket: Socket, payload: any) {
               this.paddle_left = new Paddle(this.width, this.height, true, false, gamedata.id, gamedata.name)
             else
               this.paddle_right = new Paddle(this.width, this.height, false, false, gamedata.id, gamedata.name)
-            console.log("---------- paddle left no creation!!!! ------------");
             console.log("deux users pour launch ball, puck instancier ");
             await socket.join(this.room);
             if (this.server.sockets.adapter.rooms.get(this.room).size === 2) 
@@ -460,27 +459,33 @@ async handleMuteMember(socket: Socket, payload: any) {
             this.paddle_right.move(0);
           }
 
-          @SubscribeMessage('KeyPressed')
-          async KeyPressedlu(socket: Socket, gamedata : any) { 
+          @SubscribeMessage('KeyPressed left')
+          async KeyPressedr(socket: Socket, gamedata : any) { 
             console.log("KEYPRESSED BACK")
             if (gamedata.key == 'j')
             {
-              console.log("back keyPressed up ", gamedata.id)
-              if (gamedata.id == this.paddle_left.id)
               this.paddle_left.move(-10);
-              else if (gamedata.id == this.paddle_right.id)
-              this.paddle_right.move(-10);
             }
-            else if (gamedata.key == 'n')
+            if (gamedata.key == 'n')
             {
-              console.log("back keyPressed down ", gamedata.id)
-              if (gamedata.id == this.paddle_left.id)
-              this.paddle_left.move(-10);
-              else if (gamedata.id == this.paddle_right.id)
-              this.paddle_right.move(-10);
+              this.paddle_left.move(10);
             }
-            this.updatePaddle(socket);
           }
+
+          @SubscribeMessage('KeyPressed left')
+          async KeyPressedl(socket: Socket, gamedata : any) { 
+            console.log("KEYPRESSED BACK left")
+            if (gamedata.key == 'w')
+            {
+              console.log("back keyPressed up ", gamedata.name)
+                this.paddle_right.move(-10);
+            }
+            else if (gamedata.key == 's')
+            {
+              console.log("back keyPressed down ", gamedata.name)
+                this.paddle_right.move(10);
+          }
+        }
 
           // function helper to game position
       updateBall(socket: Socket) {
@@ -494,16 +499,21 @@ async handleMuteMember(socket: Socket, payload: any) {
             this.puck.checkPaddleLeft(this.paddle_left, false, 0);
             this.puck.checkPaddleRight(this.paddle_right, false, 0);
             const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
-            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h}
+            if (this.paddle_left && this.paddle_right)
+            {
+              this.paddle_left.update();
+              this.paddle_right.update()
+              const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right.name}
+              this.server.to(this.room).emit("paddle update", (payloadp));
+            };
             //console.log("data of my puck, x and y: ", this.puck.getx(), this.puck.gety());
             //this.server.to(this.room).emit("puck_update", {});
             this.server.to(this.room).emit("puck update", (payload));
-            //this.server.to(this.room).emit("paddle update", (payloadp));
           }
-          setTimeout(this.updateBall.bind(this, socket), 100); // Bind the `this` context to the function
+          setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
         }
       }
-      
+      /*
       updatePaddle(socket: Socket) {
         if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
           return;
@@ -515,8 +525,8 @@ async handleMuteMember(socket: Socket, payload: any) {
             const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h}
             this.server.to(this.room).emit("paddle update", (payloadp));
           }
-          setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
+          //setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
         }
-      }
+      }*/
       
     }
