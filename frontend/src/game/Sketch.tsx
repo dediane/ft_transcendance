@@ -114,17 +114,17 @@ import React from 'react';
           }
 
           p5.keyPressed = () => {
-            console.log("keyPressed");
+            console.log("keyPressed by ", userdata.name);
             if (p5.key == 'j')
-              socket?.emit("KeyPressed left", {name: padl_n, key: 'j'});
+              socket?.emit("KeyPressed", {name: userdata.name, key: 'j'});
             else if (p5.key == 'n') {
-              socket?.emit("KeyPressed left", {name: padl_n, key: 'n'});
+              socket?.emit("KeyPressed", {name: userdata.name, key: 'n'});
             }
-            if (p5.key == 'w')
-            socket?.emit("KeyPressed right", {name: padr_n, key: 'w'});
-            else if (p5.key == 's') {
-              socket?.emit("KeyPressed right", {name: padr_n, key: 's'});
-            }
+            // if (p5.key == 'w')
+            // socket?.emit("KeyPressed right", {name: padr_n, key: 'w'});
+            // else if (p5.key == 's') {
+            //   socket?.emit("KeyPressed right", {name: padr_n, key: 's'});
+            // }
           }
         }
       }

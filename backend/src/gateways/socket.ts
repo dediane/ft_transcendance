@@ -459,38 +459,44 @@ async handleMuteMember(socket: Socket, payload: any) {
             this.paddle_right.move(0);
           }
 
-          @SubscribeMessage('KeyPressed left')
+          @SubscribeMessage('KeyPressed')
           async KeyPressedr(socket: Socket, gamedata : any) { 
             console.log("KEYPRESSED BACK")
-            if (gamedata.key == 'j')
+            if (gamedata.name == this.paddle_left.name)
             {
-              this.paddle_left.move(-10);
+              if (gamedata.key == 'j')
+              {
+                this.paddle_left.move(-10);
+              }
+              if (gamedata.key == 'n')
+              {
+                this.paddle_left.move(10);
+              }
             }
-            if (gamedata.key == 'n')
+            else if (gamedata.name == this.paddle_right.name)
             {
-              this.paddle_left.move(10);
+              if (gamedata.key == 'j')
+              {
+                console.log("back keyPressed up ", gamedata.name)
+                  this.paddle_right.move(-10);
+              }
+              else if (gamedata.key == 'n')
+              {
+                console.log("back keyPressed down ", gamedata.name)
+                  this.paddle_right.move(10);
+            }
             }
           }
 
           @SubscribeMessage('KeyPressed right')
           async KeyPressedl(socket: Socket, gamedata : any) { 
             console.log("KEYPRESSED BACK left")
-            if (gamedata.key == 'w')
-            {
-              console.log("back keyPressed up ", gamedata.name)
-                this.paddle_right.move(-10);
-            }
-            else if (gamedata.key == 's')
-            {
-              console.log("back keyPressed down ", gamedata.name)
-                this.paddle_right.move(10);
-          }
         }
 
           // function helper to game position
       updateBall(socket: Socket) {
         //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
-        if (!this.isGameStart || this.puck.left_score == 5 || this.puck.right_score == 5) {
+        if (!this.isGameStart || this.puck.left_score == 100 || this.puck.right_score == 100) {
           return;
         } else {
           if (this.puck) { // Check if this.puck is defined
