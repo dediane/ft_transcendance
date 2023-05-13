@@ -28,6 +28,16 @@ export class UserService {
     return users;
   }
 
+  async findByUsername(username: string) : Promise<any | undefined> {
+    const user = await this.userRepository
+    .createQueryBuilder('user')
+    .select('user')
+    .where('user.username = :username', { username})
+    .getOne()
+    const {wins, losses, id} = user;
+    return {wins, losses, username, id};
+  }
+
   async search(params: string) {
     const users = await this.userRepository
     .createQueryBuilder('user')

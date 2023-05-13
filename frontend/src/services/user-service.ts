@@ -30,6 +30,11 @@ export default {
   finduser () {
 	  return axiosInstance.get("/user", {}).then((res: { data: any }) => res.data)
   },
+
+  findPublicUser (username :string) {
+	  return axiosInstance.post("/user/username/", {username}).then((res: { data: any }) => res.data)
+  },
+
   profile () {
 	  return axiosInstance.get("/user/profile", {}).then((res: { data: any }) => res.data)
   },

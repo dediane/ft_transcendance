@@ -34,6 +34,14 @@ export class UserController {
     return this.userService.findOnebyEmail(params);
   }
 
+  @UseGuards (JwtAuthGuard)
+  @Post('username')
+  async findByUsername(@Body() req: any) {
+    if (!req.username)
+      return { error: 'Username not provided' };
+    return await this.userService.findByUsername(req.username);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
