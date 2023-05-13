@@ -18,16 +18,6 @@ export default function Homepage() {
     )
 }
 
-
-const FriendModule = () => {
-    return(
-        <div className={styles.card}>
-        <Searchbar />
-        <Friends />
-        </div>
-    )
-}
-
 const Buttons = () => {
     const [user, setUser] = useState(false)
 
@@ -98,12 +88,20 @@ const Profil = () => {
     )
 }
 
-
 const Asset = ({title , value} : {title: string, value :any}) => {
     return(
         <div className="p-3">
         <p className="text-xs text-gray-500 ">{title} </p>
         <p>{value}</p>
+        </div>
+    )
+}
+
+const FriendModule = () => {
+    return(
+        <div className={styles.card}>
+        <Searchbar />
+        <Friends />
         </div>
     )
 }
@@ -153,7 +151,6 @@ const Searchbar = () => {
     const [inputValue, setInputValue] = useState('')
     const [users, setUsers] = useState([]);
 
-
     //FRIEND
     const [friend, setFriend] = useState([]);
     useEffect(() => {
@@ -177,7 +174,7 @@ const Searchbar = () => {
         setUsers(updatedUserList)
         // setUsers(result)
 
-    }, 500);
+    }, 200);
   
     const handleInput = (event: any) => {
       const value = event.target.value
@@ -221,11 +218,11 @@ const Searchresult = ({users, setUsers} : {users :any, setUsers: any}) => {
                 <div key={key} className="">
                     <div  className={styles.listelement}>
                         {username}
-                        {!isFriend && <button onClick={() => refresh_users('add', id)} className={styles.button}>
-                            add friends
+                        {!isFriend && <button onClick={() => refresh_users('add', id)} className={styles.littlebuttonalert}>
+                            + add
                         </button>}
-                        {isFriend &&<button onClick={() => refresh_users('remove', id)} className={styles.button}>
-                            remove friends
+                        {isFriend &&<button onClick={() => refresh_users('remove', id)} className={styles.littlebutton}>
+                            remove
                         </button>}
                     </div>
                 </div>

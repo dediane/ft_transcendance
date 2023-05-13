@@ -60,6 +60,25 @@
     background-image: linear-gradient(to right,#ff6fab, #ffa2c1);
     }
 
+.littlebuttonalert { 
+    display: block;
+    width: 80px;
+    border-radius: 0.5rem;
+    background-image: linear-gradient(to right, #4ec47f, #2be780);
+    padding-top: 0.15rem;
+    padding-bottom: 0.25rem;
+    margin-left: auto;
+    margin-right: 0;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #fff;
+}
+
+.littlebuttonalert:hover {
+    background-image: linear-gradient(to right,#94ceac, #95e9ba);
+    }
+
+
 .button:hover {
 background-image: linear-gradient(to right, #bd84ff, #e0bbff);
 }
