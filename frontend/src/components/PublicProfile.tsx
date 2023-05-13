@@ -11,7 +11,6 @@ export default function Homepage() {
         <>
         <div className={styles.container}>
             <FriendModule />
-            {/* <Buttons /> */}
             <Profil />
         </div>
         </>
@@ -66,7 +65,6 @@ const Profil = () => {
     const [qrcode, setQrcode] = useState('');
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
-    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(()=>{
         const fetch_profile = async() => {
@@ -79,29 +77,6 @@ const Profil = () => {
             router.push('/login')
         fetch_profile()
     }, [])
-
-    const logout = () => {
-        authenticationService.deleteToken()
-        router.push('/login')
-    }
-
-    const active2fa = async() => {
-        const  qrcode = await userService.generate2fa()
-        setQrcode(qrcode)
-        setShowModal(true)
-    }
-
-    const disable2fa = async (code: any, setUser: any) => {
-        if(code.length === 6) {
-            const result = await userService.disable2fa(code)
-            if(result.status) {
-                setUser({...user, is2fa: false})
-            }
-            else {
-                alert("Wrong code")
-            }
-        }
-    }
 
     const handleCloseModal = () => {
         setShowModal(false);
@@ -118,26 +93,10 @@ const Profil = () => {
                     <h4>My infos</h4>
                     <hr/>
                         <Asset title={'username'} value={user.username} />
-                        <Asset title={'email'} value={user.email} />
+                        {/* <Asset title={'email'} value={user.email} /> */}
                         <Asset title={'Wins:'} value={user.wins} />
                         <Asset title={'Losses:'} value={user.losses} />
-                        <div>
-                        {!user.is2fa ? <button onClick={() => active2fa()} className={styles.buttonalert}>Activate 2FA</button> : ""}
-                        {user.is2fa ? 
-                        <div>
-                            <button onClick={() => setIsOpen(!isOpen)} className={styles.buttonalert}>Disable 2FA </button> 
-                            {isOpen && <input placeholder="Enter 2FA code" className={styles.inputbox} onChange={(e) => disable2fa(e.target.value, setUser)}/>}
-                        </div>
-                        : ""}
-                        
-                        {showModal && (
-                            <div className="">
-                            <Activate2fa qrcode={qrcode}/>
-                            </div>
-                         )}
-                        </div>
-                        <button onClick={() => logout()} className={styles.buttonalert}>Log out</button>
-                </div>
+                    </div>
                 <div className={styles.modal}>
                 </div>
                 {/* <img src={qrcode ? qrcode: ''} className={styles.qrcode}/> */}

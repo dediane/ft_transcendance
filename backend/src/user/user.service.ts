@@ -41,7 +41,7 @@ export class UserService {
     const user = await this.userRepository
     .createQueryBuilder('user')
     .select('user')
-    .where('user.email = :email', { email })
+    .where('user.email = :email', { email})
     .getOne()
     return user;
   }

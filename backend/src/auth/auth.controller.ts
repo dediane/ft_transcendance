@@ -37,6 +37,7 @@ constructor(
 
   @Post('2fa/generate')
   @UseGuards(JwtAuthGuard)
+  @UseGuards(Jwt2faAuthGuard)
   async register(@Response() res, @Request() req) {
     const { otpAuthUrl } =
       await this.authService.generateTwoFactorAuthenticationSecret(

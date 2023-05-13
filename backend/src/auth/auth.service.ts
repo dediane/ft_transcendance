@@ -67,6 +67,7 @@ export class AuthService {
       async loginWith2fa(userWithoutPsw: Partial<User>) {
         const payload = {
           email: userWithoutPsw.email,
+          id: userWithoutPsw.id,
           is2fa: !!userWithoutPsw.is2fa,
           isTwoFactorAuthenticated: true,
         };
