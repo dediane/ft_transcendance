@@ -62,7 +62,7 @@ const Buttons = () => {
 }
 
 const Profil = () => {
-    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0})
+    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false})
     const [qrcode, setQrcode] = useState('');
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
@@ -74,6 +74,8 @@ const Profil = () => {
            const result = await userService.profile()
             setUser({...result})
         }
+        if(!authenticationService.getToken()) 
+            router.push('/login')
         fetch_profile()
     }, [])
 
@@ -84,8 +86,17 @@ const Profil = () => {
 
     const active2fa = async() => {
         const  qrcode = await userService.generate2fa()
-        setQrcode(qrcode);
-        setShowModal(true);
+        setQrcode(qrcode)
+        setShowModal(true)
+    }
+
+    const disable2fa = async (code: any, setUser: any) => {
+        if(code.length === 6) {
+            const result = await userService.disable2fa(code)
+            if(result.status) {
+                setUser({...user, is2fa: false})
+            }
+        }
     }
 
     const handleCloseModal = () => {
@@ -109,7 +120,14 @@ const Profil = () => {
                         <Asset title={'Losses:'} value={user.losses} />
                         <div>
 
-                        <button onClick={() => active2fa()} className={styles.buttonalert}>Activate 2FA</button>
+                        {!user.is2fa ? <button onClick={() => active2fa()} className={styles.buttonalert}>Activate 2FA</button> : ""}
+                        {user.is2fa ? 
+                        <div>
+                            <button className={styles.buttonalert}>Disable 2FA </button> 
+                            <input onChange={(e) => disable2fa(e.target.value, setUser)}/>   
+                        </div>
+                        : ""}
+                        
                         {showModal && (
                             <div className="">
                             <Activate2fa qrcode={qrcode}/>

@@ -1,11 +1,10 @@
 import { Body, Get, Controller, NotFoundException, Response, Post, Request, UseGuards, Redirect, UnauthorizedException, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { FortyTwoAuthGuard } from './guards/fortytwo_auth.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-
+import { Jwt2faAuthGuard } from './guards/jwt-2fa.guard';
 @Controller('auth')
 export class AuthController {
 
@@ -67,13 +66,13 @@ constructor(
   }
 
   @Post('2fa/turn-off')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(Jwt2faAuthGuard)
   async turnOffTwoFactorAuthentication(@Request() req, @Body() body) {
     const isCodeValid = await
       this.authService.isTwoFactorAuthenticationCodeValid(
         body.twoFactorAuthenticationCode,
         req.user,
-      );
+      )
 
     if (!isCodeValid) {
       return ({status: false, message: "2FA code is invalid"})
@@ -91,7 +90,8 @@ constructor(
   @UseGuards(JwtAuthGuard)
   async authenticate(@Request() request, @Body() body) {
     console.log("OTP attemps")
-    
+    if(!body.twoFactorAuthenticationCode)
+      return ({status: false, message: "2FA code is invalid"})
     const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(
       body.twoFactorAuthenticationCode,
       request.user,

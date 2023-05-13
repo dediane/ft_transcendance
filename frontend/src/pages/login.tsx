@@ -9,12 +9,15 @@ import authenticationService from '@/services/authentication-service'
 import Confetti from 'react-dom-confetti';                                                                  
 
 const ConnectOTP = () => {
-  const [otp, setOtp] = useState('')
-  const otpLoad = (code) => {
-    setOtp(code)
+  const router = useRouter()
+  const otpLoad = (code: string) => {
     if(code.length === 6) {
-      const result = userService.authenticate2fa(otp)
-      console.log("OTP LOGIN RES", result)
+      userService.authenticate2fa(code).then((res: any) => { 
+        authenticationService.saveToken(res.access_token)
+        router.push("/profile")
+      }).catch((err: any) => {
+        console.log(err)
+      })
     }
   }
   return (
