@@ -252,7 +252,7 @@ function Messenger2() {
 
   function muteMember(userToMute: string)
   {
-    console.log("to remove in messenger2", userToMute)
+    console.log("to mute in messenger2", userToMute)
     console.log("currentchatName", currentChat.chatName)
     const payload = {
       channelName: currentChat.chatName,

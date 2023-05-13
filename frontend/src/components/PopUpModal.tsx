@@ -76,6 +76,7 @@ const PopupModal: React.FC<Props> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} id={modalId}
+    ariaHideApp={false}
     style={{
         content: {
           top: "50%",

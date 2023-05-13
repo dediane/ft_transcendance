@@ -186,21 +186,49 @@ export class UserService {
   // }
 
   async findOneByName(username: string) {
+    // const user = await this.userRepository
+    //   .createQueryBuilder('user')
+    //   .leftJoinAndSelect('user.blockedUsers', 'blockedUsers')
+    //   .select(['user.username', 'user.wins', 'user.losses'])
+    //   // .addSelect('blockedUsers')
+    //   .where('user.username = :username', { username })
+    //   .getOne();
+  
+      
+    // if (!user)
+    //   return ;
+    // // {
+    // //   throw new Error(`User with username ${username} not found.`);
+    // // }
+  
+    // return user;
+
     const user = await this.userRepository
-      .createQueryBuilder('user')
-      // .leftJoinAndSelect('user.blockedUsers', 'blockedUsers')
-      .select(['user.username', 'user.wins', 'user.losses'])
-      // .addSelect('blockedUsers')
-      .where('user.username = :username', { username })
-      .getOne();
-  
-    if (!user)
-      return ;
-    // {
-    //   throw new Error(`User with username ${username} not found.`);
-    // }
-  
-    return user;
+    .createQueryBuilder('user')
+    .leftJoinAndSelect('user.channels', 'memberOfChannel')
+    .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
+    .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
+    .leftJoinAndSelect('user.isbanned', 'isbannedOfChannel')
+    .leftJoinAndSelect('user.blockedUsers', 'blockedUser')
+    .select([
+      'user.id',
+      'user.username',
+      // 'user.email',
+      // 'user.socketids',
+      // 'user.avatar',
+      // 'user.password',
+      'user.wins',
+      'user.losses',
+      'memberOfChannel.name',
+      'adminOfChannel.name',
+      'isbannedOfChannel.name',
+      'ownerOfChannel.name',
+      'blockedUser.username'
+    ])
+    .where('user.username = :username', { username })
+
+    .getOne();
+  return user;
   }
   
   
