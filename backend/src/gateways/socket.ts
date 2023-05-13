@@ -149,6 +149,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
 
       const blockedUsers =  await this.userService.getBlockedUsers(userdata.id);
+      const blockedusernames = blockedUsers?.map(user => user.username);
       const channelMessages = await this.channelService.findMessagesByChatname(channelName, blockedUsers);
 
       // const channelMessages = await this.channelService.findMessagesByChatname(channelName);
@@ -173,7 +174,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       this.messages[channelName].push(...channelMessages);
       console.log("members and admins AAAAAAARE", admins, members)
       console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
-      this.server.emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner }); // send all messages for all rooms
+      this.server.emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner, blockedUsers: blockedusernames }); // send all messages for all rooms
       console.log("ALL USERS CHANS SOCKET")
       this.server.emit("all user's chans", channels);
     }

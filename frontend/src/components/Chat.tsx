@@ -461,8 +461,14 @@ function Chat(props) {
 
 
   const isUserBlocked = (username : string) => {
+
+    if (props.blockedUsers && props.blockedUsers[props.yourId]) {
+      // Check if the current user is in the admins list of the channel
+      return props.blockedUsers[props.yourId].includes(username);
+     }
+    
     // console.log("BLOC CHANELS POPULATEd", props.currentUser.username, props.currentUser?.adminChannels)
-    return blockedUsers.some((user) => user.username === username);
+    return blockedUsers.some((user) => user === username);
   };
   const blockUser2 = (username) => {
     const updatedBlockedUsers = [...blockedUsers, { username }];

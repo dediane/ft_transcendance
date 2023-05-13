@@ -46,8 +46,8 @@ function Messenger2() {
   // }, [accessType]);
   const [members, setMembers] = useState([]);
   const [mutedMembers, setmutedMembers] = useState([]);
+  const [blockedUsers, setBlockedUsers] = useState([]);
 
- 
   function createNewChannel(data: any) {
     const datachan = {
       creator: AuthService.getId(),
@@ -267,23 +267,37 @@ function Messenger2() {
   function blockUser(usertoBlock: string)
   {
     console.log("user to block ::: ", usertoBlock)
+    const userdataname  = AuthService.getUsername();
+
     const payload = {
       UserWhoCantAnymore: AuthService.getId(),
       usernameToBlock : usertoBlock,
     };
-  
+    setBlockedUsers((prevBlockedUsers) => ({
+      ...prevBlockedUsers,
+      [userdataname]: usertoBlock,
+    }));
+    
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
   }
 
 
   
-  function unblockUser(usertoBlock: string)
+  function unblockUser(usertoUnblock: string)
   {
-    console.log("user to unblock ::: ", usertoBlock)
+    console.log("user to unblock ::: ", usertoUnblock)
+    const userdataname  = AuthService.getUsername();
     const payload = {
       UserWhoCantAnymore: AuthService.getId(),
-      usernameToBlock : usertoBlock,
+      usernameToBlock : usertoUnblock,
     };
+    const updatedBlockedUsers = [userdataname]?.filter(
+      (blockeduser) => blockeduser !== usertoUnblock);
+    setBlockedUsers((prevBlockedUsers) => ({
+      ...prevBlockedUsers,
+      [userdataname]: updatedBlockedUsers,
+    }));
+
   
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
   }
@@ -448,10 +462,10 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     socketRef.current.on("all chans", (chans: SetStateAction<never[]>) => {
       console.log("all chans", chans);
       setRooms(chans);
-        setCurrentChat((prevState) => ({
-    ...prevState,
-    chatName: chans[0] || "",
-  }));
+  //       setCurrentChat((prevState) => ({
+  //   ...prevState,
+  //   chatName: chans[0] || "",
+  // }));
     
 
     // socketRef.current.on("join room", ({ room, messages }) => {
@@ -460,7 +474,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     //     [room]: messages,
     //   }));
     // });
-    socketRef.current.on("join room", ({ room, accessType, messages, members, admins, bannedmembers, mutedMembers, owner }) => {
+    socketRef.current.on("join room", ({ room, accessType, messages, members, admins, bannedmembers, mutedMembers, owner, blockedUsers }) => {
       setMessages((prevMessages) => ({
         ...prevMessages,
         [room]: messages,
@@ -490,6 +504,11 @@ console.log(room, "MEMBERS IN MESSENGER2", members)
       setOwner((prevOwner) => ({
         ...prevOwner,
         [room]: owner,
+      }));
+
+      setBlockedUsers((prevBlockedUsers) => ({
+        ...prevBlockedUsers,
+        [userdata.name]: blockedUsers,
       }));
 
 
@@ -599,6 +618,7 @@ console.log("||||||||accessType", accessType)
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         bannedmembers={bannedmembers}
+        blockedUsers={blockedUsers}
         currentUser={currentUser}
         users={users}
         userchans={userchans}
