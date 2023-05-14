@@ -101,7 +101,7 @@ console.log("SOCKET ALL USERS", currentuser.username)
     currentuser,
     allusers,
   };
-  this.server.emit('all users', payload);
+  this.server.to(socket.id).emit('all users', payload);
 
 }
 
@@ -134,8 +134,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   if (channels) {
   const channelNames = channels.map(channel => channel.name);
   console.log(channelNames);
-  this.server.emit('all chans',channelNames);
-  this.server.emit('connected users', this.users);
+   this.server.to(socket.id).emit('all chans',channelNames);
+   this.server.emit('connected users', this.users);
     for (const channel of channels) {
       const channelName = channel.name;
       const accessType = channel.accessType;
@@ -164,19 +164,19 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       if (!this.messages[channelName]) {
         this.messages[channelName] = []; // add new room if it doesn't exist
       }
-      console.log(
-        socket.id,
-        'just joined rooOOOOm',
-        channelName, 'access type:',
-        accessType,
-        channelMessages,
-      );
+      // console.log(
+      //   socket.id,
+      //   'just joined rooOOOOm',
+      //   channelName, 'access type:',
+      //   accessType,
+      //   channelMessages,
+      // );
       this.messages[channelName].push(...channelMessages);
-      console.log("members and admins AAAAAAARE", admins, members)
-      console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
-      this.server.emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner, blockedUsers: blockedusernames }); // send all messages for all rooms
+      // console.log("members and admins AAAAAAARE", admins, members)
+      // console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
+       this.server.to(socket.id).emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner, blockedUsers: blockedusernames }); // send all messages for all rooms
       console.log("ALL USERS CHANS SOCKET")
-      this.server.emit("all user's chans", channels);
+       this.server.to(socket.id).emit("all user's chans", channels);
     }
   }
 }
@@ -205,8 +205,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       };
 
     const newChannel = await this.channelService.createChannel(channelDto);
-    this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
-    // this.server.emit('new chan', { channelName: roomName}); // broadcast to all connected sockets
+     this.server.to(socket.id).emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+    //  this.server.to(socket.id).emit('new chan', { channelName: roomName}); // broadcast to all connected sockets
     }
   }
 
@@ -220,7 +220,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     const newChannel = await this.channelService.createDm(username1, username2);
 
     // const newChannel = await this.channelService.createChannel(channelDto);
-    this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+     this.server.to(socket.id).emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
     }
   
 
@@ -271,7 +271,7 @@ async handlecheckChatPassword(socket: Socket, data: any) {
   const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
   console.log("channel pass is correct or not : ", bool);
   this.server.emit('is userinput correct', bool);
-  
+
 
 }
 
@@ -283,7 +283,6 @@ async handleAddMember(socket: Socket, payload: any) {
   const chan = await this.channelService.findOneByName(channelName);
   const bool = await this.channelService.addMember(channelName, AdminId, username);
   // const { memberadded: bool, username: username } = payload;
-
   this.server.emit("member adding", {memberadded: bool, username: username})
 }
 
@@ -364,12 +363,12 @@ async handleMuteMember(socket: Socket, payload: any) {
     if (!this.messages[roomName]) {
       this.messages[roomName] = []; // add new room if it doesn't exist
     }
-    console.log(
-      socket.id,
-      'just joined room',
-      roomName,
-      this.messages[roomName],
-    );
+    // console.log(
+    //   socket.id,
+    //   'just joined room',
+    //   roomName,
+    //   this.messages[roomName],
+    // );
     socket.emit('join room', this.messages[roomName]);
   }
 
@@ -384,7 +383,6 @@ async handleMuteMember(socket: Socket, payload: any) {
         chatName,
         sender: data.sender,
       };
-      socket.to(to).emit('new message', payload);
     // Save the message to the database
     const channel = await this.channelService.findOneByName(to);
     // const userchans = this.userService.getChannels();  //plutot enregistrer dans le user chan pour eviter doublons ou bien par chanid
@@ -404,8 +402,19 @@ async handleMuteMember(socket: Socket, payload: any) {
         content,
       });
     }
-  } else {
-    console.log('Data parameter is undefined');
+const excludedSocketIds = [];
+
+for (const user of this.users) {
+  const blockedUsers = await this.userService.getBlockedUsers(user.id);
+  const excludedUserIds = blockedUsers.map(user => user.id);
+
+  if (excludedUserIds.includes(senderid)) {
+    excludedSocketIds.push(...user.sockets);
+  }
+}
+// this.server.to(to).except(excludedSocketIds).emit('new message', payload);
+      socket.to(to).except(excludedSocketIds).emit('new message', payload);
+
   }
   }
   

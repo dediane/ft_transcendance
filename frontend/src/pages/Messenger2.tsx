@@ -278,7 +278,11 @@ function Messenger2() {
       [userdataname]: usertoBlock,
     }));
     
+    
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
+    socketRef?.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    
+ 
   }
 
 
@@ -291,15 +295,18 @@ function Messenger2() {
       UserWhoCantAnymore: AuthService.getId(),
       usernameToBlock : usertoUnblock,
     };
+  
+
+  
+    socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
     const updatedBlockedUsers = [userdataname]?.filter(
       (blockeduser) => blockeduser !== usertoUnblock);
     setBlockedUsers((prevBlockedUsers) => ({
       ...prevBlockedUsers,
       [userdataname]: updatedBlockedUsers,
     }));
-
-  
-    socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
+    socketRef?.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    
   }
   
 function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
@@ -323,6 +330,9 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
   }
 
   function sendMessage() {
+    if (message.trim() === ""){
+      return;
+    }
     const payload = {
       content: message,
       to: currentChat.isChannel ? currentChat.chatName : currentChat.receiverId,

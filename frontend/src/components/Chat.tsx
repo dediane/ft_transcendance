@@ -471,15 +471,15 @@ function Chat(props) {
     return blockedUsers.some((user) => user === username);
   };
   const blockUser2 = (username) => {
-    const updatedBlockedUsers = [...blockedUsers, { username }];
-    setBlockedUsers(updatedBlockedUsers);
+    // const updatedBlockedUsers = [...blockedUsers, { username }];
+    // setBlockedUsers(updatedBlockedUsers);
     // Additional logic to save the updated blocked users in the backend or perform any necessary operations
     props.blockUser(username);
   };
 
   const unblockUser2 = (username) => {
-    const updatedBlockedUsers = blockedUsers.filter((user) => user.username !== username);
-    setBlockedUsers(updatedBlockedUsers);
+    // const updatedBlockedUsers = blockedUsers.filter((user) => user.username !== username);
+    // setBlockedUsers(updatedBlockedUsers);
     // Additional logic to save the updated blocked users in the backend or perform any necessary operations
     props.unblockUser(username);
   };
@@ -883,8 +883,10 @@ if (isBanned) {
     }
     function handleKeyPress(e){
         if(e.key === "Enter"){
+          e.preventDefault(); 
             props.sendMessage();
         }
+        
     }
     const [accessType, setAccessType] = useState('public');
     const handleAccessTypeChange = (e) => {
