@@ -101,6 +101,7 @@ const Row = styled.div`
   align-items: center;
   padding: 10px;
   cursor: pointer;
+  background-color: ${(props) => (props.active ? 'rgb(199, 143, 204)' : 'initial')};
 
   &:hover {
     background-color: rgb(199, 143, 204);
@@ -771,10 +772,18 @@ function handlePasswordToggle(event) {
             receiverId: "",
         };
         return (
-          <Row style={{ fontWeight: 500, fontSize: '0.875rem' }} onClick={() => props.toggleChat(currentChat)} key={room}>
-          {room}
-      </Row>
-      
+      //     <Row style={{ fontWeight: 500, fontSize: '0.875rem' }} onClick={() => props.toggleChat(currentChat)} key={room}>
+      //     {room}
+      // </Row>
+      <Row
+  style={{ fontWeight: 500, fontSize: '0.875rem' }}
+  onClick={() => props.toggleChat(currentChat)}
+  key={room}
+  active={props.currentChat.chatName === room}
+>
+  {room}
+</Row>
+
         )
     }
 
@@ -865,9 +874,10 @@ if (isBanned) {
   body = (
     <>
          <Pass>
+          
       <input type="password" placeholder="Enter password" onChange={(e) => setUserPassword(e.target.value)} />
       <Button3 onClick={() => props.checkChatPassword(userPassword)}>Join {props.currentChat.chatName}</Button3>
-      {props.passwordError && <span style={{color: 'red'}}>Try again.</span>}
+      {/* {props.passwordError  && <span style={{color: 'red'}}>Try again.</span>} */}
     
     </Pass>  {/* {!props.passwordError && <Button onClick={() => props.joinRoom(props.currentChat.chatName)}>Join {props.currentChat.chatName}</Button>} */}
     </>
