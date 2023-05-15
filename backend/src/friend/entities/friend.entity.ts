@@ -1,4 +1,3 @@
-// friend-request.entity.t
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Unique, Column } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 

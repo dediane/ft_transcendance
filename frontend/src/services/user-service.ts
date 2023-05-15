@@ -1,6 +1,6 @@
 import axiosService from "./axios-service"
 import axios from "axios"
-
+import authenticationService from "./authentication-service"
 const axiosInstance = axiosService.getInstance()
 export default {
   login (email :string, password :string) { 
@@ -33,7 +33,7 @@ export default {
 
   findPublicUser (username :string) {
 	  return axiosInstance.post("/user/username/", {username}).then((res: { data: any }) => res.data)
-  },
+   },
 
   profile () {
 	  return axiosInstance.get("/user/profile", {}).then((res: { data: any }) => res.data)
@@ -59,6 +59,10 @@ export default {
     return axiosInstance.get("/friend").then((res: { data: any}) => res.data)
   },
 
+  async avatar (img_base64: string) {
+    return axiosInstance.post("/user/avatar", {img_base64}).then((res: { data: any }) => res.data)
+  },
+}
 
   //Create42 route GET /auth/42 
   //here ->
@@ -73,4 +77,3 @@ export default {
 //   modify_password ( login, key, password ) {
 //     return axiosInstance.post("/password", { login , key, password }).then(res => res.data)
 //   }
-}

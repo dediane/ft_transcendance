@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { FriendRequest } from '../friend/entities/friends.entity';
-
+import { FriendRequest } from 'src/friend/entities/friend.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -67,21 +66,73 @@ export class UserService {
     .getOne();
     return user;
   }
+  async removeFriendRequest(sender_id: any, receiver_id: any): Promise<void> {
+    const friendRequest = await this.findFriendRequest(sender_id, receiver_id);
+    if (friendRequest) {
+      await this.friendRequestRepository.remove(friendRequest);
+    } else {
+      throw new Error('Friend request not found');
+    }
+  }
 
-  // async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
-  //   const user = await this.userRepository.findOne({
-  //     where: { id: user_id },
-  //     relations: ['friends'],
-  //   });
-  //   const friend = await this.findOnebyId(friend_id);
-  //   if(!user.friends) {
-  //     user.friends = []
-  //   }
-  //   user.friends.push(friend)
-  //   const result = await this.userRepository.save(user);
-  //   return;
+  async sendFriendRequest(user_id: number, friend_id: number) {
+    const sender = await this.findOnebyId(user_id);
+    const receiver = await this.findOnebyId(friend_id);
     
-  // }
+    const friendRequest = new FriendRequest();
+    friendRequest.sender = sender;
+    friendRequest.receiver = receiver;
+  
+    await this.userRepository
+      .createQueryBuilder()
+      .insert()
+      .into(FriendRequest)
+      .values(friendRequest)
+      .execute();
+  }
+
+  async rejectFriendRequest(friendRequestId: number) {
+    await this.userRepository
+      .createQueryBuilder()
+      .update(FriendRequest)
+      .set({ status: 'REJECTED' })
+      .where("id = :id", { id: friendRequestId })
+      .execute();
+  }
+  
+  async getFriendRequests(user_id: number) {
+    return this.userRepository
+      .createQueryBuilder('friendRequest')
+      .select('friendRequest')
+      .where("friendRequest.receiverId = :id AND friendRequest.status = :status", { id: user_id, status: 'PENDING' })
+      .getMany();
+  }
+  
+  async getFriends(user_id: number) {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user')
+      .where("user.id = :id", { id: user_id })
+      .leftJoinAndSelect('user.friends', 'friend')
+      .getOne();
+    
+    return user.friends;
+  }
+
+//   async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
+//     const user = await this.userRepository.findOne({
+//       where: { id: user_id },
+//       relations: ['friends'],
+//     });
+//     const friend = await this.findOnebyId(friend_id);
+//     if(!user.friends) {
+//       user.friends = []
+//     }
+//     user.friends.push(friend)
+//     const result = await this.userRepository.save(user);
+//     return;
+    
+//  }
   async addFriend(user_id: any, friend_id: any) : Promise<FriendRequest> {
     const sender = await this.userRepository
       .createQueryBuilder('user')
@@ -119,15 +170,6 @@ export class UserService {
 
   async findFriendRequest(sender_id: any, receiver_id: any): Promise<FriendRequest | undefined> {
     return await this.friendRequestRepository.findOne({ where: { sender: sender_id, receiver: receiver_id } });
-  }
-
-  async removeFriendRequest(sender_id: number, receiver_id: number): Promise<void> {
-    const friendRequest = await this.findFriendRequest(sender_id, receiver_id);
-    if (friendRequest) {
-      await this.friendRequestRepository.remove(friendRequest);
-    } else {
-      throw new Error('Friend request not found');
-    }
   }
 
   async removeFriend(user_id: number, friend_id: number) {
@@ -175,11 +217,12 @@ export class UserService {
     console.log("reSULT", result)
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async updateAvatar(userId: number, avatar: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId }
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    user.avatar = avatar;
+    return await this.userRepository.save(user)
   }
 }

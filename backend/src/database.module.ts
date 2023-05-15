@@ -5,7 +5,7 @@ import { Channel } from './channel/entities/channel.entity';
 import { Game } from './game/entities/game.entity';
 import { Message } from './message/entities/message.entity';
 import { User } from './user/entities/user.entity';
-import { FriendRequest } from './friend/entities/friends.entity';
+import { FriendRequest } from './friend/entities/friend.entity';
 
 @Module({
     imports: [

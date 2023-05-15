@@ -45,4 +45,29 @@ export class FriendController {
     getFriend(@Request() req) {
         return this.userService.findFriend(req.user.id)
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('sendrequest')
+    async sendFriendRequest(@Request() req) {
+    const user_id = req.user.id;
+    const friend_id = req.body.friend_id;
+    const response = await this.userService.sendFriendRequest(user_id, friend_id);
+    return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('acceptrequest')
+    async acceptFriendRequest(@Request() req) {
+    const friendRequestId = req.body.friendRequestId;
+    const response = await this.userService.acceptFriendRequest(friendRequestId);
+    return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('rejectrequest')
+    async rejectFriendRequest(@Request() req) {
+    const friendRequestId = req.body.friendRequestId;
+    const response = await this.userService.rejectFriendRequest(friendRequestId);
+    return response;
+    }
 }

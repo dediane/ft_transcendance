@@ -1,7 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Game } from 'src/game/entities/game.entity';
 import { Message } from 'src/message/entities/message.entity';
-import { FriendRequest } from 'src/friend/entities/friends.entity';
+import { FriendRequest } from 'src/friend/entities/friend.entity';
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -46,10 +47,6 @@ export class User {
   @ManyToMany(() => User, (user) => user.id)
   @JoinTable()
   friends: User[];
-
-  // @ManyToMany(() => User, (user) => user.id)
-  // @JoinTable()
-  // friendRequests: User[];
 
   @OneToMany(() => FriendRequest, friendRequest => friendRequest.sender)
   sentFriendRequests: FriendRequest[];
