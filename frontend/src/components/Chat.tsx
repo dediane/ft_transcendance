@@ -84,9 +84,8 @@ const ChannelInfo = styled.div`
     height: 10%;
     width: 100%;
 box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-
+align-items: center;
     display: flex;
-align-items: flex-start;
 justify-content: space-between;
 `;
 
@@ -1115,7 +1114,7 @@ if (isBanned) {
                     required /></>
       )}
 
-      <Button type="submit">Create Group</Button>
+      <Button3 type="submit">Create Group</Button3>
     </form>
                    
   <Button onClick={() => closeModal()}>Close Modal</Button>
@@ -1163,7 +1162,7 @@ if (isBanned) {
                 </Button3>
               )}
                <Button3 onClick={() => seeProfile(user.username)}>
-                    See Profile
+                    Profile
                   </Button3>
             </>
           {/* </div> */}
@@ -1197,7 +1196,10 @@ if (isBanned) {
 {(isDM &&
   <ChannelInfo>
   <div style={{ marginLeft: 'auto' }}>
+  {/* <div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center' , justifyContent: 'center'}}> */}
+
   <Button3 onClick={() => playPong()}>
+
     Play pong
   </Button3>
 </div>
@@ -1218,20 +1220,26 @@ if (isBanned) {
 </div>
     <div>
       {isOwner && (props.accessType === 'protected') && (
-  <Button onClick={() => {
+<div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
+  <Button3 onClick={() => {
     props.removeChatPassword(props.currentChat.chatName);
   }}>
     Make chan public
-  </Button>
+  </Button3>
+  </div>
 )}
       {/* et que le user est un owner ou un admin */}
 
       {isOwner && (props.accessType === 'protected') && (
-      <Button onClick={openPasswordModal}>Change chat password</Button>
+      <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
+      <Button3 onClick={openPasswordModal}>Change chat password</Button3>
+      </div>
       )}
       {/* et que le user est un owner ou un admin */}
       {isOwner && props.accessType === 'public' && (
-  <Button onClick={openPasswordModal}>Make channel password-protected</Button>
+    <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
+  <Button3 onClick={openPasswordModal}>Make channel password-protected</Button3>
+  </div>
 )}
 
       
@@ -1248,7 +1256,9 @@ if (isBanned) {
       />
        {/* && (props.accessType === 'private') */}
     {isOwner && (props.accessType === 'private') && (
-  <Button onClick={openAddUserModal}>Add user</Button>
+            <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
+  <Button3 onClick={openAddUserModal}>Add user</Button3>
+  </div>
     )}
       <PopupModal
         isOpen={showAddUserPopup}
@@ -1269,7 +1279,12 @@ if (isBanned) {
 user!== props.currentUser.username && (
 <li key={i}>
   <label>
-    {user}
+    {/* {user} */}
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+
+    <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
+            {user}
+          </span>
     {isMemberAdmin(user) ? (
       <Button3 onClick={() => removeAdmin2(user)}>
         Remove Admin
@@ -1277,6 +1292,7 @@ user!== props.currentUser.username && (
     ) : (
       <Button3 onClick={() => addAdmin2(user)}>Add Admin</Button3>
     )}
+    </div>
   </label>
     </li>
   )
@@ -1291,15 +1307,22 @@ user!== props.currentUser.username && (
   {filteredUsersUsernames?.map((user, i) => (
     user !== props.currentUser.username && (
       <li key={i}>
+        
         <label>
-          {user}
+<div style={{ display: 'flex', alignItems: 'center' }}>
+        <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
+            {user}
+          </span>
+          
           {isMemberAdmin(user) ? (
-            <Button2 onClick={() => removeAdmin2(user)}>
+            <Button3 onClick={() => removeAdmin2(user)}>
               Remove Admin
-            </Button2>
+            </Button3>
           ) : (
-            <Button2 onClick={() => addAdmin2(user)}>Add Admin</Button2>
+            <Button3 onClick={() => addAdmin2(user)}>Add Admin</Button3>
           )}
+</div>
+
         </label>
       </li>
     )
@@ -1340,19 +1363,23 @@ user!== props.currentUser.username && (
 
     </div>
 {isOwner &&
-  <Button onClick={() => {
+  <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
+  <Button3 onClick={() => {
     props.removeChannel(props.currentChat.chatName);
   }}>
     Delete Chan
-  </Button>
+  </Button3>
+  </div>
 }
 {props.accessType === 'private' &&
-<Button onClick={() => {
+<div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
+<Button3 onClick={() => {
       props.removeMember(props.yourId);
       closeRemoveMemberModal();
     }}>	
       Leave Chan
-    </Button>	
+    </Button3>	
+    </div>
 }
   </ModalContainer2>
 )}
