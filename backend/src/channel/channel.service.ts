@@ -47,7 +47,7 @@ export class ChannelService {
       .leftJoinAndSelect('channel.admins', 'admin')
       // .select(['channel.name', 'channel.id', 'member.username', 'admin.username'])
       .leftJoinAndSelect('channel.messages', 'message')
-      .select(['channel.name', 'channel.id', 'channel.accessType', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'bannedUser.username', 'mutedMember.username',  'message.content'])
+      .select(['channel.name', 'channel.dm', 'channel.id', 'channel.accessType', 'owner.username', 'channel.password', 'member.username', 'member.id', 'admin.username', 'bannedUser.username', 'mutedMember.username',  'message.content'])
       // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
       .getMany();
     return channels;
@@ -333,22 +333,70 @@ async getPublicChannels(): Promise<Channel[]> {
 }
 
 
-async getChannelsforUser(userId: number): Promise<Channel[]> {
+async getPublicProtected(): Promise<Channel[]> {
   const channels = await this.channelRepository.createQueryBuilder('channel')
     .leftJoinAndSelect('channel.owner', 'owner')
     .leftJoinAndSelect('channel.members', 'member')
     .leftJoinAndSelect('channel.bannedUsers', 'bannedUser')
     .leftJoinAndSelect('channel.mutedMembers', 'mutedMember')
-    // .leftJoinAndSelect('channel.invitedUsers', 'invitedUser')
     .leftJoinAndSelect('channel.admins', 'admin')
-    // .select(['channel.name', 'channel.id', 'member.username', 'admin.username'])
     .leftJoinAndSelect('channel.messages', 'message')
-    .select(['channel.name', 'channel.dm', 'channel.id', 'channel.accessType', 'owner.username', 'channel.password', 'member.username', 'admin.username', 'bannedUser.username', 'mutedMember.username',  'message.content'])
-    // .select(['channel.name', 'channel.dm', 'channel.password', 'message.content', 'member.username', 'invitedUser.username', 'admin.username'])
+    .select([
+      'channel.name',
+      'channel.dm',
+      'channel.id',
+      'channel.accessType',
+      'owner.username',
+      'channel.password',
+      'member.username',
+      'admin.username',
+      'bannedUser.username',
+      'mutedMember.username',
+      'message.content'
+    ])
+    .where('channel.accessType IN (:...accessTypes)', { accessTypes: ['protected', 'public'] })
     .getMany();
 
   return channels;
 }
+
+
+async getPrivateChannelsforUser(userId: number): Promise<Channel[]> {
+  const allChannels = await this.findAll();
+
+  const userChannels = allChannels.filter(channel =>
+    channel.accessType === 'private' && channel.members.find(member => member.id === userId)
+  );
+
+  return userChannels;
+}
+
+
+async getPublicAndProtectedChannelsForUser(userId: number): Promise<Channel[]> {
+  const allChannels = await this.findAll();
+
+  const userChannels = allChannels.filter(channel =>
+    channel.accessType !== 'private');
+
+  return userChannels;
+}
+
+async getChannelsforUser(userId: number): Promise<Channel[]> {
+  const allChannels = await this.findAll();
+
+  const privateChannels = allChannels.filter(channel =>
+    channel.accessType === 'private' && channel.members.find(member => member.id === userId)
+  );
+
+  const publicAndProtectedChannels = allChannels.filter(channel =>
+    channel.accessType !== 'private'
+  );
+
+  const userChannels = [...privateChannels, ...publicAndProtectedChannels];
+
+  return userChannels;
+}
+
 
 
 async removeChannelPassword(userId: string, channelName: string): Promise<boolean> {
@@ -755,6 +803,7 @@ async createDm(username1: string, username2: string) {
     dm: true,
     members: [user1, user2],
     owner: user1,
+    accessType: `private`,
   };
   
   const newChannel = await this.create(channelDto);

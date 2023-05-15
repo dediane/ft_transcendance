@@ -128,12 +128,24 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     
   // RETRIEVE AND LOAD ALL MESSAGES IN ALL ROOMS FOR THIS USER
 
-  // const channels = await this.channelService.findAll();
+  // const channels = await this.channelService.findAll();c
+  console.log("userdata id and name", userdata.id, userdata.name)
   const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
 //aussi a GET LES PUBLIC CHANS 
   if (channels) {
+  // const channelNames2 = channels.map(channel => {
+  //   if (channel.dm && channel.members.length == 2) {
+  //     console.log("je passe au moins dans members ", channel.members)
+  //     const otherMember = channel.members.find(member => member.username !== userdata.name);
+  //     return otherMember.username;
+  //   } else {
+  //     return channel.name;
+  //   }
+  // });
   const channelNames = channels.map(channel => channel.name);
-  console.log(channelNames);
+
+  
+  console.log("CHANNELLNAMES ???", channelNames);
    this.server.to(socket.id).emit('all chans',channelNames);
    this.server.emit('connected users', this.users);
     for (const channel of channels) {
@@ -205,7 +217,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       };
 
     const newChannel = await this.channelService.createChannel(channelDto);
-     this.server.to(socket.id).emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+     this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
     //  this.server.to(socket.id).emit('new chan', { channelName: roomName}); // broadcast to all connected sockets
     }
   }
@@ -220,7 +232,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     const newChannel = await this.channelService.createDm(username1, username2);
 
     // const newChannel = await this.channelService.createChannel(channelDto);
-     this.server.to(socket.id).emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+     this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
     }
   
 
