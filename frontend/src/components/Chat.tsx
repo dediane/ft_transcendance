@@ -1263,7 +1263,7 @@ if (isBanned) {
       />
        {isOwner && (props.accessType !== 'public') && (
       <div>
-    <h3>All Members</h3>
+    <h3>All Members except owner and yourself</h3>
   <ul>
   {filteredMembersUsernames?.map((user, i) => (
 user!== props.currentUser.username && (
@@ -1283,7 +1283,7 @@ user!== props.currentUser.username && (
 ))}
       </ul>
     </div>)}
-    {isOwner && (props.accessType === 'public') && (
+    {isOwner && (props.accessType === 'public' || props.accessType === 'protected') && (
 <div>
   
     <h3>All Members</h3>

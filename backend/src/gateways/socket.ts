@@ -264,6 +264,7 @@ async handleChatPassword(socket: Socket, data: any) {
   const updateChannelDto: UpdateChannelDto = {password: newPassword, name: channelName };
 
  await this.channelService.changeChannelPassword(userId, updateChannelDto);
+ this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
 
 }
 
@@ -273,6 +274,7 @@ async handleRemoveChatPassword(socket: Socket, data: any) {
 const { userId, channelName } = data;
 
 await this.channelService.removeChannelPassword(userId, channelName);
+this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
 
 }
 
@@ -284,7 +286,7 @@ async handlecheckChatPassword(socket: Socket, data: any) {
 
   const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
   console.log("channel pass is correct or not : ", bool);
-  this.server.emit('is userinput correct', bool);
+  this.server.to(socket.id).emit('is userinput correct', bool);
 
 
 }
@@ -309,6 +311,8 @@ async handleAddAdmin(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.addAdmin(channelName, AdminId, username);
+ this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+
 }
 
 @SubscribeMessage('remove admin')
@@ -318,6 +322,8 @@ async handleRemovAdmin(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeAdmin(channelName, AdminId, username);
+ this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+
 }
 
 
