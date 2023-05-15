@@ -26,6 +26,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     const generatedpwd = Math.random().toString(36).substring(2);
     const user = { first_name, last_name, email, img_url, id, username:login}
     const existingUser = await this.userService.findOnebyEmail(email)
+    delete existingUser.secret2fa
     console.log("existingUser", existingUser)
     if (existingUser){
       return done(null, {...existingUser})

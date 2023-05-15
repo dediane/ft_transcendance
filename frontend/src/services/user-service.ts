@@ -10,10 +10,31 @@ export default {
   register (username :string, email :string ,password :string) {
 	  return axiosInstance.post("/user", { username, email, password }).then((res: { data: any }) => res.data)
   },
+
+  activate2fa(twoFactorAuthenticationCode :string) {
+    return axiosInstance.post("auth/2fa/turn-on", { twoFactorAuthenticationCode }).then((res: { data: any }) => res.data)
+  },
+
+  disable2fa(twoFactorAuthenticationCode :string) {
+    return axiosInstance.post("auth/2fa/turn-off", { twoFactorAuthenticationCode }).then((res: { data: any }) => res.data)
+  },
+
+  generate2fa() {
+    return axiosInstance.post("auth/2fa/generate").then((res: { data: any }) => res.data)
+  },
+
+  authenticate2fa(twoFactorAuthenticationCode :string) {
+    return axiosInstance.post("auth/2fa/authenticate", { twoFactorAuthenticationCode }).then((res: { data: any }) => res.data)
+  },
   
   finduser () {
 	  return axiosInstance.get("/user", {}).then((res: { data: any }) => res.data)
   },
+
+  findPublicUser (username :string) {
+	  return axiosInstance.post("/user/username/", {username}).then((res: { data: any }) => res.data)
+  },
+
   profile () {
 	  return axiosInstance.get("/user/profile", {}).then((res: { data: any }) => res.data)
   },
@@ -36,7 +57,8 @@ export default {
 
   find_friend () {
     return axiosInstance.get("/friend").then((res: { data: any}) => res.data)
-  }
+  },
+
 
   //Create42 route GET /auth/42 
   //here ->

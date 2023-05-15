@@ -8,6 +8,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { FortyTwoStrategy } from './login42.strategy';
+import { Jwt2faStrategy } from './jwt-2fa.strategy';
 
 @Module({
   imports:
@@ -19,7 +20,7 @@ import { FortyTwoStrategy } from './login42.strategy';
       signOptions: {expiresIn: '1d'}}),
     UserModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, FortyTwoStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, FortyTwoStrategy, Jwt2faStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

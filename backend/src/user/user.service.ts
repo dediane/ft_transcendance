@@ -28,8 +28,17 @@ export class UserService {
     return users;
   }
 
+  async findByUsername(username: string) : Promise<any | undefined> {
+    const user = await this.userRepository
+    .createQueryBuilder('user')
+    .select('user')
+    .where('user.username = :username', { username})
+    .getOne()
+    const {wins, losses, id} = user;
+    return {wins, losses, username, id};
+  }
+
   async search(params: string) {
-    console.log(params)
     const users = await this.userRepository
     .createQueryBuilder('user')
     .select(['user.username', 'user.id', 'user.avatar'])
@@ -42,7 +51,7 @@ export class UserService {
     const user = await this.userRepository
     .createQueryBuilder('user')
     .select('user')
-    .where('user.email = :email', { email })
+    .where('user.email = :email', { email})
     .getOne()
     return user;
   }
@@ -61,7 +70,6 @@ export class UserService {
       where: { id: user_id },
       relations: ['friends'],
     });
-    console.log("USER", user)
     const friend = await this.findOnebyId(friend_id);
     if(!user.friends) {
       user.friends = []
@@ -77,7 +85,6 @@ export class UserService {
       where: { id: user_id },
       relations: ['friends'],
     });
-    console.log("USER", user)
     if(user.friends) {
       for (var k = 0; k < user.friends.length; k++)
       {
@@ -96,6 +103,26 @@ export class UserService {
       relations: ['friends'],
     })
     )
+  }
+
+  async turnOnTwoFactorAuthentication(userId: number) {
+    const user = await this.findOnebyId(userId);
+    user.is2fa = true;
+    await this.userRepository.update(userId, user);
+  }
+
+  async turnOffTwoFactorAuthentication(userId: number) {
+    const user = await this.findOnebyId(userId);
+    user.is2fa = false;
+    await this.userRepository.update(userId, user);
+  }
+
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+    const user = await this.findOnebyId(userId);
+    user.secret2fa = secret;
+    const result = await this.userRepository.update(userId, user);
+    console.log("reSULT", result)
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

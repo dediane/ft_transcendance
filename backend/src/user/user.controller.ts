@@ -3,6 +3,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
+
 import { prependOnceListener } from 'process';
 
 @Controller('user')
@@ -14,7 +16,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(Jwt2faAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
@@ -30,6 +32,14 @@ export class UserController {
   @Get()
   findOne(@Param() params: string) {
     return this.userService.findOnebyEmail(params);
+  }
+
+  @UseGuards (JwtAuthGuard)
+  @Post('username')
+  async findByUsername(@Body() req: any) {
+    if (!req.username)
+      return { error: 'Username not provided' };
+    return await this.userService.findByUsername(req.username);
   }
 
   @Patch(':id')

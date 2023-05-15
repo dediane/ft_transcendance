@@ -15,7 +15,7 @@ export class SearchController {
     @UseGuards (JwtAuthGuard)
     @Get(':input')
     search(@Param('input') params :any)  {
-      console.log(params, "dans controller")
+      // console.log(params, "dans controller")
       const user = this.userService.search(params);
       return user;
     }
