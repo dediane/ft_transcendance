@@ -573,7 +573,10 @@ console.log("||||||||accessType", accessType)
         ...prevMessages,
         [channelName]: [],
       }));
-      window.location.href = "/Messenger2";
+      // window.location.href = "/Messenger2";
+      // window.location.reload();
+    socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
+
     });
 
 

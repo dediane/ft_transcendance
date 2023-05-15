@@ -250,7 +250,9 @@ async handleRemoveChannel(socket: Socket, channelName: string) {
     
     // await this.messageService.remove(existingChannel.messages.map(msg => msg.id)); // remove all messages in the channel
     await this.channelService.remove(existingChannel.id);
-    this.server.emit('chan removed', channelName); // broadcast to all connected sockets
+    this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+
+    // this.server.emit('chan removed', channelName); // broadcast to all connected sockets
   } else {
     socket.emit('error', `Channel ${channelName} does not exist.`);
   }
