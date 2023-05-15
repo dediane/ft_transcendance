@@ -367,6 +367,8 @@ async handleBanMember(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.banMember(channelName, AdminId, username);
+  this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+
 }
 
 @SubscribeMessage('mute member')

@@ -625,14 +625,14 @@ async banMember(channelName: string, adminId: number, username: string){
   console.log("BAN MEMBER CALLED SERVICE")
   const channel = await this.findOneByName(channelName);
 
-  if(channel.members) {
-    for (var k = 0; k < channel.members.length; k++)
-    {
-      if (channel.members[k].username === username)
-      channel.members.splice(k, 1)
-    }
-    await this.channelRepository.save(channel);
-  }
+  // if(channel.members) {
+  //   for (var k = 0; k < channel.members.length; k++)
+  //   {
+  //     if (channel.members[k].username === username)
+  //     channel.members.splice(k, 1)
+  //   }
+  //   await this.channelRepository.save(channel);
+  // }
 
   const user = await this.userService.findOneByName(username);
  

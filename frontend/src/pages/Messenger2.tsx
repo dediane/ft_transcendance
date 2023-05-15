@@ -239,13 +239,13 @@ function Messenger2() {
       [currentChat.chatName]: updatedBannedMembers,
     }));
 
-    const updatedMembers = members[currentChat.chatName].filter(
-      (member) => member !== userNameToRemoveasMember
-    );
-    setMembers((prevMembers) => ({
-      ...prevMembers,
-      [currentChat.chatName]: updatedMembers,
-    }));
+    // const updatedMembers = members[currentChat.chatName].filter(
+    //   (member) => member !== userNameToRemoveasMember
+    // );
+    // setMembers((prevMembers) => ({
+    //   ...prevMembers,
+    //   [currentChat.chatName]: updatedMembers,
+    // }));
     socketRef?.current?.emit("ban member", payload);  //member to remove a envoyer a la database pour modif
   }
   
