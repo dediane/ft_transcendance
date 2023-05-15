@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as passport from 'passport';
+import helmet from 'helmet';
 
 import { HttpExceptionFilter } from './http-exception.filter';
 
@@ -11,6 +12,8 @@ async function bootstrap() {
   app.enableCors();
   // app.useGlobalFilters(new HttpExceptionFilter());
 
+  // somewhere in your initialization file
+  app.use(helmet());
   const config = new DocumentBuilder()
   .setTitle('Transcendence')
   .setDescription('Transcendence API description')

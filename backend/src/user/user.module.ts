@@ -7,9 +7,10 @@ import { Game } from 'src/game/entities/game.entity';
 import { Message } from 'src/message/entities/message.entity';
 import { SearchController } from 'src/search/search.controller';
 import { FriendController } from 'src/friend/friend.controller';
+import { FriendRequest } from 'src/friend/entities/friends.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Game, Message])],
+  imports: [TypeOrmModule.forFeature([User, Game, Message, FriendRequest])],
   controllers: [UserController, SearchController, FriendController],
   providers: [UserService],
   exports: [UserService]

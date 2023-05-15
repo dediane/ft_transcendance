@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { FriendRequest } from '../friend/entities/friends.entity';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -10,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(FriendRequest) private friendRequestRepository: Repository<FriendRequest>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -65,19 +68,66 @@ export class UserService {
     return user;
   }
 
-  async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
-    const user = await this.userRepository.findOne({
-      where: { id: user_id },
-      relations: ['friends'],
-    });
-    const friend = await this.findOnebyId(friend_id);
-    if(!user.friends) {
-      user.friends = []
-    }
-    user.friends.push(friend)
-    const result = await this.userRepository.save(user);
-    return;
+  // async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
+  //   const user = await this.userRepository.findOne({
+  //     where: { id: user_id },
+  //     relations: ['friends'],
+  //   });
+  //   const friend = await this.findOnebyId(friend_id);
+  //   if(!user.friends) {
+  //     user.friends = []
+  //   }
+  //   user.friends.push(friend)
+  //   const result = await this.userRepository.save(user);
+  //   return;
     
+  // }
+  async addFriend(user_id: any, friend_id: any) : Promise<FriendRequest> {
+    const sender = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user')
+      .where('user.id = :id', { id: user_id })
+      .getOne();
+
+    const receiver = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user')
+      .where('user.id = :id', { id: friend_id })
+      .getOne();
+    
+    const friendRequest = new FriendRequest();
+    friendRequest.sender = sender;
+    friendRequest.receiver = receiver;
+    return this.friendRequestRepository.save(friendRequest);
+  }
+
+  async acceptFriendRequest(request_id: number) : Promise<User> {
+    const request = await this.friendRequestRepository.findOne({ where: { id: request_id }, relations: ['sender', 'receiver'] });
+
+    if (!request) {
+      throw new Error('Request not found');
+    }
+  
+    request.sender.friends.push(request.receiver);
+    request.receiver.friends.push(request.sender);
+  
+    await this.userRepository.save([request.sender, request.receiver]);
+    await this.friendRequestRepository.delete(request_id);
+  
+    return request.receiver;
+  }
+
+  async findFriendRequest(sender_id: any, receiver_id: any): Promise<FriendRequest | undefined> {
+    return await this.friendRequestRepository.findOne({ where: { sender: sender_id, receiver: receiver_id } });
+  }
+
+  async removeFriendRequest(sender_id: number, receiver_id: number): Promise<void> {
+    const friendRequest = await this.findFriendRequest(sender_id, receiver_id);
+    if (friendRequest) {
+      await this.friendRequestRepository.remove(friendRequest);
+    } else {
+      throw new Error('Friend request not found');
+    }
   }
 
   async removeFriend(user_id: number, friend_id: number) {

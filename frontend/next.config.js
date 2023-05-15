@@ -5,13 +5,13 @@ const nextConfig = {
 
 module.exports = {
   ...nextConfig,
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        destination: '/404',
-        permanent: true,
-      },
-    ]
-  }
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: '/:path*',
+  //       destination: '/404',
+  //       permanent: true,
+  //     },
+  //   ]
+  // }
 }
