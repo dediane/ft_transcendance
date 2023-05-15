@@ -14,8 +14,19 @@ const Container = styled.div`
 const PopBox = styled.textarea`
     height: 15%;
     width: 100%;
+    font-size: 0.875rem;
+    font-weight: 500;
 `;
 
+
+// const Button = styled.button`
+//   padding: 10px;
+//   border-radius: 5px;
+//   background-color: #4CAF50;
+//   color: white;
+//   margin-right: 10px;
+//   cursor: pointer;
+// `;
 
 const Button = styled.button`
   padding: 10px;
@@ -24,6 +35,8 @@ const Button = styled.button`
   color: white;
   margin-right: 10px;
   cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
 `;
 
 const CancelButton = styled(Button)`

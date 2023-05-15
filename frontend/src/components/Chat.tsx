@@ -1057,6 +1057,7 @@ if (isBanned) {
         <Container>
 
             <SideBar>
+            {!showModal && (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
   <div>
     <Button3 onClick={openDmModal}>Add DM</Button3>
@@ -1076,27 +1077,42 @@ if (isBanned) {
     <Button3 onClick={openModal}>Add Room</Button3>
   </div>
 </div>
-
+    )}
                 {showModal && (
                   
                   <ModalContainer>
-<form onSubmit={handleRoomCreation}>
-      <label htmlFor="chatNameInput">Chat Name:</label>
-      <input
-        id="chatNameInput"
-        type="text"
-        value={chatName}
-        onChange={handleChatNameChange}
-        placeholder="Enter chat name here"
-        required
-      />
-      <label htmlFor="accessTypeSelect">  Type of chan </label>
-      <select id="accessTypeSelect" value={accessType} onChange={handleAccessTypeChange}>
-        <option value="public">Public</option>
-        <option value="protected">Protected</option>
-        <option value="private">Private</option>
-      </select>
+        <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'right'}}>
 
+                      <Button onClick={() => closeModal()}>X</Button>
+                      </div>
+                      <form onSubmit={handleRoomCreation}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+  <label htmlFor="chatNameInput" style={{ marginRight: '10px', fontWeight: 500, fontSize: '0.875rem' }}>Chat Name:</label>
+  <input
+    id="chatNameInput"
+    type="text"
+    value={chatName}
+    onChange={handleChatNameChange}
+    placeholder="Enter chat name here"
+    required
+    style={{ marginLeft: 'auto', fontWeight: 500, fontSize: '0.875rem'  }}
+  />
+</div>
+
+  <div>
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+  <label htmlFor="accessTypeSelect" style={{ marginRight: '10px', fontWeight: 500, fontSize: '0.875rem' }}>Type of chan:</label>
+  <span style={{ fontWeight: 500, fontSize: '0.875rem', marginLeft: 'auto' }}>
+    <select id="accessTypeSelect" value={accessType} onChange={handleAccessTypeChange}>
+      <option value="public">Public</option>
+      <option value="protected">Protected</option>
+      <option value="private">Private</option>
+    </select>
+  </span>
+</div>
+
+
+  </div>
       {requirePassword && (
         <><label htmlFor="passwordInput">Password:</label><input
                     id="passwordInput"
@@ -1113,11 +1129,13 @@ if (isBanned) {
                     }}
                     required /></>
       )}
+        <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>
 
       <Button3 type="submit">Create Group</Button3>
+      </div>
     </form>
                    
-  <Button onClick={() => closeModal()}>Close Modal</Button>
+
 </ModalContainer>
                 )}
                 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>Channels</h3>
@@ -1185,9 +1203,13 @@ if (isBanned) {
             <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p>
 
             {(!isDM && props.userchans[0] && !((props.accessType !== 'private')  && !isAdmin)) && (
-  <Button onClick={openModal2}>
-    Parameters
-  </Button>
+              <button onClick={openModal2} style={{ lineHeight: '0.5' }}>
+      <span style={{ margin: '0', padding: '0', letterSpacing: '-0.2em' }}>___</span>
+      <br/>
+      <span style={{ margin: '0', padding: '0', letterSpacing: '-0.2em' }}>___</span>
+      <br/>
+      <span style={{ margin: '0', padding: '0', letterSpacing: '-0.2em' }}>___</span>
+    </button>
 )}
    
 </ChannelInfo>
