@@ -298,6 +298,8 @@ async handleAddMember(socket: Socket, payload: any) {
   const bool = await this.channelService.addMember(channelName, AdminId, username);
   // const { memberadded: bool, username: username } = payload;
   this.server.emit("member adding", {memberadded: bool, username: username})
+  this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+
 }
 
 
@@ -327,6 +329,8 @@ async handleRemoveMember(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeMember(channelName, AdminId, username);
+  this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+
 }
 
 @SubscribeMessage('block user')
