@@ -411,6 +411,20 @@ async handleMuteMember(socket: Socket, payload: any) {
       };
     // Save the message to the database
     const channel = await this.channelService.findOneByName(to);
+
+    const mutedMember = channel.mutedMembers.find(member => member.id === senderid);
+
+    if (mutedMember) {
+      // Sender is muted, send a message informing them
+      const payload = {
+        content: 'You have been muted in this channel for one minute. (The messages you are currently sending will not be received by other users.)',
+        chatName,
+        sender: 'System',
+      };
+
+      socket.emit('new message', payload);
+      return; // Exit the function, no need to proceed further
+    }
     // const userchans = this.userService.getChannels();  //plutot enregistrer dans le user chan pour eviter doublons ou bien par chanid
     const senderr = await this.userService.findOnebyId(senderid);
     //TO DO BEFORE: A ADD DANS LE USER APRES CREATION ET CHECK DANS CHANNEL DATABASE
