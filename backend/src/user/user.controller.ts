@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { prependOnceListener } from 'process';
+import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -14,7 +16,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(Jwt2faAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
@@ -32,13 +34,23 @@ export class UserController {
     return this.userService.findOnebyEmail(params);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @UseGuards (JwtAuthGuard)
+  @Post('username')
+  async findByUsername(@Body() req: any) {
+    if (!req.username)
+      return { error: 'Username not provided' };
+    return await this.userService.findByUsername(req.username);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @UseGuards (JwtAuthGuard)
+  @Post('avatar')
+  async uploadAvatar(@Body() body: any, @Request() req) {
+    // Handle image upload logic here
+    console.log('Image uploaded:', body.img_base64);
+    if(!body.img_base64)
+      return { status: false, error: 'Image not provided' };
+    console.log(req.user.id)
+    await this.userService.updateAvatar(req.user.id, body.img_base64);
+    return { status: true };
   }
 }

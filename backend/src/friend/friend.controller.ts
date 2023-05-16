@@ -8,7 +8,23 @@ export class FriendController {
 
     @UseGuards (JwtAuthGuard)
     @Post('add')
-    addFriend(@Request() req) {
+    async addFriend(@Request() req) {
+        const user_id = req.user.id
+        const friend_id = req.body.friend_id
+        console.log(user_id, friend_id)
+        try {
+            const res = await this.userService.addFriend(user_id, friend_id)
+            if(res.id)
+                return {status: true, message: "Friendship requested", id: res.id}
+        } catch(err) {
+            console.log(err)
+            return {status: false, message: "Friendship already requested"}
+        }
+    }
+
+    @UseGuards (JwtAuthGuard)
+    @Post('accept')
+    accept(@Request() req) {
         const user_id = req.user.id
         const friend_id = req.body.friend_id
         console.log(user_id, friend_id)
@@ -30,4 +46,28 @@ export class FriendController {
         return this.userService.findFriend(req.user.id)
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('sendrequest')
+    async sendFriendRequest(@Request() req) {
+    const user_id = req.user.id;
+    const friend_id = req.body.friend_id;
+    const response = await this.userService.sendFriendRequest(user_id, friend_id);
+    return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('acceptrequest')
+    async acceptFriendRequest(@Request() req) {
+    const friendRequestId = req.body.friendRequestId;
+    const response = await this.userService.acceptFriendRequest(friendRequestId);
+    return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('rejectrequest')
+    async rejectFriendRequest(@Request() req) {
+    const friendRequestId = req.body.friendRequestId;
+    const response = await this.userService.rejectFriendRequest(friendRequestId);
+    return response;
+    }
 }

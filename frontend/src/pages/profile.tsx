@@ -4,22 +4,22 @@ import { useEffect, useState } from "react";
 import styles from "../styles/Profile.module.css"
 import { useRouter } from "next/router";
 import { LayoutGroupContext } from "framer-motion";
-import _ from "lodash";
-
+import _, { remove } from "lodash";
+import { Activate2fa } from "@/components/TwoFactor";
+import { AvatarUploader } from "@/components/Avatar";
+import { Searchbar, Friends } from "@/components/FriendComponent";
 export default function Homepage() {
     return (
         <>
-        <div className="">
-        <Searchbar />
-        <Friends />
-        <Play />
-        <Profil />
+        <div className={styles.container}>
+            <FriendModule />
+            {/* <Buttons /> */}
+            <Profil />
         </div>
         </>
     )
 }
-
-const Play = () => {
+const Buttons = () => {
     const [user, setUser] = useState(false)
 
     useEffect(()=>{
@@ -33,7 +33,7 @@ const Play = () => {
         console.log(user)
     }
     return (
-    <div className="flex">
+    <div className="my-auto m-8 min-w-[25%] items-center flex-1">
         <div className="m-4">
         <button className={styles.button}>
             Play PONG!
@@ -54,8 +54,11 @@ const Play = () => {
 }
 
 const Profil = () => {
-    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0})
+    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
+    const [qrcode, setQrcode] = useState('');
+    const [showModal, setShowModal] = useState(false);
     const router = useRouter();
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(()=>{
         const fetch_profile = async() => {
@@ -64,6 +67,8 @@ const Profil = () => {
            const result = await userService.profile()
             setUser({...result})
         }
+        if(!authenticationService.getToken()) 
+            router.push('/login')
         fetch_profile()
     }, [])
 
@@ -72,23 +77,77 @@ const Profil = () => {
         router.push('/login')
     }
 
+    const active2fa = async() => {
+        const  qrcode = await userService.generate2fa()
+        setQrcode(qrcode)
+        setShowModal(true)
+    }
+
+    const disable2fa = async (code: any, setUser: any) => {
+        if(code.length === 6) {
+            const result = await userService.disable2fa(code)
+            if(result.status) {
+                setUser({...user, is2fa: false})
+            }
+            else {
+                alert("Wrong code")
+            }
+        }
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    
+    const handleAvatarUpload = (newAvatarUrl: any) => {
+        setUser((prevUser) => ({ ...prevUser, avatar: newAvatarUrl }));
+    };
+
+
     return (
-         <div className={styles.profilecard}>
-            <h3 className={styles.h1}>My profil</h3>
-            <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
-            </img>
-            <h4>My infos</h4>
+        <>
+         <div className={styles.card}>
+            <div className="col-span-3">
+                <div className="">
+                    <h3 className={styles.h1}>My profil</h3>
+                    
+                    {!user.avatar && <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
+                    </img>}
+                    {user.avatar && <img src={`${user.avatar}`} className={styles.profilepicture}/> }
+                    <AvatarUploader handleUpload={handleAvatarUpload}/>
+                    <h4>My infos</h4>
+                    <hr/>
+                        <Asset title={'username'} value={user.username} />
+                        <Asset title={'email'} value={user.email} />
+                        <Asset title={'Wins:'} value={user.wins} />
+                        <Asset title={'Losses:'} value={user.losses} />
+                        <div>
+                        {!user.is2fa ? <button onClick={() => active2fa()} className={styles.buttonalert}>Activate 2FA</button> : ""}
+                        {user.is2fa ? 
+                        <div>
+                            <button onClick={() => setIsOpen(!isOpen)} className={styles.buttonalert}>Disable 2FA </button> 
+                            {isOpen && <input placeholder="Enter 2FA code" className={styles.inputbox} onChange={(e) => disable2fa(e.target.value, setUser)}/>}
+                        </div>
+                        : ""}
+                        
+                        {showModal && (
+                            <div className="">
+                            <Activate2fa qrcode={qrcode}/>
+                            </div>
+                         )}
+                        </div>
+                        <button onClick={() => logout()} className={styles.buttonalert}>Log out</button>
+                </div>
+                <div className={styles.modal}>
+                </div>
+                {/* <img src={qrcode ? qrcode: ''} className={styles.qrcode}/> */}
             <hr/>
-                <Asset title={'username'} value={user.username} />
-                <Asset title={'email'} value={user.email} />
-                <Asset title={'Wins:'} value={user.wins} />
-                <Asset title={'Losses:'} value={user.losses} />
-                <button onClick={() => logout()} className={styles.button}>Log out</button>
-            <hr/>
+            </div>
         </div>
+        </>
     )
 }
-
 
 const Asset = ({title , value} : {title: string, value :any}) => {
     return(
@@ -99,89 +158,11 @@ const Asset = ({title , value} : {title: string, value :any}) => {
     )
 }
 
-const Friends = () => {
-        const [friend, setFriend] = useState([])
-        useEffect(()=>{
-            const fetch_friends = async() => {
-                const result = await userService.find_friend()
-                console.log(result)
-                setFriend(result.friends)
-            }
-            fetch_friends()
-        }, [])
+const FriendModule = () => {
     return(
-        <div>
-            <h2>My friends</h2>
-            {friend.map((current :any, key :any) => {
-                const {username, id} = current
-                return (
-                    <div key={key} className="flex justify-between flex-row">
-                        <div  className={styles.listelement}>
-                            {username}
-                            {/* <button onClick={() => add_friend(id)} className={styles.button}> */}
-                                {/* add friends
-                            </button>
-                            <button onClick={() => remove_friend(id)} className={styles.button}>
-                                remove friends
-                            </button> */}
-                        </div>
-                    </div>
-                )
-            })}
+        <div className={styles.card}>
+        <Searchbar />
+        <Friends />
         </div>
     )
 }
-
-const Searchbar = () => {
-    const [inputValue, setInputValue] = useState('');
-    const [users, setUsers] = useState([]);
-    const handleInputChange = _.debounce(async (value) => {
-        const result = await userService.search(value)
-        setUsers(result)
-      console.log('Input value:', value, result);
-    }, 500);
-  
-    const handleInput = (event: any) => {
-      const value = event.target.value;
-      setInputValue(value);
-      handleInputChange(value);
-    };
-    return (
-        <div className="">
-            <input value={inputValue} onChange={handleInput}  
-            type="text" placeholder="search your friends" className={styles.inputbox}></input>
-            <Searchresult users={users}/>
-        </div>
-    )
-}
-
-
-const Searchresult = ({users} : {users :any}) => {
-    const add_friend = async (id :number) => {
-        await userService.add_friend(id)
-    }
-    const remove_friend = async (id :number) => {
-        await userService.remove_friend(id)
-    }
-
-    return (
-        <div>
-        {users.map((current :any, key :any) => {
-            const {username, id} = current
-            return (
-                <div key={key} className="flex justify-between flex-row">
-                    <div  className={styles.listelement}>
-                        {username}
-                        <button onClick={() => add_friend(id)} className={styles.button}>
-                            add friends
-                        </button>
-                        <button onClick={() => remove_friend(id)} className={styles.button}>
-                            remove friends
-                        </button>
-                    </div>
-                </div>
-            )
-        })}
-    </div>
-    )
-} 

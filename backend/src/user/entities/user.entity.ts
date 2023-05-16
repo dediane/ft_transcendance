@@ -1,24 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, ManyToOne, JoinColumn, JoinTable } from 'typeorm';
 import { Game } from 'src/game/entities/game.entity';
 import { Message } from 'src/message/entities/message.entity';
+import { FriendRequest } from 'src/friend/entities/friend.entity';
 import { Channel } from 'src/channel/entities/channel.entity';
-
-
-// @Entity()
-// export class ChannelMembership {
-//   @PrimaryGeneratedColumn()
-//   id: number;
-
-//   @ManyToOne(() => Channel, channel => channel.users)
-//   channel: Channel;
-
-//   @ManyToOne(() => User, user => user.memberships)
-//   user: User;
-
-//   @Column()
-//   role: string;
-// }
-
 
 @Entity('users')
 export class User {
@@ -102,5 +86,11 @@ blockedUsers: User[];
   async getChannels(): Promise<Channel[]> {
     return this.channels;
   }
+
+  @OneToMany(() => FriendRequest, friendRequest => friendRequest.sender)
+  sentFriendRequests: FriendRequest[];
+
+  @OneToMany(() => FriendRequest, friendRequest => friendRequest.receiver)
+  receivedFriendRequests: FriendRequest[];
 
 }
