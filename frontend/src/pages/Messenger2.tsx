@@ -9,6 +9,8 @@ import axios from 'axios';
 
 function Messenger2() {
   const [connected, setConnected] = useState(false);
+  const [channels, setChannels] = useState({});
+
   const [passwordError , setPasswordError] = useState(true);
   const [currentChat, setCurrentChat] = useState({
     isChannel: true,
@@ -20,6 +22,7 @@ function Messenger2() {
   const [connectedRooms, setConnectedRooms] = useState(["public"]);
 
   const [invitedMembers, setinvitedMembers] = useState([]);
+ const [userChannels, setUserChannels] = useState([])
   const [admins, setAdmins] = useState([]);
   const [owner, setOwner] = useState([]);
   const [bannedmembers, setBannedmembers] = useState([]);
@@ -474,7 +477,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     //     [room]: messages,
     //   }));
     // });
-    socketRef.current.on("join room", ({ room, accessType, messages, members, admins, bannedmembers, mutedMembers, owner, blockedUsers }) => {
+    socketRef.current.on("join room", ({ room, accessType, messages, members, admins, bannedmembers, mutedMembers, owner, blockedUsers, channels }) => {
       setMessages((prevMessages) => ({
         ...prevMessages,
         [room]: messages,
@@ -510,81 +513,50 @@ console.log(room, "MEMBERS IN MESSENGER2", members)
         ...prevBlockedUsers,
         [userdata.name]: blockedUsers,
       }));
-
-
-
+      console.log("!!!???USERCHANNELS MESSENGER 2!!!!!!!", channels)
+      setUserChannels((prevChannels) => ({
+        ...prevChannels,
+        [userdata.name]: channels,
+      }));
+      console.log("AFTER!!!???USERCHANNELS MESSENGER 2!!!!!!!", userChannels[userdata.name]);
 console.log("||||||||accessType", accessType)
-
-      // const setAccessType = (roomName, accessType) => {
-      //   setAccessType((prevAccessType) => ({
-      //     ...prevAccessType,
-      //     [room]: accessType,
-      //   }));
 
         setAccessType((prevAccessType) => ({
           ...prevAccessType,
           [room]: accessType,
         }));
-// console.log("||||||||2accessType", accessType["PROTECTED"])
-
-      // };
-      // setAccessType(accessType);
-      // setMembers((prevMembers) => ({
-      //   ...prevMembers,
-      //   [room]: members,
-      // }));
-
-
-      // const updatedChat = { ...currentChat, members: [...currentChat.members, ...members] };
-      // setCurrentChat(updatedChat);
-
-      
-        // setMembers(members);
-        // setAdmins(admins);
-
-        // Get the current state
-        // const chatState = { ...currentChat };
-
-        // Add new member(s) to the members array
-        // chatState.members = [...chatState.members, members];
-        // chatState.admins = [...chatState.admins, admins];
-
-        // if(!chatState.admins) {
-        //   chatState.admins = []
-        // }
-        // chatState.admins.push(admin)
-
-        // if(!chatState.members) {
-        //   chatState.members = []
-        // }
-        // chatState.members.push(member)
-        // Update the state
-        // setCurrentChat(chatState);
-
     });
     
+
+    // Example usage inside a function or event handler
+    // socketRef.current.on("join room", ({ channels: newChannels }) => {
+      // const updatedChannels = channels.reduce((obj, channel) => {
+      //   obj[channel.name] = channel;
+      //   return obj;
+      // });
+      
+      // setChannels((prevChannels) => ({
+      //   ...prevChannels,
+      //   ...updatedChannels,
+      // }));
+    // });
+    
+    
+
+
     });
     
 
     socketRef?.current.on("new chan", (channelName :string) => {
       console.log("received new chan", channelName);
-      // setRooms((prevRooms) => [...prevRooms, channelName]);
       setMessages((prevMessages) => ({
         ...prevMessages,
         [channelName]: [],
       }));
-      // window.location.href = "/Messenger2";
-      // window.location.reload();
     socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
 
     });
 
-
-
-
-
-    
-  
     socketRef.current.on("new message", ({ content, sender, chatName }) => {
       setMessages((messages) => {
         const newMessages = immer(messages, (draft) => {
@@ -610,14 +582,12 @@ console.log("||||||||accessType", accessType)
     body = (
       <Chat
         message={message}
-        // userpass={userpass}
         passwordError={passwordError}
         handleMessageChange={handleMessageChange}
         sendMessage={sendMessage}
         changeChatPassword={changeChatPassword}
         removeChatPassword={removeChatPassword}
         checkChatPassword={checkChatPassword}
-        // yourId={socketRef.current ? socketRef.current.id : ""}
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         bannedmembers={bannedmembers}
@@ -626,7 +596,6 @@ console.log("||||||||accessType", accessType)
         users={users}
         userchans={userchans}
         owner={owner}
-
         addMember={addMember}
         addAdmin={addAdmin}
         removeAdmin={removeAdmin}
@@ -647,13 +616,8 @@ console.log("||||||||accessType", accessType)
         accessType={accessType[currentChat.chatName]}
         members={members[currentChat.chatName]}
         mutedMembers={mutedMembers[currentChat.chatName]}
-
-        // accessType={accessType}
-        
+        userChannels={userChannels}
         admins={admins}
-        
-
-
       />
     );
   }

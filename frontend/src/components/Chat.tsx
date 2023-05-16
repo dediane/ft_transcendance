@@ -1,24 +1,8 @@
 import React, { useState, useEffect} from 'react';
 import styled from "styled-components"
-import Popup from 'reactjs-popup';
-import Modal from "react-modal";
 import PopupModal from "./PopUpModal"
-import CustomPopup from "./CustomPopup"
-import { m } from 'framer-motion';
-import Link from 'next/link';
 import MemberList from './MemberList';
-import MemberListModal from './MemberListModal';
-// import ChatRoom from '@/pages/[chatname]';
-
-
 import Message from '@/components/Message';
-// import ChatRoom from '@/pages/[chatname]';
-
-/*
-const TextBox = styled.textarea`
-    height: 15%;
-    width: 100%;
-`;*/
 
 const Container = styled.div`
     height: 100vh;
@@ -26,16 +10,8 @@ const Container = styled.div`
     display: flex;
 `;
 
-const AddRoomButton = styled.div`
-  background-color: blue;
-  color: white;
-  padding: 10px;
-  cursor: pointer;
-`;
-
 const SideBar = styled.div`
-box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
     height: 100%;
     width: 25%;
     overflow-y: scroll;
@@ -64,9 +40,6 @@ const TextBox = styled.textarea`
 
 `;
 
-// ce sont ces lignes qui font bug le password en le mettant en bas mais peut pas enlever sinon le toggle to the bottom quand envoie message ne fonctionne pas    display: flex;
-// flex-direction: column-reverse;
-
 const BodyContainer = styled.div`
     width: 100%;
     height: 75%;
@@ -83,17 +56,11 @@ const BodyContainer = styled.div`
 const ChannelInfo = styled.div`
     height: 10%;
     width: 100%;
-box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    align-items: center;
     display: flex;
-justify-content: space-between;
+    justify-content: space-between;
 `;
-
-
-
-// const Row = styled.div`
-//     cursor: pointer;
-// `;
 
 const Row = styled.div`
   display: flex;
@@ -101,11 +68,11 @@ const Row = styled.div`
   padding: 10px;
   cursor: pointer;
   background-color: ${(props) => (props.active ? 'rgb(199, 143, 204)' : 'initial')};
-
   &:hover {
     background-color: rgb(199, 143, 204);
   }
 `;
+
 const Messages = styled.div`
     display: flex;
     flex-direction: column;
@@ -124,54 +91,13 @@ const Pass = styled.div`
 
 
 const ModalContainer = styled.div`
-height: 100%;
-border-right: 1px solid black;
-overflow-y: scroll;
-
+  height: 100%;
+  border-right: 1px solid black;
+  overflow-y: scroll;
 `;
-// const TextBox = styled.textarea`
-//   width: 100%;
-//   height: 15%;
-//   overflow: scroll;
-  
-//   &.show-modal {
-//     width: 75%;
-//     height: calc(100% - 40px); /* Adjust the value if needed */
-//     margin-right: 25%;
-//   }
-// `;
 
-// const ModalContainer2 = styled.div`
-//   height: 100%;
-//   width: 20%;
-//   position: absolute;
-//   background-color: white;
-//   right: 0;
-//   z-index: 1;
-//   padding: 20px;
-//   overflow-y: scroll;
-// `;
-
-// .button { 
-// 	display: block;
-// 	width: 100%;
-// 	border-radius: 0.5rem;
-// 	background-image: linear-gradient(to right, #ff4b96, #ff83a8);
-// 	padding-left: 1.25rem;
-// 	padding-right: 1.25rem;
-// 	padding-top: 0.75rem;
-// 	padding-bottom: 0.75rem;
-// 	font-size: 0.875rem;
-// 	font-weight: 500;
-// 	color: #fff;
-// }
-
-// .button:hover {
-// background-image: linear-gradient(to right, #ff6fab, #ffa2c1);
-// }
 const Button3 = styled.button`
-display:flex;
-
+  display:flex;
 	border-radius: 0.7rem;
 	background-image: linear-gradient(to right, #ff4b96, #ff83a8);
 	padding-left: 0.5rem;
@@ -184,138 +110,16 @@ display:flex;
 `
 
 const ModalContainer2 = styled.div`
-
-box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   height: 100%;
   width: 21%;
   background-color: white;
-
   position: absolute;
   right: 0;
   z-index: 1;
   padding: 20px;
   overflow-y: scroll;
 
-`;
-const Button = styled.button`
-  position: relative;
-
-  font-size: 0.875rem;
-
-  font-weight: bold;
-  color: var(--line_color);
-  letter-spacing: 2px;
-  transition: all 0.3s ease;
-  overflow-wrap: break-word;
-  &:hover {
-    letter-spacing: 6px;
-  }
-  
-  &::before,
-  &::after,
-  .button__text::before,
-  .button__text::after {
-    content: "";
-    position: absolute;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--line_color);
-    transition: all 0.5s ease;
-  }
-  
-  &::before {
-    top: 0;
-    left: 54px;
-    width: calc(100% - 128px);
-  }
-  
-  &::after {
-    top: 0;
-    right: 54px;
-    width: 8px;
-  }
-  
-  .button__text::before {
-    bottom: 0;
-    right: 54px;
-    width: calc(100% - 128px);
-  }
-  
-  .button__text::after {
-    bottom: 0;
-    left: 54px;
-    width: 8px;
-  }
-  
-  &:hover::before,
-  &:hover .button__text::before {
-    width: 8px;
-  }
-  
-  &:hover::after,
-  &:hover .button__text::after {
-    width: calc(100% - 128px);
-  }
-`;
-
-const Button2 = styled.button`
-  position: relative;
-  width: 100px;
-  font-size: 0.875rem;
-  font-weight: bold;
-  color: var(--line_color);
-  letter-spacing: 2px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    letter-spacing: 6px;
-  }
-
-  &::before,
-  &::after,
-  .button__text::before,
-  .button__text::after {
-    content: "";
-    position: absolute;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--line_color);
-    transition: all 0.5s ease;
-  }
-
-  &::before {
-    top: 0;
-    left: 54px;
-    width: calc(100% - 128px);
-  }
-
-  &::after {
-    top: 0;
-    right: 54px;
-    width: 8px;
-  }
-
-  .button__text::before {
-    bottom: 0;
-    right: 54px;
-    width: calc(100% - 128px);
-  }
-
-  .button__text::after {
-    bottom: 0;
-    left: 54px;
-    width: 8px;
-  }
-
-  &:hover::before,
-  &:hover .button__text::before {
-    width: 8px;
-  }
-
-  &:hover::after,
-  &:hover .button__text::after {
-    width: calc(100% - 128px);
-  }
 `;
 
 const CloseButton = styled.button`
@@ -331,11 +135,7 @@ const CloseButton = styled.button`
 
 
 function Chat(props) {
-    const [rooms, setRooms] = React.useState(props.rooms);
-    // const [rooms, setRooms] = React.useState(Array.from(new Set(props.rooms)));
-// const [rooms, setRooms] = useState<string[]>(props.rooms);
-
-  const [newRoomName, setNewRoomName] = React.useState('');
+  const [rooms, setRooms] = React.useState(props.rooms);
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [usersToAdd, setUsersToAdd] = useState('');
@@ -381,10 +181,6 @@ function Chat(props) {
   function handleDmChange(event) {
     setDm(event.target.value);
   }
-  
-  // const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setPassword(event.target.value);
-  // };
 
   function handlePasswordChange(event) {
     setPassword(event.target.value);
@@ -408,10 +204,6 @@ function Chat(props) {
     setShowPasswordPopup(false);
     setPassword('');
   };
-  
-
-
-
 
   const openAddUserModal = () => {
     setShowAddUserPopup(true);
@@ -431,56 +223,20 @@ function Chat(props) {
     closeAddUserModal();
   };
   
-
-
-
-
-
-
-  const openAddAdminModal = () => {
-    setShowAddAdminPopup(true);
-  };
-
-  const closeAddAdminModal = () => {
-    setShowAddAdminPopup(false);
-    // setPassword('');
-  };
-
-  
-  const addAdmin = () => {
-  props.addAdmin(admin);
-
-    // do something with the new user
-    closeAddAdminModal();
-  };
-
-  function handleAdminAdding(event) {
-    setAdmin(event.target.value);
-  }
   const [blockedUsers, setBlockedUsers] = useState(props.currentUser?.blockedUsers || []);
-
 
   const isUserBlocked = (username : string) => {
 
     if (props.blockedUsers && props.blockedUsers[props.yourId]) {
-      // Check if the current user is in the admins list of the channel
       return props.blockedUsers[props.yourId].includes(username);
      }
-    
-    // console.log("BLOC CHANELS POPULATEd", props.currentUser.username, props.currentUser?.adminChannels)
     return blockedUsers.some((user) => user === username);
   };
   const blockUser2 = (username) => {
-    // const updatedBlockedUsers = [...blockedUsers, { username }];
-    // setBlockedUsers(updatedBlockedUsers);
-    // Additional logic to save the updated blocked users in the backend or perform any necessary operations
     props.blockUser(username);
   };
 
   const unblockUser2 = (username) => {
-    // const updatedBlockedUsers = blockedUsers.filter((user) => user.username !== username);
-    // setBlockedUsers(updatedBlockedUsers);
-    // Additional logic to save the updated blocked users in the backend or perform any necessary operations
     props.unblockUser(username);
   };
 
@@ -488,9 +244,6 @@ function Chat(props) {
 
  
   const isMemberAdmin = (username: string) => {
-    // return(filteredAdmins.some(
-    //   (admin) => admin.username === username
-    // ));
     return props.admins[props.currentChat.chatName].includes(username);
     };
   
@@ -498,22 +251,17 @@ function Chat(props) {
   const addAdmin2 = (username) => {
     const updatedAdminUsers = [...adminUsers, username];
     setAdminUsers(updatedAdminUsers);
-    // Additional logic to save the updated admin users in the backend or perform any necessary operations
     props.addAdmin(username);
   };
 
   const removeAdmin2 = (username) => {
     const updatedAdminUsers = adminUsers.filter((admin) => admin !== username);
     setAdminUsers(updatedAdminUsers);
-    // Additional logic to save the updated admin users in the backend or perform any necessary operations
     props.removeAdmin(username);
   };
 
   const isUserAdmin = (channelName : string) => {
-    // console.log("ADMIN CHANNELS POPULATEd",  props.currentUser?.adminChannels)
-     // Check if the channel exists in the admins object
      if (props.admins && props.admins[channelName]) {
-      // Check if the current user is in the admins list of the channel
       return props.admins[channelName].includes(props.yourId);
      }
     
@@ -523,101 +271,26 @@ function Chat(props) {
 
   const isUserBanned= (channelName : string) => {
     if (props.bannedmembers && props.bannedmembers[channelName]) {
-      // Check if the current user is in the bannedmembers list of the channel
       return props.bannedmembers[channelName].includes(props.yourId);
      }
-    //  console.log("isbannedCHANNELS POPULATEd",  props.currentUser?.isbanned)
-    // if (props.currentUser && props.currentUser.isbanned) {
-    //   return props.currentUser.isbanned.some(
-    //     (chan) => chan.name === chatName
-    //   );
-    // }
-    // return false;
   };
   const isBanned= isUserBanned(props.currentChat.chatName);
 
 
   const isUsermuted= (channelName : string) => {
     if (props.mutedMembers && props.mutedMembers[channelName]) {
-      // Check if the current user is in the mutedMembers list of the channel
       return props.mutedMembers[channelName].includes(props.yourId);
      }
 
   };
   const ismuted= isUsermuted(props.currentChat.chatName);
 
-  // const isUserOwner = (user: User, channelName: string): boolean => {
-  //   console.log("OWNER CHANNELS POPULATEd", props.currentUser?.username, props.currentUser?.ownedChannels)
-
-  //   return user?.ownedChannels.some((channel: Channel) => channel.name === channelName);
-  // };
-  
-  // const isOwner = isUserOwner(props.currentUser, props.currentChat.chatName);
-
-  
   const isUserOwner = (channelName: string): boolean => {
     console.log("?????CHAT PROPS OWNER", channelName, "is", props.owner[channelName])
     return (props.owner[channelName] == props.yourId)
-    // return props.owner[channelName].includes(props.yourId);
   };
   
   const isOwner = isUserOwner(props.currentChat.chatName);
-
-  const [blockUsername, setBlockUser] = useState('');
-  const [showBlockUserPopup, setBlockUserPopup] = useState(false);
-
-  const openBlockUserModal = () => {
-    setBlockUserPopup(true);
-  };
-
-  const closeBlockUserModal = () => {
-    setBlockUserPopup(false);
-    setBlockUser('');
-  };
-  
-  const blockUser = () => {
-  props.blockUser(blockUsername);
-    // do something with the new user
-    closeBlockUserModal();
-  // location.reload();
-
-  };
-
-  function handleBlockUserChange(event) {
-    setBlockUser(event.target.value);
-  }
-
- 
-
-  const [UnblockUsername, setUnblockUser] = useState('');
-
-  const [showUnblockUserPopup, setUnblockUserPopup] = useState(false);
-
-
-
-
-  const openUnblockUserModal = () => {
-    setUnblockUserPopup(true);
-  };
-
-  const closeUnblockUserModal = () => {
-    setUnblockUserPopup(false);
-    setUnblockUser('');
-  };
-  
-  const UnblockUser = () => {
-  props.unblockUser(UnblockUsername);
-  
-
-    // do something with the new user
-    closeUnblockUserModal();
-  };
-
-  function handleUnblockUserChange(event) {
-    setUnblockUser(event.target.value);
-  }
-
-
   
   const [AdmintoRemove, setAdmintoRemove] = useState('');
   const [showRemoveAdminPopup, setShowRemoveAdminPopup] = useState(false);
@@ -631,19 +304,10 @@ function Chat(props) {
     // setPassword('');
   };
 
-  const removeAdmin = () => {
-  props.removeAdmin(AdmintoRemove);
-
-    // do something with the new user
-    closeRemoveAdminModal();
-  };
 
   function handleAdminRemoveing(event) {
     setAdmintoRemove(event.target.value);
   }
-
-
-
 
   const [MemberToRemove, setMemberToRemove] = useState('');
   const [showRemoveMemberPopup, setShowRemoveMemberPopup] = useState(false);
@@ -704,11 +368,6 @@ const muteMember = (member) => {
 
 
 const handleRoomCreation = () => {
-  // const newRoom = {
-  //   chatName: chatName,
-  //   password: requirePassword ? password : null
-  // };
-
   const newRoom = {
     chatName: chatName,
     accessType: accessType,
@@ -764,29 +423,117 @@ function handlePasswordToggle(event) {
       }
 
 
+    // function renderRooms(room){
+    //     const currentChat = {
+    //         chatName: room,
+    //         isChannel: true,
+    //         receiverId: "",
+    //     };
+    //     return (
+    //   <Row
+    //   style={{ fontWeight: 500, fontSize: '0.875rem' }}
+    //   onClick={() => props.toggleChat(currentChat)}
+    //   key={room}
+    //   active={props.currentChat.chatName === room}
+    //   >
+    //   {room}
+    //   </Row>
+
+    //     )
+    // }
+
+
+
     function renderRooms(room){
-        const currentChat = {
-            chatName: room,
-            isChannel: true,
-            receiverId: "",
-        };
-        return (
-      //     <Row style={{ fontWeight: 500, fontSize: '0.875rem' }} onClick={() => props.toggleChat(currentChat)} key={room}>
-      //     {room}
-      // </Row>
-      <Row
+      if (room.accessType == 'private')
+        return;
+        console.log("ACCESSTYPE", room.accessType)
+      console.log("IN ROOM", room)
+      const currentChat = {
+          chatName: room.name,
+          isChannel: true,
+          receiverId: "",
+      };
+      return (
+    <Row
+    style={{ fontWeight: 500, fontSize: '0.875rem' }}
+    onClick={() => props.toggleChat(currentChat)}
+    key={room.name}
+    active={props.currentChat.chatName === room.name}
+    >
+    {room.name}
+    </Row>
+
+      )
+  }
+
+
+  function renderPrivate(room){
+    console.log("IN ROOM", room)
+
+    if (room.accessType != 'private')
+      return;
+    if (!room.DM)
+      return;
+    const currentChat = {
+        chatName: room.name,
+        isChannel: true,
+        receiverId: "",
+    };
+
+    let othername = "";
+    if (room.dm) {
+      const otherMember = room.members.find(member => member.username !== props.yourId);
+      othername = otherMember.username;
+    }
+    else
+      othername = room.name
+    return (
+  <Row
   style={{ fontWeight: 500, fontSize: '0.875rem' }}
   onClick={() => props.toggleChat(currentChat)}
-  key={room}
-  active={props.currentChat.chatName === room}
+  key={room.name}
+  active={props.currentChat.chatName === room.name}
+  >
+  {
+    othername
+  }
+  </Row>
+    )
+}
+
+function renderDMS(room){
+  console.log("IN ROOM", room)
+
+  if (room.accessType != 'private')
+    return;
+  const currentChat = {
+      chatName: room.name,
+      isChannel: true,
+      receiverId: "",
+  };
+
+  let othername = "";
+  if (room.dm) {
+    const otherMember = room.members.find(member => member.username !== props.yourId);
+    othername = otherMember.username;
+  }
+  else
+    othername = room.name
+  return (
+<Row
+style={{ fontWeight: 500, fontSize: '0.875rem' }}
+onClick={() => props.toggleChat(currentChat)}
+key={room.name}
+active={props.currentChat.chatName === room.name}
 >
-  {room}
+{
+  othername
+}
 </Row>
-
-        )
-    }
-
-
+  )
+}
+    
     function renderUser(user){
       console.log("render user");
 console.log("ACCESSTYPE????", props.accessType)
@@ -818,29 +565,7 @@ console.log("ACCESSTYPE????", props.accessType)
     fontsize: " 0.875rem",
   };
 
-    // function renderMessages(message, index){
-    //     return (
-    //         <div key={index}  style={userStyle}>
-    //             <h3>{message.sender}</h3>
-    //             <p>{message.content}</p>
-    //         </div>
-    //     )
-    // }
-
-
-    // function renderMessages(message, index) {
-    //   const isMyMessage = message.sender === props.yourid;
-    
-    //   return (
-    //     <Message key={index} isMyMessage={isMyMessage}>
-    //       <h3>{message.sender}</h3>
-    //       <p>{message.content}</p>
-    //     </Message>
-    //   );
-    // }
-
-
-    function renderMessages(message, index) {
+  function renderMessages(message, index) {
       return (
         <Message
           key={index}
@@ -851,15 +576,15 @@ console.log("ACCESSTYPE????", props.accessType)
       );
     }
     
-  
-    
     let body;
 if (isBanned) {
   body = (
-    <Messages>
-      Can't access this chan, you were banned from this channel
-    </Messages>
-  );
+<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500, fontSize: '14px' }}>
+  <span style={{ marginRight: '10px' }}>Can't access this channel, you were BANNED</span>
+</div>
+
+  )
+
 } else {
   body = (
     
@@ -1083,7 +808,7 @@ if (isBanned) {
                   <ModalContainer>
         <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'right'}}>
 
-                      <Button onClick={() => closeModal()}>X</Button>
+                      <button onClick={() => closeModal()}>X</button>
                       </div>
                       <form onSubmit={handleRoomCreation}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1142,7 +867,21 @@ if (isBanned) {
 
 
               
-                {props.rooms?.map(renderRooms)}
+                {/* {props.rooms?.map(renderRooms)} */}
+                {/* {Object.values(props.userChannels[props.yourId]).forEach(channel => {
+  console.log(channel.name);
+  console.log(channel.accessType);
+  // Do something with the accessType value
+})}; */}
+                {props.userChannels[props.yourId]?.map(renderRooms)}
+                {/* <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>Private</h3> */}
+                {props.userChannels[props.yourId]?.map(renderPrivate)}
+                <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>My Dms</h3>
+                {props.userChannels[props.yourId]?.map(renderDMS)}
+
+
+                {/* {props.userChannels?.map(renderRooms)} */}
+                {/* {Object.keys(props.userChannels || {}).map(renderRooms)} */}
                 {/* {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)} */}
                 {/* {props.currentChat.members && Array.isArray(props.currentChat.members) && props.currentChat.members.map(renderUser)} */}
 
@@ -1197,7 +936,7 @@ if (isBanned) {
      </SideBar>
 
      <ChatPanel>
-     {(!isDM &&
+     {(!isDM && (!isBanned) && (!props.passwordError) &&
         <ChannelInfo>
         <p style={{ fontWeight: 500, fontSize: '0.875rem' }}> {props.currentChat.chatName}</p>
             <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p>
@@ -1218,10 +957,7 @@ if (isBanned) {
 {(isDM &&
   <ChannelInfo>
   <div style={{ marginLeft: 'auto' }}>
-  {/* <div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center' , justifyContent: 'center'}}> */}
-
   <Button3 onClick={() => playPong()}>
-
     Play pong
   </Button3>
 </div>
@@ -1263,8 +999,6 @@ if (isBanned) {
   <Button3 onClick={openPasswordModal}>Make channel password-protected</Button3>
   </div>
 )}
-
-      
        <PopupModal
         isOpen={showPasswordPopup}
         onRequestClose={closePasswordModal}
@@ -1301,9 +1035,7 @@ if (isBanned) {
 user!== props.currentUser.username && (
 <li key={i}>
   <label>
-    {/* {user} */}
     <div style={{ display: 'flex', alignItems: 'center' }}>
-
     <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
             {user}
           </span>
@@ -1352,37 +1084,6 @@ user!== props.currentUser.username && (
 </ul>
 </div>
     )}
-{/* {isOwner ? (
-  <>
-    <Button onClick={openAddAdminModal}>Make a user admin</Button>
-    <PopupModal
-      isOpen={showAddAdminPopup}
-      onRequestClose={closeAddAdminModal}
-      onSave={addAdmin}
-      onCancel={closeAddAdminModal}
-      value={admin}
-      onChange={handleAdminAdding}
-      placeholder="Enter the username of the user you want to make an admin"
-      modalId="add-user-modal"
-      buttonText="Add User"
-    />
-
-    <Button onClick={openRemoveAdminModal}>Remove admin from chat</Button>
-    <PopupModal
-      isOpen={showRemoveAdminPopup}
-      onRequestClose={closeRemoveAdminModal}
-      onSave={removeAdmin}
-      onCancel={closeRemoveAdminModal}
-      value={AdmintoRemove}
-      onChange={handleAdminRemoveing}
-      placeholder="Enter the username of the user you want to remove as an admin"
-      modalId="Remove-user-modal"
-      buttonText="Remove User"
-    />
-  </>
-) : null} */}
-
-
     </div>
 {isOwner &&
   <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
@@ -1410,6 +1111,7 @@ user!== props.currentUser.username && (
 {body}
 
         </BodyContainer>
+        {(!isBanned) && (!props.passwordError) &&
          <TextBox
          className={showModal2 ? "show-modal" : ""}
             value={props.message}
@@ -1417,8 +1119,9 @@ user!== props.currentUser.username && (
             onKeyPress={handleKeyPress}
             placeholder="enter message here"
         />
+      }
+
      </ChatPanel>
-     
      </Container>
             )
 }

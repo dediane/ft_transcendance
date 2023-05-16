@@ -186,7 +186,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       this.messages[channelName].push(...channelMessages);
       // console.log("members and admins AAAAAAARE", admins, members)
       // console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
-       this.server.to(socket.id).emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner, blockedUsers: blockedusernames }); // send all messages for all rooms
+       this.server.to(socket.id).emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner, blockedUsers: blockedusernames, channels: channels }); // send all messages for all rooms
       console.log("ALL USERS CHANS SOCKET")
        this.server.to(socket.id).emit("all user's chans", channels);
     }
