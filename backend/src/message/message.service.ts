@@ -38,65 +38,6 @@ export class MessageService {
       };
     });
   }
-
-  // async getMessagesPayloadperChan(channelName: string): Promise<Message[]> {
-  //   const channel = await this.channelRepository.findOne({ name: channelName });
-  //   if (!channel) {
-  //     throw new NotFoundException(`Channel '${channelName}' not found`);
-  //   }
-  
-  //   const messages = await this.messageRepository.find({ channel });
-  
-  //   const payload = messages.map((message) => ({
-  //     content: message.content,
-  //     chatName: channelName,
-  //     sender: message.sender,
-  //   }));
-  
-  //   return payload;
-  // }
-  
-  // async getMessagesPayloadperChan(channelName: string): Promise<{ content: string, chatName: string, sender: string }[]> {
-  //   const channel = await this.channelRepository.findOne({ name: channelName });
-  //   if (!channel) {
-  //     throw new NotFoundException(`Channel '${channelName}' not found`);
-  //   }
-  
-  //   const messages = await this.messageRepository.find({ where: { channel } });
-  //   const payload = messages.map((message) => ({
-  //     content: message.content,
-  //     chatName: channel.name,
-  //     sender: message.sender.username,
-  //   }));
-  
-  //   return payload;
-  // }
-  
-  
-  
-  // async getMessagesForChannel(channelId: number): Promise<Message[]> {
-  //   const messages = await this.messageRepository.find({
-  //     where: {
-  //       channel: { id: channelId },
-  //     },
-  //     relations: ['sender', 'channel'],
-  //   });
-  //   return messages;
-  // }
-  
-  // async getMessagesForChannelbyName(channelName: string): Promise<Message[]> {
-  //   const channel = await this.channelRepository.findOne({
-  //     where: { name: channelName },
-  //     relations: ['messages', 'messages.sender', 'messages.channel'],
-  //   });
-  //   if (!channel) {
-  //     throw new Error(`Channel ${channelName} not found`);
-  //   }
-  //   return channel.messages;
-  // }
-  
-  
-  
   
   async findOne(id : number) : Promise<Message | undefined> {
     const Message = await this.messageRepository
@@ -107,7 +48,6 @@ export class MessageService {
 
     return Message;
   }
-  
 
   async update(id: number, updateMessageDto: UpdateMessageDto): Promise<Message> {
     const message = await this.messageRepository.findOne({where: {id}});

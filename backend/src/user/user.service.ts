@@ -205,7 +205,6 @@ async update(id: number, updateUserDto: UpdateUserDto) {
   }
   
   async unblockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
-    // Find the user who is blocking
     console.log("unblock user SERVICE")
     const blocker = await this.userRepository.findOne({
       where: { id: blockerUserId },
@@ -215,20 +214,13 @@ async update(id: number, updateUserDto: UpdateUserDto) {
     if (!blocker) {
       throw new Error(`User with id ${blockerUserId} not found`);
     }
-  
-    // Find the user who is being blocked
     const blockee = await this.userRepository.findOne({
       where: { username: blockeeUsername },
     });
-  
     if (!blockee) {
       throw new Error(`User with username ${blockeeUsername} not found`);
     }
-  
-    // Remove the blockee from the blocker's list of blocked users
     blocker.blockedUsers = blocker.blockedUsers.filter(user => user.id !== blockee.id);
-  
-    // Save the blocker to the database
     await this.userRepository.save(blocker);
   }
   
@@ -242,8 +234,6 @@ async update(id: number, updateUserDto: UpdateUserDto) {
     if (!user) {
       throw new Error(`User with id ${userId} not found`);
     }
-  
-    // Return the list of blocked users
     return user.blockedUsers;
   }
 

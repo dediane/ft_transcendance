@@ -2,12 +2,6 @@ import { Message } from 'src/message/entities/message.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
 
-// export enum ChannelAccessType {
-//     Protected = 'protected',
-//     Public = 'public',
-//     Private = 'private'
-//   }
-
 @Entity('channels')
 export class Channel {
     @PrimaryGeneratedColumn()
@@ -49,6 +43,4 @@ export class Channel {
     @ManyToMany(() => User, user => user.isbanned)
     @JoinTable()
     bannedUsers: User[];
-
-
 }
