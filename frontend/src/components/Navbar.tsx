@@ -10,7 +10,7 @@ export const Navbar = () => {
     <div className="hidden w-full md:block md:w-auto" id="navbar-default">
       <ul className="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0">
         <li>
-          <a href="." className={styles.link}>Home</a>
+          <a href="/login" className={styles.link}>Home</a>
         </li>
         <li>
           <a href="home_game" className={styles.link}>
