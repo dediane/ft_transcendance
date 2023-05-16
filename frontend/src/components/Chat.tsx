@@ -473,7 +473,7 @@ function handlePasswordToggle(event) {
 
     if (room.accessType != 'private')
       return;
-    if (!room.DM)
+    if (room.dm)
       return;
     const currentChat = {
         chatName: room.name,
@@ -507,6 +507,9 @@ function renderDMS(room){
 
   if (room.accessType != 'private')
     return;
+  if (room.dm != true)
+    return; 
+
   const currentChat = {
       chatName: room.name,
       isChannel: true,
@@ -874,7 +877,7 @@ if (isBanned) {
   // Do something with the accessType value
 })}; */}
                 {props.userChannels[props.yourId]?.map(renderRooms)}
-                {/* <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>Private</h3> */}
+                <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>Private chans</h3>
                 {props.userChannels[props.yourId]?.map(renderPrivate)}
                 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>My Dms</h3>
                 {props.userChannels[props.yourId]?.map(renderDMS)}
@@ -886,8 +889,10 @@ if (isBanned) {
                 {/* {props.currentChat.members && Array.isArray(props.currentChat.members) && props.currentChat.members.map(renderUser)} */}
 
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All connected Users</h3>
+        <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
 
         {props.allUsers?.map(renderUser)}
+        </span>
 {/* OK */}
         {/* <h3>All Users</h3>
         <ul>
@@ -936,7 +941,7 @@ if (isBanned) {
      </SideBar>
 
      <ChatPanel>
-     {(!isDM && (!isBanned) && (!props.passwordError) &&
+      {((!isDM) && (!isBanned) && (!(props.accessType === "protected" && props.passwordError))) && props.currentChat.chatName && (
         <ChannelInfo>
         <p style={{ fontWeight: 500, fontSize: '0.875rem' }}> {props.currentChat.chatName}</p>
             <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p>
@@ -1029,7 +1034,8 @@ if (isBanned) {
       />
        {isOwner && (props.accessType !== 'public') && (
       <div>
-    <h3>All Members except owner and yourself</h3>
+<h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members except owner and yourself</h3>
+
   <ul>
   {filteredMembersUsernames?.map((user, i) => (
 user!== props.currentUser.username && (
@@ -1055,8 +1061,7 @@ user!== props.currentUser.username && (
     </div>)}
     {isOwner && (props.accessType === 'public' || props.accessType === 'protected') && (
 <div>
-  
-    <h3>All Members</h3>
+<h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members</h3>
 <ul>
   {filteredUsersUsernames?.map((user, i) => (
     user !== props.currentUser.username && (
@@ -1111,7 +1116,7 @@ user!== props.currentUser.username && (
 {body}
 
         </BodyContainer>
-        {(!isBanned) && (!props.passwordError) &&
+        {(!isBanned) && (!(props.accessType == "protected" && (props.passwordError))) &&(props.currentChat.chatName) && 
          <TextBox
          className={showModal2 ? "show-modal" : ""}
             value={props.message}
