@@ -555,9 +555,10 @@ console.log("ACCESSTYPE????", props.accessType)
           receiverId: user.username,
       };
       return(
-          <div onClick={() => {
-              props.toggleChat(currentChat);
-          }} key={user.username}>
+          // <div onClick={() => {
+          //     props.toggleChat(currentChat);
+          // }} key={user.username}>
+            <div>
               {user.username}
           </div>
       )

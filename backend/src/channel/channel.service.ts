@@ -399,7 +399,11 @@ async removeMember(channelName: string, adminId: number, username: string){
     await this.channelRepository.save(channel);
   }
   if ((channel.admins.length === 0) && (channel.members.length === 0) )
+  {
+    this.remove(channel.id);
     return;
+  }
+
   // const channel = await this.findOneByName(channelName);
   let newOwner;
   if (isOwner) {
@@ -449,6 +453,11 @@ async muteMember(channelName: string, adminId: number, username: string){
 
   if (!user) {
     throw new Error(`User ${username} not found`);
+  }
+  for (var k = 0; k < channel.mutedMembers.length; k++)
+  {
+    if (channel.mutedMembers[k].username === username)
+        return;
   }
 
   const mutedUntil = new Date(Date.now() + 60 * 1000); // 1 minute, change to 120000 for 2 minutes

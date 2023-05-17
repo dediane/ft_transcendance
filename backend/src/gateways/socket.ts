@@ -103,8 +103,9 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       const mutedMembers = channel.mutedMembers?.map(user => user.username);
       const admins = channel.admins?.map(user => user.username);
       const bannedmembers = channel.bannedUsers?.map(user => user.username);
+      console.log("????????owner SOCKET", channel.owner.username)
       const owner = channel.owner.username;
-      // console.log("owner SOCKET", owner)
+
       socket.join(channelName);
       if (!this.messages[channelName]) {
         this.messages[channelName] = []; // add new room if it doesn't exist

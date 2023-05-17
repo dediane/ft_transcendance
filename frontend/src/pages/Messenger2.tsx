@@ -73,6 +73,7 @@ function Messenger2() {
     }));
 
   
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
     
   }
 
@@ -83,6 +84,8 @@ function Messenger2() {
     };
     console.log(`Messenger2: creating DM with ${username2} and {${datachan.username2}}`)
     socketRef?.current?.emit("create DM", datachan);
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   
     // setRooms((prevRooms) => {
     //   if (!prevRooms.includes(data.chatName)) {
@@ -115,6 +118,8 @@ function Messenger2() {
       ...prevState,
       chatName: userchans[0].name,
     }));
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
    
   }
 
@@ -126,6 +131,8 @@ function Messenger2() {
       channelName: currentChat.chatName,
     };
     socketRef?.current?.emit("remove password", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
 
@@ -137,6 +144,8 @@ function Messenger2() {
       newPassword : newpass,
     };
     socketRef?.current?.emit("change password", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
 
@@ -148,6 +157,8 @@ function Messenger2() {
       userInput : userinput,
     };
     socketRef?.current?.emit("check password", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
 
@@ -169,6 +180,8 @@ function Messenger2() {
       [currentChat.chatName]: updatedMembers,
     }));
     setNewMember("");
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
   function addAdmin(userNameToAddasAdmin: string)
@@ -186,6 +199,8 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("add admin", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
   function removeAdmin(userNameToRemoveasAdmin: string)
@@ -204,6 +219,8 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("remove admin", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
 
@@ -224,6 +241,8 @@ function Messenger2() {
       [currentChat.chatName]: updatedMembers,
     }));
     socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
   function banMember(userNameToRemoveasMember: string)
@@ -250,6 +269,8 @@ function Messenger2() {
     //   [currentChat.chatName]: updatedMembers,
     // }));
     socketRef?.current?.emit("ban member", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
   
 
@@ -264,6 +285,8 @@ function Messenger2() {
     };
   
     socketRef?.current?.emit("mute member", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
 
 
@@ -282,6 +305,9 @@ function Messenger2() {
     }));
     
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
+
   }
 
 
@@ -301,8 +327,9 @@ function Messenger2() {
       [userdataname]: updatedBlockedUsers,
     }));
 
-  
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
+    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
   }
   
 function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
