@@ -138,6 +138,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     console.log(`attempting (${roomName}) room (${accessType}) creation. password is (${password}) and creator is (${datachan.creator})`)
     const usr = await this.userService.findOnebyId(datachan.creator);
     const existingChannel = await this.channelService.findOneByName(roomName);
+    
     if (!existingChannel) {
       console.log(`room (${roomName})  doesn't exist so let's create it`)
       const channelDto: CreateChannelDto = {

@@ -116,11 +116,9 @@ function Messenger2() {
     });
     setCurrentChat((prevState) => ({
       ...prevState,
-      chatName: userchans[0].name,
+      chatName : "",
     }));
     socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
-
-   
   }
 
 
@@ -233,6 +231,7 @@ function Messenger2() {
       AdminId: AuthService.getId(),
       username : userNameToRemoveasMember,
     };
+
     const updatedMembers = members[currentChat.chatName]?.filter(
       (member) => member !== userNameToRemoveasMember
     );
@@ -242,6 +241,17 @@ function Messenger2() {
     }));
     socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
     socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+
+    //if removed member is self update currentchat
+    if (AuthService.getUsername() === userNameToRemoveasMember)
+    {
+      setCurrentChat((prevState) => ({
+        ...prevState,
+        // chatName: userchans[0].name,
+        chatName : "",
+      }));
+    }
+
 
   }
 

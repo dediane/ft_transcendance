@@ -469,6 +469,8 @@ function handlePasswordToggle(event) {
 
 
   function renderPrivate(room){
+    if (room.accessType == 'private' && !(room.members.find(member => member.username === props.yourId)))
+      return;
     console.log("IN ROOM", room)
 
     if (room.accessType != 'private')
@@ -1095,6 +1097,7 @@ user!== props.currentUser.username && (
   <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
   <Button3 onClick={() => {
     props.removeChannel(props.currentChat.chatName);
+    closeModal2();
   }}>
     Delete Chan
   </Button3>
@@ -1104,7 +1107,8 @@ user!== props.currentUser.username && (
 <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
 <Button3 onClick={() => {
       props.removeMember(props.yourId);
-      closeRemoveMemberModal();
+    closeModal2();
+
     }}>	
       Leave Chan
     </Button3>	
