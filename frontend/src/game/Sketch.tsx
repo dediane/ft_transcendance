@@ -85,6 +85,11 @@ import React from 'react';
             // puck.x, puck.y, puck.r
             // to show
           });
+          
+          socket?.on("end game", () => {
+            console.log("redirection my bro")
+            window.location.href = "/home_game";
+          });
 
           socket?.on("paddle update", (payload : any) => {
             console.log("update paddle");

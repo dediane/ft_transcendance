@@ -379,7 +379,7 @@ for (const user of this.users) {
         data : any) 
     {
       const {message, userid, username} = data;
-      console.log("user id is ", userid, " username", username);
+      console.log("------->>>>>   user id is ", userid, " username", username);
       console.log(this.room_id);
       if (!this.room_id)
       {
@@ -389,17 +389,18 @@ for (const user of this.users) {
         };
         const game = await this.gameService.create(gameDto);
         if (!game)
-          return ;
+        return ;
         this.room_id = game.id.toString();
         console.log("game id  ", this.room_id);
       }
-      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
-      if ((connectedSockets && connectedSockets.size === 1))
+      //console.log("------->>>>>   user id is ", userid, " username", username);
+     const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
+      /*if ((connectedSockets && connectedSockets.size === 1))
       {
         const game = await this.gameService.findOne(Number(this.room_id))
         console.log("this.room id 1 ", this.room_id)
-        console.log("PLAAAYYYERRRRR 2222 ", username)
-        if (username === this.player2)
+        console.log("PLAAAYYYERRRRR 1 by username", username)
+        if (this.player2 && username === this.player2)
         {
           console.log ("same personne good bye");
           return ;
@@ -417,9 +418,9 @@ for (const user of this.users) {
       {
         console.log("this.room id 2 ", this.room_id)
         const game = await this.gameService.findOne(Number(this.room_id))
-        console.log("PLAAAYYYERRRRR 1111 ", this.player1)
-        console.log("PLAAAYYYERRRRR 2222 ", username)
-        if (username === this.player1)
+        console.log("PLAAAYYYERRRRR 1 ", this.player1)
+        console.log("PLAAAYYYERRRRR 2 ", username)
+        if (this.player1 && username === this.player1)
         {
           console.log ("same personne good bye");
           return ;
@@ -431,7 +432,7 @@ for (const user of this.users) {
         await this.userService.update(userid, up);
         console.log("update player 2");
         this.player2 = user.username;
-      }
+      }*/ // a revoir 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
       {
@@ -514,7 +515,7 @@ for (const user of this.users) {
           }
         }
 
-        async addscore() {
+        async addscore(id_room: string) {
           console.log("PASSE PAR ADD SCORE BACK")
           const luser = await this.userService.findOnebyId(this.paddle_left.id)
           const ruser = await this.userService.findOnebyId(this.paddle_right.id)
@@ -545,24 +546,22 @@ for (const user of this.users) {
               // await this.userService.update(this.paddle_right.id, updateuserdto2);
               // here true await this.userService.update(this.paddle_left.id, luser);
               // here true await this.userService.update(this.paddle_right.id, ruser);
-        
+              setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
         }
-
-        async savegame(){
-          //const game = this.gameService.findOne(Number(this.room_id));
-          this.room_id = "";
-          console.log("room id after final ", this.room_id);
+        
+        end_game(id_room: string) {
+          this.server.to(id_room).emit("end game");
         }
 
         // function helper to game position
     updateBall(socket: Socket) {
       //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
-        this.addscore();
-        this.savegame();
+        this.addscore(this.room_id);
         // socket emit
         return;
-      } else {
+      }
+      else {
         if (this.puck) { // Check if this.puck is defined
           this.puck.update();
           this.puck.edges();
