@@ -135,7 +135,7 @@ const CloseButton = styled.button`
 
 
 function Chat(props) {
-  const [rooms, setRooms] = React.useState(props.rooms);
+  // const [rooms, setRooms] = React.useState(props.rooms);
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [usersToAdd, setUsersToAdd] = useState('');
@@ -374,33 +374,7 @@ const handleRoomCreation = () => {
     password: requirePassword ? password : null
   };
   props.createNewChannel(newRoom);
-    // do something with the new user
-    // closeAddAdminModal();
   };
-
-function handleChatNameKeyPress(event) {
-  if (event.key === "Enter" || event.key === "Next") {
-    event.preventDefault();
-    // add the new room to the list of rooms if it doesn't already exist
-    if (chatName !== null && chatName !== '') {
-      if (!rooms.includes(chatName)) {
-        const newRoom = {
-          chatName: chatName,
-          password: requirePassword ? password : null
-        };
-        setRooms([...rooms, chatName]);
-        props.createNewChannel(newRoom);
-      } else {
-        setShowPopup(true);
-        console.log('Error: Room already exists'); // add the error message to the screen
-      }
-    }
-    // reset the chat name state variable
-    setChatName('');
-    setShowModal(false);
-  }
-}
-
 
 function handlePasswordToggle(event) {
   setRequirePassword(event.target.checked);
@@ -644,31 +618,7 @@ if (isBanned) {
 
 
     }
-    // const UserList = (chatName : string) => {
-    //   console.log("USERLIST POPULATEd",  props.userchans)
-    //   if (props.userchans)
-    //   {
-    //     const channel = props.userchans.some(
-    //       (chan) => chan.name === chatName
-    //     );
-    //   console.log("CHAN POPULATEd",  channel)
-
-        
-
-    //   }
-   
-
-    //   // if (props.currentUser && props.currentUser.adminChannels) {
-    //   //   return props.currentUser.adminChannels.some(
-    //   //     (chan) => chan.name === chatName
-    //   //   );
-    //   // }
-    //   // const chanmembers = channel?.members;
-
-    //   // const filteredMembers = chanmembers.filter(member => member === channel.owner && member === yourId);
-
-    //   // return filteredMembers;
-    // };
+ 
     const isDMchan = (chatName: string) => {
       if (props.userchans)
       {
@@ -727,10 +677,6 @@ if (isBanned) {
           const filteredMembers = channelMembers.filter(
             (member) => member !== channel.owner?.username && member !== props.yourId
           );
-          // Filter channel members based on conditions
-          // const filteredMembers = channelMembers.filter(
-          //   (member) => member.username !== channel.owner?.username && member.username !== props.yourId
-          // );
           console.log("FILTERED MEMBERS:", filteredMembers);
     
           return filteredMembers;
@@ -740,14 +686,8 @@ if (isBanned) {
       return null; // Or handle the case when no channel or members are found
     };
     
-    // const [filteredMembers, setFilteredMembers] = useState([]);
-    // if (!isDM)
-    // {
       const filteredMembersUsernames = UserList(props.currentChat.chatName);
 
-    // }
-    // const filteredMembersUsernames = filteredMembers?.map((member) => member.username);
-    
     const UserListPublic = (chatName: string) => {
       console.log("USERLIST POPULATED", props.userchans, "FOR", chatName);
     
@@ -871,38 +811,17 @@ if (isBanned) {
                 )}
                 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>Channels</h3>
 
-
-              
-                {/* {props.rooms?.map(renderRooms)} */}
-                {/* {Object.values(props.userChannels[props.yourId]).forEach(channel => {
-  console.log(channel.name);
-  console.log(channel.accessType);
-  // Do something with the accessType value
-})}; */}
                 {props.userChannels[props.yourId]?.map(renderRooms)}
                 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>Private chans</h3>
                 {props.userChannels[props.yourId]?.map(renderPrivate)}
                 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>My Dms</h3>
                 {props.userChannels[props.yourId]?.map(renderDMS)}
 
-
-                {/* {props.userChannels?.map(renderRooms)} */}
-                {/* {Object.keys(props.userChannels || {}).map(renderRooms)} */}
-                {/* {props.rooms && Array.isArray(props.rooms) && props.rooms.map(renderRooms)} */}
-                {/* {props.currentChat.members && Array.isArray(props.currentChat.members) && props.currentChat.members.map(renderUser)} */}
-
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All connected Users</h3>
         <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
 
         {props.allUsers?.map(renderUser)}
         </span>
-{/* OK */}
-        {/* <h3>All Users</h3>
-        <ul>
-        {props.users?.map((user, i) => (
-          <li key={i}>{user.username}</li>
-          ))}
-        </ul> */}
         <div>
 
         <div>
@@ -915,7 +834,6 @@ if (isBanned) {
           <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
             {user.username}
           </span>
-          {/* <div style={{ marginLeft: 'auto' }}> */}
             <>
               {isUserBlocked(user.username) ? (
                 <Button3 onClick={() => unblockUser2(user.username)}>
@@ -930,7 +848,6 @@ if (isBanned) {
                     Profile
                   </Button3>
             </>
-          {/* </div> */}
         </div>
       </li>
     )
