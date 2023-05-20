@@ -7,7 +7,7 @@ import { LayoutGroupContext } from "framer-motion";
 import _, { remove } from "lodash";
 import { Activate2fa } from "@/components/TwoFactor";
 import { AvatarUploader } from "@/components/Avatar";
-import { Searchbar, Friends } from "@/components/FriendComponent";
+import { Friends } from "@/components/FriendComponent";
 export default function Homepage() {
     return (
         <>
@@ -161,7 +161,6 @@ const Asset = ({title , value} : {title: string, value :any}) => {
 const FriendModule = () => {
     return(
         <div className={styles.card}>
-        <Searchbar />
         <Friends />
         </div>
     )

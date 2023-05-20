@@ -165,24 +165,19 @@ async update(id: number, updateUserDto: UpdateUserDto) {
   return `This action updates a #${id} user`;
 } 
 
-  async addFriend(user_id: any, friend_id: any) : Promise<FriendRequest> {
-    const sender = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user')
-      .where('user.id = :id', { id: user_id })
-      .getOne();
-
-    const receiver = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user')
-      .where('user.id = :id', { id: friend_id })
-      .getOne();
-    
-    const friendRequest = new FriendRequest();
-    friendRequest.sender = sender;
-    friendRequest.receiver = receiver;
-    return this.friendRequestRepository.save(friendRequest);
-  }
+    async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['friends'],
+    });
+    const friend = await this.findOnebyId(friend_id);
+    if(!user.friends) {
+      user.friends = []
+    }
+    user.friends.push(friend)
+    const result = await this.userRepository.save(user);
+    return friend;
+ }
 
   async acceptFriendRequest(request_id: number) : Promise<User> {
     const request = await this.friendRequestRepository.findOne({ where: { id: request_id }, relations: ['sender', 'receiver'] });
