@@ -125,15 +125,9 @@ import React from 'react';
             else if (p5.key == 'n') {
               socket?.emit("KeyPressed", {name: userdata.name, key: 'n'});
             }
-            // if (p5.key == 'w')
-            // socket?.emit("KeyPressed right", {name: padr_n, key: 'w'});
-            // else if (p5.key == 's') {
-            //   socket?.emit("KeyPressed right", {name: padr_n, key: 's'});
-            // }
           }
         }
       }
-      // ici faire emit et on avec des appelle de function
     };
     
   // Puck Class

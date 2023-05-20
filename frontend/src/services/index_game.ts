@@ -21,7 +21,7 @@ class GameService {
             {
                 console.log("has join " , AuthService.getId());
             });
-            socket.current?.on("room_join_error", ({error: any}) => rj(error))
+            socket.current?.on("room_join_error",({ error }) => rj(error))
             console.log("after emit");
         });
     }

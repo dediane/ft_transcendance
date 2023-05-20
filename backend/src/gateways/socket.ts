@@ -389,13 +389,13 @@ for (const user of this.users) {
         };
         const game = await this.gameService.create(gameDto);
         if (!game)
-        return ;
+          return ;
         this.room_id = game.id.toString();
         console.log("game id  ", this.room_id);
       }
       //console.log("------->>>>>   user id is ", userid, " username", username);
      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
-      /*if ((connectedSockets && connectedSockets.size === 1))
+      if ((connectedSockets && connectedSockets.size === 1))
       {
         const game = await this.gameService.findOne(Number(this.room_id))
         console.log("this.room id 1 ", this.room_id)
@@ -432,12 +432,12 @@ for (const user of this.users) {
         await this.userService.update(userid, up);
         console.log("update player 2");
         this.player2 = user.username;
-      }*/ // a revoir 
+      } // a revoir 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
       {
         socket.emit("room_join_error", {
-          error: "Room is full please choose another room to play! you gonna be a spectator",
+          error: "Room is full please wait the game end to play!",
         });
         // spectator
       } else {
