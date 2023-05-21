@@ -247,6 +247,41 @@ function Chat(props) {
     return props.admins[props.currentChat.chatName].includes(username);
     };
   
+  const isMember = (channelName: string) => {
+    const channels = props.userChannels[props.yourId];
+    const channel = channels?.find(channel => channel.name === channelName);
+    console.log("<<=<<<<<<<<<<<<<channel", channel)
+    const isMember = channel?.members?.some(member => member.username === props.yourId);
+    console.log("<<=<<<<<<<<<<<<<ismember", isMember, props.yourId)
+    
+    return isMember || false;
+  };
+  
+
+  // const isMember = (channelName: string) => {
+  //   const channels = props.userChannels[props.yourId];
+  //   const channel = channels?.find(channel => channel.name ===)
+  // }
+
+  // const isMember = () => {
+  //   const channelName = props.currentChat.chatName;
+  //   const userChannels = props.userChannels[props.yourId];
+  
+  //   if (!userChannels) {
+  //     return false; // or handle the error as per your requirement
+  //   }
+  
+  //   const channel = userChannels.find(channel => channel.channelName === channelName);
+  
+  //   if (!channel) {
+  //     return false; // or handle the error as per your requirement
+  //   }
+  
+  //   const isMember = channel.members.some(member => member.username === props.yourId);
+  
+  //   return isMember;
+  // };
+  
 
   const addAdmin2 = (username) => {
     const updatedAdminUsers = [...adminUsers, username];
@@ -557,7 +592,19 @@ console.log("ACCESSTYPE????", props.accessType)
     }
     
     let body;
-if (isBanned) {
+if (!isMember(props.currentChat.chatName))
+{
+  if (props.currentChat.chatName != "")
+  {
+    body = (
+      <Button3 onClick={() => props.addMember(props.yourId)}>Join {props.currentChat.chatName}</Button3>
+      )
+  }
+ 
+
+
+}
+else if (isBanned) {
   body = (
 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500, fontSize: '14px' }}>
   <span style={{ marginRight: '10px' }}>Can't access this channel, you were BANNED</span>
@@ -565,7 +612,8 @@ if (isBanned) {
 
   )
 
-} else {
+} 
+else {
   body = (
     
     <Messages>
@@ -583,18 +631,21 @@ if (isBanned) {
       <Button3 onClick={() => props.checkChatPassword(userPassword)}>Join {props.currentChat.chatName}</Button3>
       {/* {props.passwordError  && <span style={{color: 'red'}}>Try again.</span>} */}
     
-    </Pass>  {/* {!props.passwordError && <Button onClick={() => props.joinRoom(props.currentChat.chatName)}>Join {props.currentChat.chatName}</Button>} */}
+    </Pass> 
     </>
   );
   if (!props.passwordError)
   {
+    props.addMember(props.yourId);
+
     body = (
       <Messages>
           {props.messages?.map(renderMessages)}
       </Messages>
   )
   }
-    }
+}
+    
     function handleKeyPress(e){
         if(e.key === "Enter"){
           e.preventDefault(); 
@@ -1038,7 +1089,7 @@ user!== props.currentUser.username && (
 {body}
 
         </BodyContainer>
-        {(!isBanned) && (!(props.accessType == "protected" && (props.passwordError))) &&(props.currentChat.chatName) && 
+        {isMember(props.currentChat.chatName) && (!isBanned) && (!(props.accessType == "protected" && (props.passwordError))) &&(props.currentChat.chatName) && 
          <TextBox
          className={showModal2 ? "show-modal" : ""}
             value={props.message}
