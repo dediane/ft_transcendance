@@ -95,7 +95,6 @@ p5.updateWithProps = props => {
       });
 
       socket?.on("paddle update", (payload : any) => {
-        console.log("update paddle");
         padl_x = payload.plx; 
         padl_y = payload.ply;
         padl_w = payload.plw;
@@ -117,7 +116,6 @@ p5.updateWithProps = props => {
 
       // keyReleased and keyPressed for the gamers
       p5.keyReleased = () => {
-        console.log("player key relased ")
         socket?.emit("KeyReleased");
       }
 
@@ -144,21 +142,23 @@ p5.updateWithProps = props => {
 
     if (left_score == score || right_score == score) {
       if (left_score == score) {
-        p5.text("FINISH", width / 2 - 100, height / 2 - 50);
-        p5.text("LEFT PLAYER WIN", width / 2 - 225, height / 2 + 50)
-        return (<Confetti width={1440} height={150} />)
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "Player " + paddle_left.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+        return ;
       }
       if (right_score == score) {
-        p5.text("FINISH", width / 2 - 100, height / 2 - 50);
-        p5.text("RIGHT PLAYER WIN", width / 2 - 225, height / 2 + 50)
-        return (<Confetti width={1440} height={150} />)
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "Player " + paddle_right.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+        return;
       }
     }
     else {
       center_bar();
 
-      speed = puck.checkPaddleLeft(paddle_left, true, speed);
-      speed = puck.checkPaddleRight(paddle_right, true, speed);
 
       // show and update the paddles
 

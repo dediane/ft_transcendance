@@ -149,7 +149,6 @@ import React from 'react';
         let str = "Player " + paddle_left.name + " win !!"
         p5.fill(0, 102, 153);
         p5.text(str, width / 2 - 225, height / 2 + 50)
-
         return ;
       }
       if (right_score == score) {

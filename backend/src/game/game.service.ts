@@ -31,7 +31,6 @@ export class GameService {
   }
 
   async findOne(id: number) {
-    console.log("find one id ", id);
     const game = await this.GameRepository
       .createQueryBuilder('game')
       .where('game.id = :id', { id })

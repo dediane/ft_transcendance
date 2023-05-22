@@ -163,11 +163,8 @@ export class UserService {
 async update(id: number, updateUserDto: UpdateUserDto) {
   const user = await this.userRepository.findOne({ where: { id } });
   if (!user) {
-    console.log("nooooooo user")
     throw new Error(`user with ID ${id} not found`);
   }
-  else
-    console.log("user exist")
   
   Object.assign(user, updateUserDto);
   // user.wins = updateUserDto.wins;

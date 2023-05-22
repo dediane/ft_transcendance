@@ -408,6 +408,7 @@ for (const user of this.users) {
         const game = await this.gameService.findOne(Number(this.room_id))
         if (this.player2 && username === this.player2)
         {
+          console.log("same person bye 1")
           return ; // same person so return
         }
         const user = await this.userService.findOnebyId(userid)
@@ -416,12 +417,16 @@ for (const user of this.users) {
         };
         await this.userService.update(userid, up);
         this.player1 = user.username; // set the player 1
+        console.log("       SET PLAYER 1")
+        console.log("player 1 is ", this.player1)
+        console.log("player 2 is ", this.player2)
       }
       else
       {
         const game = await this.gameService.findOne(Number(this.room_id))
         if (this.player1 && username === this.player1)
         {
+          console.log("same person bye 2")
           return ; // same person so return
         }
         const user = await this.userService.findOnebyId(userid)
@@ -430,6 +435,9 @@ for (const user of this.users) {
         };
         await this.userService.update(userid, up);
         this.player2 = user.username; // set the player 2
+        console.log("       SET PLAYER 2")
+        console.log("player 1 is ", this.player1)
+        console.log("player 2 is ", this.player2)
       } // a revoir -> i dont think that works 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
@@ -455,7 +463,7 @@ for (const user of this.users) {
           // and set the width and height to 500 / 500
           this.width = gamedata.width;
           this.height = gamedata.height;
-          this.puck = new Puck(this.width, this.height);
+          this.puck = new Puck(this.width, this.height, false);
           if (!this.paddle_left)
             this.paddle_left = new Paddle(this.width, this.height, true, false, gamedata.id, gamedata.name)
           else
@@ -553,8 +561,8 @@ for (const user of this.users) {
         if (this.puck) { // Check if this.puck is defined
           this.puck.update();
           this.puck.edges();
-          this.puck.checkPaddleLeft(this.paddle_left, false, 0);
-          this.puck.checkPaddleRight(this.paddle_right, false, 0);
+          this.puck.checkPaddleLeft(this.paddle_left);
+          this.puck.checkPaddleRight(this.paddle_right);
           const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
           if (this.paddle_left && this.paddle_right)
           {
@@ -595,6 +603,7 @@ for (const user of this.users) {
         const game = await this.gameService.findOne(Number(this.room_id))
         if (this.player2 && username === this.player2)
         {
+          console.log("same person bye 1")
           return ;
         }
         const user = await this.userService.findOnebyId(userid)
@@ -603,12 +612,16 @@ for (const user of this.users) {
         };
         await this.userService.update(userid, up);
         this.player1 = user.username;
+        console.log("       SET PLAYER 1")
+        console.log("player 1 is ", this.player1)
+        console.log("player 2 is ", this.player2)
       }
       else
       {
         const game = await this.gameService.findOne(Number(this.room_id))
         if (this.player1 && username === this.player1)
         {
+          console.log("same person bye 2")
           return ;
         }
         const user = await this.userService.findOnebyId(userid)
@@ -617,6 +630,9 @@ for (const user of this.users) {
         };
         await this.userService.update(userid, up);
         this.player2 = user.username;
+        console.log("       SET PLAYER 2")
+        console.log("player 1 is ", this.player1)
+        console.log("player 2 is ", this.player2)
       } // a revoir 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
@@ -641,7 +657,7 @@ for (const user of this.users) {
       // and set the width and height to 500 / 500
       this.width = gamedata.width;
       this.height = gamedata.height;
-      this.puck = new Puck(this.width, this.height);
+      this.puck = new Puck(this.width, this.height, true);
       if (!this.paddle_left)
         this.paddle_left = new Paddle(this.width, this.height, true, true, gamedata.id, gamedata.name)
       else
@@ -664,14 +680,15 @@ for (const user of this.users) {
       else {
         if (this.puck) { // Check if this.puck is defined
           this.puck.update();
-          this.puck.edges();
-          this.speed = this.puck.checkPaddleLeft(this.paddle_left, false, this.speed);
-          this.speed = this.puck.checkPaddleRight(this.paddle_right, false, this.speed);
+          this.speed = this.puck.edges();
+          console.log("speed extra ", this.speed) 
+          this.speed = this.puck.checkPaddleLeft(this.paddle_left);
+          this.speed = this.puck.checkPaddleRight(this.paddle_right);
           const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
           if (this.paddle_left && this.paddle_right)
           {
             this.paddle_left.update();
-            this.paddle_right.update()
+            this.paddle_right.update();
             const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right.name}
             this.server.to(this.room_id).emit("paddle update", (payloadp));
           };
