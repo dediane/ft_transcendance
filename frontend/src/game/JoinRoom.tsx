@@ -72,7 +72,7 @@ export function JoinRoom(props: IJoinRoomProps)
     
     console.log("setting ", roomName);
     const joined = await gameService
-    .joinGameRoom(socket, roomName).catch((err) => {
+    .joinGameRoom(socket, roomName, props.mode).catch((err) => {
       alert(err);
     });
     setJoining(false);

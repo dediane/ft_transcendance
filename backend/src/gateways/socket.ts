@@ -19,6 +19,15 @@ import { GameService } from 'src/game/game.service';
 import { CreateGameDto } from 'src/game/dto/create-game.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 
+type GameProps = {
+  id: number;
+  userA: Socket;
+  userB: Socket;
+  scoreA: number;
+  scoreB: number;
+  idA: number;
+  idB: number;
+};
 
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -39,6 +48,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     jokes: [],
     javascript: [],
   };
+  private games = new Map<number, GameProps>();
 
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
@@ -370,17 +380,17 @@ for (const user of this.users) {
   fscore = 5;
   player1: string;
   player2: string;
+  speed = 1;
+  // data i use for the logistic
 
 
-    // join game from home page
+    // join classic game from home page
 @SubscribeMessage("join_game")
   public async joinGame( 
         socket: Socket,
         data : any) 
     {
       const {message, userid, username} = data;
-      console.log("------->>>>>   user id is ", userid, " username", username);
-      console.log(this.room_id);
       if (!this.room_id)
       {
         const gameDto: CreateGameDto = {
@@ -391,63 +401,49 @@ for (const user of this.users) {
         if (!game)
           return ;
         this.room_id = game.id.toString();
-        console.log("game id  ", this.room_id);
-      }
-      //console.log("------->>>>>   user id is ", userid, " username", username);
+      } // generate the data id
      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
       if ((connectedSockets && connectedSockets.size === 1))
       {
         const game = await this.gameService.findOne(Number(this.room_id))
-        console.log("this.room id 1 ", this.room_id)
-        console.log("PLAAAYYYERRRRR 1 by username", username)
         if (this.player2 && username === this.player2)
         {
-          console.log ("same personne good bye");
-          return ;
+          return ; // same person so return
         }
         const user = await this.userService.findOnebyId(userid)
         const up : UpdateUserDto = {
           gamePlayer1: [game],
         };
         await this.userService.update(userid, up);
-        this.player1 = user.username;
-        console.log("PLAAAYYYERRRRR 1111 ", this.player1)
-        console.log("update game with player 1");
+        this.player1 = user.username; // set the player 1
       }
       else
       {
-        console.log("this.room id 2 ", this.room_id)
         const game = await this.gameService.findOne(Number(this.room_id))
-        console.log("PLAAAYYYERRRRR 1 ", this.player1)
-        console.log("PLAAAYYYERRRRR 2 ", username)
         if (this.player1 && username === this.player1)
         {
-          console.log ("same personne good bye");
-          return ;
+          return ; // same person so return
         }
         const user = await this.userService.findOnebyId(userid)
         const up : UpdateUserDto = {
           gamePlayer2: [game],
         };
         await this.userService.update(userid, up);
-        console.log("update player 2");
-        this.player2 = user.username;
-      } // a revoir 
+        this.player2 = user.username; // set the player 2
+      } // a revoir -> i dont think that works 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
-      {
+      { // already 2 people in the room
         socket.emit("room_join_error", {
           error: "Room is full please wait the game end to play!",
         });
-        // spectator
       } else {
         await socket.join(this.room_id);
         this.server.emit("room_joined");
-        
+        // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
-        { // si on a deux user start game 
+        { // we have 2 people so start game
           this.server.to(this.room_id).emit("start_game", {});
-          // ici envoyer au front end change page in homegame et lancer le jeu
         }
       }
     }
@@ -455,29 +451,21 @@ for (const user of this.users) {
         // start game from pong.txt 
         @SubscribeMessage('start game')
         async handleJoinGameServer(socket: Socket, gamedata : any) {
-          
-          console.log('launch ball, ', this.room_id);
+          // this have to be change for the responssive
+          // and set the width and height to 500 / 500
           this.width = gamedata.width;
           this.height = gamedata.height;
-          console.log('width and height in backend haha ', this.width, this.height)
           this.puck = new Puck(this.width, this.height);
           if (!this.paddle_left)
             this.paddle_left = new Paddle(this.width, this.height, true, false, gamedata.id, gamedata.name)
           else
             this.paddle_right = new Paddle(this.width, this.height, false, false, gamedata.id, gamedata.name)
-          console.log("deux users pour launch ball, puck instancier ");
           await socket.join(this.room_id);
-          console.log("l'id de ma game estttttttt ", this.room_id)
           if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
           { // si on a deux user start game 
             this.isGameStart = true;
-            console.log("game start true");
             this.updateBall(socket);
-            //this.server.to(room).emit("launch ball", {}); // ici envoyer au front end change page in homegame et lancer le jeu
           }
-          else
-            console.log("no game started, size ", this.server.sockets.adapter.rooms.get(this.room_id).size)
-          //this.server.emit('update ball');
         }
   
 
@@ -581,4 +569,141 @@ for (const user of this.users) {
       }
     }
 
+
+    ///////////////////////: Extra Game /////////////////////
+    // join game extra from home_game
+    @SubscribeMessage("join_game_extra")
+    public async joinExtraGame( 
+      socket: Socket,
+      data : any)
+    {
+      const {message, userid, username} = data;
+      if (!this.room_id)
+      {
+        const gameDto: CreateGameDto = {
+          score1 : 0,
+          score2 : 0,
+        };
+        const game = await this.gameService.create(gameDto);
+        if (!game)
+          return ;
+        this.room_id = game.id.toString();
+      } // generate id game
+      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
+      if ((connectedSockets && connectedSockets.size === 1))
+      {
+        const game = await this.gameService.findOne(Number(this.room_id))
+        if (this.player2 && username === this.player2)
+        {
+          return ;
+        }
+        const user = await this.userService.findOnebyId(userid)
+        const up : UpdateUserDto = {
+          gamePlayer1: [game],
+        };
+        await this.userService.update(userid, up);
+        this.player1 = user.username;
+      }
+      else
+      {
+        const game = await this.gameService.findOne(Number(this.room_id))
+        if (this.player1 && username === this.player1)
+        {
+          return ;
+        }
+        const user = await this.userService.findOnebyId(userid)
+        const up : UpdateUserDto = {
+          gamePlayer2: [game],
+        };
+        await this.userService.update(userid, up);
+        this.player2 = user.username;
+      } // a revoir 
+      const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
+      if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
+      { // already 2 people in the room
+        socket.emit("room_join_error", {
+          error: "Room is full please wait the game end to play!",
+        });
+      } else {
+        await socket.join(this.room_id);
+        this.server.emit("room_joined");
+        
+        if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
+        { // we have 2 people to play
+          this.server.to(this.room_id).emit("start_game_extra", {});
+        }
+      }
+    }
+
+    @SubscribeMessage('start game extra')
+    async handleJoinGameServerExtra(socket: Socket, gamedata : any) {
+      // this have to be change for the responssive
+      // and set the width and height to 500 / 500
+      this.width = gamedata.width;
+      this.height = gamedata.height;
+      this.puck = new Puck(this.width, this.height);
+      if (!this.paddle_left)
+        this.paddle_left = new Paddle(this.width, this.height, true, true, gamedata.id, gamedata.name)
+      else
+        this.paddle_right = new Paddle(this.width, this.height, false, true, gamedata.id, gamedata.name)
+      await socket.join(this.room_id);
+      if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
+      { // si on a deux user start game 
+        this.isGameStart = true;
+        this.updateBallExtra(socket);
+      }
+    }
+
+    updateBallExtra(socket: Socket) {
+      //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
+      if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
+        this.addscore(this.room_id);
+        // socket emit
+        return;
+      }
+      else {
+        if (this.puck) { // Check if this.puck is defined
+          this.puck.update();
+          this.puck.edges();
+          this.speed = this.puck.checkPaddleLeft(this.paddle_left, false, this.speed);
+          this.speed = this.puck.checkPaddleRight(this.paddle_right, false, this.speed);
+          const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
+          if (this.paddle_left && this.paddle_right)
+          {
+            this.paddle_left.update();
+            this.paddle_right.update()
+            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right.name}
+            this.server.to(this.room_id).emit("paddle update", (payloadp));
+          };
+          this.server.to(this.room_id).emit("puck update", (payload));
+        }
+        setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
+      }
+    }
+
+    @SubscribeMessage('KeyPressed extra')
+    async KeyPressed(socket: Socket, gamedata : any) { 
+      if (gamedata.name == this.paddle_left.name)
+      {
+        if (gamedata.key == 'j')
+        {
+          this.paddle_left.move(-10 * this.speed);
+        }
+        if (gamedata.key == 'n')
+        {
+          this.paddle_left.move(10 * this.speed);
+        }
+      }
+      else if (gamedata.name == this.paddle_right.name)
+      {
+        if (gamedata.key == 'j')
+        {
+            this.paddle_right.move(-10 * this.speed);
+        }
+        else if (gamedata.key == 'n')
+        {
+            this.paddle_right.move(10 * this.speed);
+      }
+      }
+    }
 }
