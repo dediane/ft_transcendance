@@ -25,17 +25,25 @@ export class ChannelService {
  ) {}
 
   async create(createChannelDto: CreateChannelDto) {
-    const hashedPassword = await bcrypt.hash(createChannelDto.password, 12);
-
-    const channel = await this.channelRepository.create({...createChannelDto, password: hashedPassword, });
-    return this.channelRepository.save(channel);
+    if (createChannelDto.password) {
+      const hashedPassword = await bcrypt.hash(createChannelDto.password, 12);
+      const channel = await this.channelRepository.create({ ...createChannelDto, password: hashedPassword });
+      return this.channelRepository.save(channel);
+    } else {
+      const channel = await this.channelRepository.create(createChannelDto);
+      return this.channelRepository.save(channel);
+    }
   }
 
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const hashedPassword = await bcrypt.hash(createChannelDto.password, 12);
-
-    const channel = await this.channelRepository.create({...createChannelDto, password: hashedPassword, });
-    return this.channelRepository.save(channel);
+    if (createChannelDto.password) {
+      const hashedPassword = await bcrypt.hash(createChannelDto.password, 12);
+      const channel = await this.channelRepository.create({ ...createChannelDto, password: hashedPassword });
+      return this.channelRepository.save(channel);
+    } else {
+      const channel = await this.channelRepository.create(createChannelDto);
+      return this.channelRepository.save(channel);
+    }
   }
   
   //si valeur n'existe pas dans l'entity et appel a  sur leftJoinAndSelect('channel.admins', 'admin') va mettre ce message d'erreur [Nest] 24976  - 04/24/2023, 9:41:03 PM   ERROR [WsExceptionsHandler] Relation with property path invitedUsers in entity was not found.
@@ -310,6 +318,26 @@ async removeChannelPassword(userId: string, channelName: string): Promise<boolea
 }
 
 
+// async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {
+//   // Check if user is the owner of the channel
+//   const channel = await this.channelRepository.createQueryBuilder('channel')
+//     .leftJoin('channel.owner', 'owner')
+//     .where('channel.name = :name', { name: updateChannelDto.name })
+//     .andWhere('owner.id = :userId', { userId })
+//     .getOne();
+
+//   if (!channel) {
+//     throw new Error('Channel not found or user is not the owner');
+//   }
+
+//   await this.channelRepository.update(channel.id, {
+//     password: updateChannelDto.password,
+//     accessType: 'protected',
+//   });
+
+//   return true;
+// }
+
 async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {
   // Check if user is the owner of the channel
   const channel = await this.channelRepository.createQueryBuilder('channel')
@@ -322,13 +350,20 @@ async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto):
     throw new Error('Channel not found or user is not the owner');
   }
 
+  let hashedPassword = updateChannelDto.password; // Assume the password is already hashed
+
+  if (updateChannelDto.password) {
+    hashedPassword = await bcrypt.hash(updateChannelDto.password, 12);
+  }
+
   await this.channelRepository.update(channel.id, {
-    password: updateChannelDto.password,
+    password: hashedPassword,
     accessType: 'protected',
   });
 
   return true;
 }
+
 
 async addMember(channelName: string, adminId: number, username: string) : Promise<boolean> 
 {
