@@ -444,9 +444,13 @@ console.log("ACCESSTYPE????", props.accessType)
     let body;
 if (!isMember(props.currentChat.chatName))
 {
-  if (props.currentChat.chatName != "")
+  const channel = props.userchans.find((chan: { name: string; }) => chan.name === props.currentChat.chatName);
+
+  if ( channel && props.currentChat.chatName != "")
   {
     body = (
+      
+    
       <Button3 onClick={() => props.addMember(props.yourId)}>Join {props.currentChat.chatName}</Button3>
       )
   }
