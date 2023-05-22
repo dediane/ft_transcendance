@@ -222,13 +222,13 @@ this.server.emit('new chan', channels );
 }
 
 
-@SubscribeMessage('check password')
-async handlecheckChatPassword(socket: Socket, data: any) {
-  const { userId, channelName, userInput } = data;
-  const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
-  console.log("channel pass is correct or not : ", bool);
-  this.server.to(socket.id).emit('is userinput correct', bool);
-}
+// @SubscribeMessage('check password')
+// async handlecheckChatPassword(socket: Socket, data: any) {
+//   const { userId, channelName, userInput } = data;
+//   const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
+//   console.log("channel pass is correct or not : ", bool);
+//   this.server.to(socket.id).emit('is userinput correct', bool);
+// }
 
 @SubscribeMessage('add member')
 async handleAddMember(socket: Socket, payload: any) {

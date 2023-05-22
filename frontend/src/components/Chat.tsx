@@ -257,32 +257,6 @@ function Chat(props: { createDm: (arg0: string) => void; changeChatPassword: (ar
     
     return isMember || false;
   };
-  
-
-  // const isMember = (channelName: string) => {
-  //   const channels = props.userChannels[props.yourId];
-  //   const channel = channels?.find(channel => channel.name ===)
-  // }
-
-  // const isMember = () => {
-  //   const channelName = props.currentChat.chatName;
-  //   const userChannels = props.userChannels[props.yourId];
-  
-  //   if (!userChannels) {
-  //     return false; // or handle the error as per your requirement
-  //   }
-  
-  //   const channel = userChannels.find(channel => channel.channelName === channelName);
-  
-  //   if (!channel) {
-  //     return false; // or handle the error as per your requirement
-  //   }
-  
-  //   const isMember = channel.members.some(member => member.username === props.yourId);
-  
-  //   return isMember;
-  // };
-  
 
   const addAdmin2 = (username: any) => {
     const updatedAdminUsers = [...adminUsers, username];
@@ -433,27 +407,6 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
       }
 
 
-    // function renderRooms(room){
-    //     const currentChat = {
-    //         chatName: room,
-    //         isChannel: true,
-    //         receiverId: "",
-    //     };
-    //     return (
-    //   <Row
-    //   style={{ fontWeight: 500, fontSize: '0.875rem' }}
-    //   onClick={() => props.toggleChat(currentChat)}
-    //   key={room}
-    //   active={props.currentChat.chatName === room}
-    //   >
-    //   {room}
-    //   </Row>
-
-    //     )
-    // }
-
-
-
     function renderRooms(room: { accessType: string; name: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }){
       if (room.accessType == 'private')
         return;
@@ -514,7 +467,7 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
     )
 }
 
-function renderDMS(room: { accessType: string; dm: boolean; name: React.Key | null | undefined; members: any[]; }){
+function renderDMS(room: { accessType: string; dm: boolean; name: string; members: any[]; }){
   console.log("IN ROOM", room)
 
   if (room.accessType != 'private')
@@ -530,6 +483,7 @@ function renderDMS(room: { accessType: string; dm: boolean; name: React.Key | nu
 
   let othername = "";
   if (room.dm) {
+    console.log("???!!!OTHERMEMBER", room)
     const otherMember = room.members.find((member: { username: any; }) => member.username !== props.yourId);
     othername = otherMember.username;
   }
@@ -552,9 +506,6 @@ active={props.currentChat.chatName === room.name}
 const handleJoinChannel = () => {
   const channels = props.userChannels[props.yourId];
   const channel = channels?.find(channel => channel.name === props.currentChat.chatName);
-
-  // Assuming userPassword is the plain text password entered by the user
-  // const userPassword = '...'; // Get the user's input
 
   bcrypt.compare(userPassword, channel.password)
     .then(isMatch => {
@@ -657,12 +608,6 @@ else {
           
       <input type="password" placeholder="Enter password" onChange={(e) => setUserPassword(e.target.value)} />
       <Button3 onClick={handleJoinChannel}>Join {props.currentChat.chatName}</Button3>
-{/* <Button3 onClick={() => props.checkChatPassword(userPassword)}>Join {props.currentChat.chatName}</Button3>
-       {!props.passwordError && !isMember(props.currentChat.chatName) &&
-        props.addMember(props.yourId)
-      } */}
-      {/* {props.passwordError  && <span style={{color: 'red'}}>Try again.</span>} */}
-     
     </Pass> 
     </>
   );
@@ -1070,39 +1015,6 @@ user!== props.currentUser.username && (
 ))}
       </ul>
     </div>)}
-
-
-    {/* {isOwner && (props.accessType === 'public' || props.accessType === 'protected') && (
-<div>
-<h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members</h3>
-<ul>
-  {filteredUsersUsernames?.map((user, i) => (
-    user !== props.currentUser.username && (
-      <li key={i}>
-        
-        <label>
-<div style={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
-            {user}
-          </span>
-          
-          {isMemberAdmin(user) ? (
-            <Button3 onClick={() => removeAdmin2(user)}>
-              Remove Admin
-            </Button3>
-          ) : (
-            <Button3 onClick={() => addAdmin2(user)}>Add Admin</Button3>
-          )}
-</div>
-
-        </label>
-      </li>
-    )
-  ))}
-</ul>
-</div>
-    )} */}
-
     </div>
 {isOwner &&
   <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>

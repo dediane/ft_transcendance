@@ -75,6 +75,8 @@ function Messenger2() {
       username1: AuthService.getUsername(),
       username2: username2,
     };
+    if (datachan.username1 === datachan.username2)
+      return;
     console.log(`Messenger2: creating DM with ${username2} and {${datachan.username2}}`)
     socketRef?.current?.emit("create DM", datachan);
     socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
@@ -124,21 +126,6 @@ function Messenger2() {
     socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
-
-
-  function checkChatPassword(userinput: string)
-  {
-    const payload = {
-      userId: AuthService.getId(),
-      channelName: currentChat.chatName,
-      userInput : userinput,
-    };
-    socketRef?.current?.emit("check password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
-
-  }
-
-
 
   function addMember(username: string)
   {
@@ -550,7 +537,6 @@ console.log("||||||||accessType", accessType)
         sendMessage={sendMessage}
         changeChatPassword={changeChatPassword}
         removeChatPassword={removeChatPassword}
-        checkChatPassword={checkChatPassword}
         yourId={socketRef.current ? AuthService.getUsername() : ""}
         allUsers={allUsers}
         bannedmembers={bannedmembers}

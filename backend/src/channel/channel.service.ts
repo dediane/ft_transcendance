@@ -92,64 +92,6 @@ export class ChannelService {
   
     return channel;
   }
-  async isUserBanned(channelName: string, user: User): Promise<boolean> {
-    const channel = await this.findOneByName(channelName);
-    if (!channel) {
-      return false;
-    }
-    return channel.bannedUsers.some(banneduser => banneduser.id === user.id);
-  }
-
-
-  async isUserAdmin(channelName: string, user: User): Promise<boolean> {
-    const channel = await this.findOneByName(channelName);
-    if (!channel) {
-      return false;
-    }
-    return channel.admins.some(admin => admin.id === user.id);
-  }
-
-
-  async isUserOwner(channelName: string, user: User): Promise<boolean> {
-    const channel = await this.findOneByName(channelName);
-    if (!channel || !channel.owner) {
-      return false;
-    }
-    return channel.owner.id === user.id;
-  }
-  
-async isChanPublic(channelName: string): Promise<boolean> {
-  const channel = await this.channelRepository.createQueryBuilder('channel')
-    .where('channel.name = :channelName', { channelName })
-    .andWhere('channel.password IS NULL') // exclude password-protected channels
-    .getOne();
-
-  return !!channel && !channel.dm;
-}
-
-
-async isChanPasswordProtected(channelName: string): Promise<boolean> {
-  const channel = await this.channelRepository
-    .createQueryBuilder('channel')
-    .where('channel.name = :name', { name: channelName })
-    .andWhere('channel.password IS NOT NULL')
-    .select('channel.id')
-    .getOne();
-
-  return !!channel;
-}
-
-async isChanPrivate(channelName: string): Promise<boolean> {
-  const channel = await this.channelRepository
-    .createQueryBuilder('channel')
-    .where('channel.name = :name', { name: channelName })
-    .andWhere('channel.dm = true') // include DMs
-    .leftJoinAndSelect('channel.members', 'members')
-    .select(['channel.id', 'channel.name', 'members'])
-    .getOne();
-
-  return !!channel && channel.members.length > 0;
-}
 
 async findMessagesByChatname(chatname: string, blockedUsers: User[]): Promise<{ content: string, chatName: string, sender: string }[]> {
     const messages = await this.messageRepository
@@ -173,26 +115,6 @@ async findMessagesByChatname(chatname: string, blockedUsers: User[]): Promise<{ 
     });
   }
 
-  async findAdmins(channel: Channel): Promise<User[]> {
-    const admins = await this.channelRepository
-      .createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.admins', 'admin')
-      .where('channel.id = :channelId', { channelId: channel.id })
-      .getOneOrFail();
-  
-    return admins.admins;
-  }
-  
-  async findMembers(channel: Channel): Promise<User[]> {
-    const members = await this.channelRepository
-      .createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.members', 'member')
-      .where('channel.id = :channelId', { channelId: channel.id })
-      .getOneOrFail();
-  
-    return members.members;
-  }
-  
 async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
   const channel = await this.channelRepository.findOne({ where: { id } });
   if (!channel) {
@@ -201,82 +123,6 @@ async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
   
   Object.assign(channel, updateChannelDto);
   return this.channelRepository.save(channel);
-}
-
-async getChannelPassword(name: string) : Promise<string>{ 
-  console.log("channel name", name);
-  const channel = await this.channelRepository.createQueryBuilder('channel')
-    .select('channel.password')
-    .where('channel.name = :name', { name })
-    .getOne();
-
-  return channel ? channel.password : null;
-}
-
-async isChannelPasswordCorrect(channelName: string, userInput: string): Promise<boolean> {
-  const channelPassword = await this.getChannelPassword(channelName);
-  console.log("userinput is ", userInput);
-  return channelPassword === userInput;
-}
-
-
-async getPublicChannels(): Promise<Channel[]> {
-  const channels = await this.channelRepository.createQueryBuilder('channel')
-    .where('channel.dm = false') // exclude DMs
-    .leftJoinAndSelect('channel.members', 'members')
-    .select(['channel.id', 'channel.name', 'members'])
-    .getMany();
-
-  return channels;
-}
-
-
-async getPublicProtected(): Promise<Channel[]> {
-  const channels = await this.channelRepository.createQueryBuilder('channel')
-    .leftJoinAndSelect('channel.owner', 'owner')
-    .leftJoinAndSelect('channel.members', 'member')
-    .leftJoinAndSelect('channel.bannedUsers', 'bannedUser')
-    .leftJoinAndSelect('channel.mutedMembers', 'mutedMember')
-    .leftJoinAndSelect('channel.admins', 'admin')
-    .leftJoinAndSelect('channel.messages', 'message')
-    .select([
-      'channel.name',
-      'channel.dm',
-      'channel.id',
-      'channel.accessType',
-      'owner.username',
-      'channel.password',
-      'member.username',
-      'admin.username',
-      'bannedUser.username',
-      'mutedMember.username',
-      'message.content'
-    ])
-    .where('channel.accessType IN (:...accessTypes)', { accessTypes: ['protected', 'public'] })
-    .getMany();
-
-  return channels;
-}
-
-
-async getPrivateChannelsforUser(userId: number): Promise<Channel[]> {
-  const allChannels = await this.findAll();
-
-  const userChannels = allChannels.filter(channel =>
-    channel.accessType === 'private' && channel.members.find(member => member.id === userId)
-  );
-
-  return userChannels;
-}
-
-
-async getPublicAndProtectedChannelsForUser(userId: number): Promise<Channel[]> {
-  const allChannels = await this.findAll();
-
-  const userChannels = allChannels.filter(channel =>
-    channel.accessType !== 'private');
-
-  return userChannels;
 }
 
 async getChannelsforUser(userId: number): Promise<Channel[]> {
@@ -316,27 +162,6 @@ async removeChannelPassword(userId: string, channelName: string): Promise<boolea
 
   return true;
 }
-
-
-// async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {
-//   // Check if user is the owner of the channel
-//   const channel = await this.channelRepository.createQueryBuilder('channel')
-//     .leftJoin('channel.owner', 'owner')
-//     .where('channel.name = :name', { name: updateChannelDto.name })
-//     .andWhere('owner.id = :userId', { userId })
-//     .getOne();
-
-//   if (!channel) {
-//     throw new Error('Channel not found or user is not the owner');
-//   }
-
-//   await this.channelRepository.update(channel.id, {
-//     password: updateChannelDto.password,
-//     accessType: 'protected',
-//   });
-
-//   return true;
-// }
 
 async changeChannelPassword(userId: string, updateChannelDto: UpdateChannelDto): Promise<boolean> {
   // Check if user is the owner of the channel
