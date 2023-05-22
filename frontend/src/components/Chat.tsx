@@ -4,139 +4,9 @@ import PopupModal from "./PopUpModal"
 import MemberList from './MemberList';
 import Message from '@/components/Message';
 import bcrypt from 'bcryptjs';
-
-const Container = styled.div`
-    height: 100vh;
-    width: 100%;
-    display: flex;
-`;
-
-const SideBar = styled.div`
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-    height: 100%;
-    width: 25%;
-    overflow-y: scroll;
-    
-`;
-
-const ChatPanel = styled.div`
-    height: 100;
-    width: 85%;
-    display: flex;
-    flex-direction: column;
-`;
-
-
-const TextBox = styled.textarea`
-
-    width: 100%;
-    height: 15%;
-    overflow: scroll;
-    
-    &.show-modal {
-      width: 73%;
-      margin-right: 27%;
-      height: 30%;
-    }
-
-`;
-
-const BodyContainer = styled.div`
-    width: 100%;
-    height: 75%;
-    overflow-y: scroll;
-    display: flex;
-    flex-direction: column-reverse;
-    
-    &.show-modal {
-      width: 75%;
-    }
-   
-`;
-
-const ChannelInfo = styled.div`
-    height: 10%;
-    width: 100%;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  background-color: ${(props) => (props.active ? 'rgb(199, 143, 204)' : 'initial')};
-  &:hover {
-    background-color: rgb(199, 143, 204);
-  }
-`;
-
-const Messages = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-`;
-
-const Pass = styled.div`
-  display: flex;
-  position: fixed;
-  top: 50%;
-  left: 60%;
-  transform: translate(-50%, -50%);
-  flex-direction: column;
-  align-items: flex-start;
-`;
-
-
-const ModalContainer = styled.div`
-  height: 100%;
-  border-right: 1px solid black;
-  overflow-y: scroll;
-`;
-
-const Button3 = styled.button`
-  display:flex;
-	border-radius: 0.7rem;
-	background-image: linear-gradient(to right, #ff4b96, #ff83a8);
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
-	font-size: 0.875rem;
-	font-weight: 500;
-	color: #fff;
-`
-
-const ModalContainer2 = styled.div`
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-  height: 100%;
-  width: 21%;
-  background-color: white;
-  position: absolute;
-  right: 0;
-  z-index: 1;
-  padding: 20px;
-  overflow-y: scroll;
-
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-`;
-
-
+import { Container, SideBar,ChatPanel, TextBox, BodyContainer, ChannelInfo, Row, Messages, Pass, ModalContainer, Button3, ModalContainer2, CloseButton} from '@/styles/chat.module';
 
 function Chat(props: { createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: any[]; addMember: (arg0: string) => void; currentUser: { blockedUsers: any; adminUsers: any; username: any; }; blockedUsers: { [x: string]: string | string[]; }; yourId: string | number; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }; userChannels: { [x: string]: any[]; }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: string; }) => void; accessType: string; messages: any[]; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; allUsers: any[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined; }) {
-  // const [rooms, setRooms] = React.useState(props.rooms);
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [usersToAdd, setUsersToAdd] = useState('');
@@ -145,7 +15,6 @@ function Chat(props: { createDm: (arg0: string) => void; changeChatPassword: (ar
   const [requirePassword, setRequirePassword] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
     
-
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [showAddUserPopup, setShowAddUserPopup] = useState(false);
   const [showAddAdminPopup, setShowAddAdminPopup] = useState(false);
@@ -891,12 +760,8 @@ else {
      </SideBar>
 
      <ChatPanel>
-      {/* {((!isDM) && (!isBanned) && (!(props.accessType === "protected" && props.passwordError))) && props.currentChat.chatName && ( */}
         {((!isDM) && (!isBanned) &&  isMember(props.currentChat.chatName)  && props.currentChat.chatName &&
         <ChannelInfo>
-        {/* <p style={{ fontWeight: 500, fontSize: '0.875rem' }}> {props.currentChat.chatName}</p> */}
-            {/* <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p> */}
-
             {(!isDM && props.userchans[0] ) && (
               <button onClick={openModal2} style={{ lineHeight: '0.5' }}>
       <span style={{ margin: '0', padding: '0', letterSpacing: '-0.2em' }}>___</span>
@@ -925,12 +790,6 @@ else {
     <CloseButton onClick={closeModal2}>X</CloseButton>
     
     <div>
-    {/* {isAdmin  &&  (props.accessType === 'private') &&
-      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
-    }
-    {isAdmin  &&  (props.accessType !== 'private') &&
-      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredUsersUsernames}  banFunction={banMember} muteFunction={muteMember} />
-    } */}
     {isAdmin &&
       <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
     }
@@ -969,7 +828,6 @@ else {
         modalId="change-password-modal"
         buttonText="Save"
       />
-       {/* && (props.accessType === 'private') */}
     {isOwner && (props.accessType === 'private') && (
             <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
   <Button3 onClick={openAddUserModal}>Add user</Button3>
@@ -978,7 +836,7 @@ else {
       <PopupModal
         isOpen={showAddUserPopup}
         onRequestClose={closeAddUserModal}
-        onSave={addUser} //attention: plutot call invite que add non ? appelle add apres premiere connexion?? en consideration des chats prives
+        onSave={addUser}
         onCancel={closeAddUserModal}
         value={member}
         onChange={handleMemberAdding}
