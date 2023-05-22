@@ -3,6 +3,7 @@ import styled from "styled-components"
 import PopupModal from "./PopUpModal"
 import MemberList from './MemberList';
 import Message from '@/components/Message';
+import bcrypt from 'bcryptjs';
 
 const Container = styled.div`
     height: 100vh;
@@ -134,7 +135,7 @@ const CloseButton = styled.button`
 
 
 
-function Chat(props) {
+function Chat(props: { createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: any[]; addMember: (arg0: string) => void; currentUser: { blockedUsers: any; adminUsers: any; username: any; }; blockedUsers: { [x: string]: string | string[]; }; yourId: string | number; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }; userChannels: { [x: string]: any[]; }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: string; }) => void; accessType: string; messages: any[]; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; allUsers: any[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined; }) {
   // const [rooms, setRooms] = React.useState(props.rooms);
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
@@ -178,15 +179,15 @@ function Chat(props) {
   };
 
 
-  function handleDmChange(event) {
+  function handleDmChange(event: { target: { value: React.SetStateAction<string>; }; }) {
     setDm(event.target.value);
   }
 
-  function handlePasswordChange(event) {
+  function handlePasswordChange(event: { target: { value: React.SetStateAction<string>; }; }) {
     setPassword(event.target.value);
   }
 
-  function handleMemberAdding(event) {
+  function handleMemberAdding(event: { target: { value: React.SetStateAction<string>; }; }) {
     setMember(event.target.value);
   }
   
@@ -215,7 +216,7 @@ function Chat(props) {
   };
 
   const addUser = () => {
-    if (props.users.some(user => user.username === member) && !filteredMembersUsernames.includes(member)) {
+    if (props.users.some((user: { username: string; }) => user.username === member) && !filteredMembersUsernames.includes(member)) {
       props.addMember(member);
     }
   
@@ -230,13 +231,13 @@ function Chat(props) {
     if (props.blockedUsers && props.blockedUsers[props.yourId]) {
       return props.blockedUsers[props.yourId].includes(username);
      }
-    return blockedUsers.some((user) => user === username);
+    return blockedUsers.some((user: string) => user === username);
   };
-  const blockUser2 = (username) => {
+  const blockUser2 = (username: any) => {
     props.blockUser(username);
   };
 
-  const unblockUser2 = (username) => {
+  const unblockUser2 = (username: any) => {
     props.unblockUser(username);
   };
 
@@ -249,9 +250,9 @@ function Chat(props) {
   
   const isMember = (channelName: string) => {
     const channels = props.userChannels[props.yourId];
-    const channel = channels?.find(channel => channel.name === channelName);
+    const channel = channels?.find((channel: { name: string; }) => channel.name === channelName);
     console.log("<<=<<<<<<<<<<<<<channel", channel)
-    const isMember = channel?.members?.some(member => member.username === props.yourId);
+    const isMember = channel?.members?.some((member: { username: any; }) => member.username === props.yourId);
     console.log("<<=<<<<<<<<<<<<<ismember", isMember, props.yourId)
     
     return isMember || false;
@@ -283,14 +284,14 @@ function Chat(props) {
   // };
   
 
-  const addAdmin2 = (username) => {
+  const addAdmin2 = (username: any) => {
     const updatedAdminUsers = [...adminUsers, username];
     setAdminUsers(updatedAdminUsers);
     props.addAdmin(username);
   };
 
-  const removeAdmin2 = (username) => {
-    const updatedAdminUsers = adminUsers.filter((admin) => admin !== username);
+  const removeAdmin2 = (username: any) => {
+    const updatedAdminUsers = adminUsers.filter((admin: any) => admin !== username);
     setAdminUsers(updatedAdminUsers);
     props.removeAdmin(username);
   };
@@ -340,7 +341,7 @@ function Chat(props) {
   };
 
 
-  function handleAdminRemoveing(event) {
+  function handleAdminRemoveing(event: { target: { value: React.SetStateAction<string>; }; }) {
     setAdmintoRemove(event.target.value);
   }
 
@@ -362,14 +363,14 @@ function Chat(props) {
     closeRemoveMemberModal();
   };
 
-  function handleMemberRemoveing(event) {
+  function handleMemberRemoveing(event: { target: { value: React.SetStateAction<string>; }; }) {
     setMemberToRemove(event.target.value);
   }
 
-    const handleChatNameChange = (event) => {
+    const handleChatNameChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setChatName(event.target.value);
       };
-  const handleChatMembersChange = (event) => {
+  const handleChatMembersChange = (event: { target: { value: { split: (arg0: string) => React.SetStateAction<never[]>; }; }; }) => {
     setChatMembers(event.target.value.split(","));
   };
 
@@ -380,13 +381,13 @@ function Chat(props) {
 
 const [showPopup, setShowPopup] = useState(false);
 
-const kickMember  = (member) => {
+const kickMember  = (member: any) => {
   props.removeMember(member);
 
     closeRemoveMemberModal();
   };
 
-const banMember = (member) => {
+const banMember = (member: any) => {
   console.log(`Banning ${member}`);
 
   props.banMember(member);
@@ -394,7 +395,7 @@ const banMember = (member) => {
   closeRemoveMemberModal();
 };
 
-const muteMember = (member) => {
+const muteMember = (member: any) => {
   console.log(`Muting ${member}`);
   props.muteMember(member);
 
@@ -411,7 +412,7 @@ const handleRoomCreation = () => {
   props.createNewChannel(newRoom);
   };
 
-function handlePasswordToggle(event) {
+function handlePasswordToggle(event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) {
   setRequirePassword(event.target.checked);
 }
 
@@ -453,7 +454,7 @@ function handlePasswordToggle(event) {
 
 
 
-    function renderRooms(room){
+    function renderRooms(room: { accessType: string; name: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }){
       if (room.accessType == 'private')
         return;
         console.log("ACCESSTYPE", room.accessType)
@@ -477,8 +478,8 @@ function handlePasswordToggle(event) {
   }
 
 
-  function renderPrivate(room){
-    if (room.accessType == 'private' && !(room.members.find(member => member.username === props.yourId)))
+  function renderPrivate(room: { accessType: string; members: any[]; dm: any; name: React.Key | null | undefined; }){
+    if (room.accessType == 'private' && !(room.members.find((member: { username: any; }) => member.username === props.yourId)))
       return;
     console.log("IN ROOM", room)
 
@@ -494,7 +495,7 @@ function handlePasswordToggle(event) {
 
     let othername = "";
     if (room.dm) {
-      const otherMember = room.members.find(member => member.username !== props.yourId);
+      const otherMember = room.members.find((member: { username: any; }) => member.username !== props.yourId);
       othername = otherMember.username;
     }
     else
@@ -513,7 +514,7 @@ function handlePasswordToggle(event) {
     )
 }
 
-function renderDMS(room){
+function renderDMS(room: { accessType: string; dm: boolean; name: React.Key | null | undefined; members: any[]; }){
   console.log("IN ROOM", room)
 
   if (room.accessType != 'private')
@@ -529,7 +530,7 @@ function renderDMS(room){
 
   let othername = "";
   if (room.dm) {
-    const otherMember = room.members.find(member => member.username !== props.yourId);
+    const otherMember = room.members.find((member: { username: any; }) => member.username !== props.yourId);
     othername = otherMember.username;
   }
   else
@@ -549,23 +550,33 @@ active={props.currentChat.chatName === room.name}
 }
 
 const handleJoinChannel = () => {
-  // Check password
   const channels = props.userChannels[props.yourId];
   const channel = channels?.find(channel => channel.name === props.currentChat.chatName);
-  if (channel.password === userPassword)
-  {
-    const isMember = channel?.members?.some(member => member.username === props.yourId);
-    // if (!isMember(channel.name))
-    if (!isMember)
-      props.addMember(props.yourId);
-  }
-  else
-  {
+
+  // Assuming userPassword is the plain text password entered by the user
+  // const userPassword = '...'; // Get the user's input
+
+  bcrypt.compare(userPassword, channel.password)
+    .then(isMatch => {
+      if (isMatch) {
+        const isMember = channel?.members?.some(member => member.username === props.yourId);
+        if (!isMember) {
+          props.addMember(props.yourId);
+        }
+      } else {
+        // Passwords don't match
     <span style={{color: 'red'}}>Try again.</span>
-  }
+
+        console.log('Incorrect password');
+      }
+    })
+    .catch(error => {
+      // Handle error
+      console.log('Error comparing passwords', error);
+    });
 };
     
-    function renderUser(user){
+    function renderUser(user: { username: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }){
       console.log("render user");
 console.log("ACCESSTYPE????", props.accessType)
       
@@ -597,7 +608,7 @@ console.log("ACCESSTYPE????", props.accessType)
     fontsize: " 0.875rem",
   };
 
-  function renderMessages(message, index) {
+  function renderMessages(message: { sender: any; content: any; }, index: React.Key | null | undefined) {
       return (
         <Message
           key={index}
@@ -669,7 +680,7 @@ else {
   }
 }
     
-    function handleKeyPress(e){
+    function handleKeyPress(e: { key: string; preventDefault: () => void; }){
         if(e.key === "Enter"){
           e.preventDefault(); 
             props.sendMessage();
@@ -677,7 +688,7 @@ else {
         
     }
     const [accessType, setAccessType] = useState('public');
-    const handleAccessTypeChange = (e) => {
+    const handleAccessTypeChange = (e: { target: { value: any; }; }) => {
       const selectedAccessType = e.target.value;
       setAccessType(selectedAccessType);
   
@@ -696,7 +707,7 @@ else {
     const isDMchan = (chatName: string) => {
       if (props.userchans)
       {
-        const channel = props.userchans.find((chan) => chan.name === chatName);
+        const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
     
         console.log("CHAN POPULATED", channel);
     
@@ -712,7 +723,7 @@ else {
     console.log("USERCHAN POPULATED FOR ADMIN", props.userchans, "FOR", chatName);
   
     if (props.userchans) {
-      const channel = props.userchans.find((chan) => chan.name === chatName);
+      const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
   
       console.log("CHAN POPULATED FOR ADMIN", channel);
   
@@ -722,7 +733,7 @@ else {
   
         // Filter channel members based on conditions
         const filteredAdmins = channelAdmins.filter(
-          (member) => member.username !== channel.owner.username && member.username !== props.yourId
+          (member: { username: any; }) => member.username !== channel.owner.username && member.username !== props.yourId
         );
         console.log("FILTERED ADMINS:", filteredAdmins);
   
@@ -739,7 +750,7 @@ else {
       console.log("USERLIST POPULATED", props.userchans, "FOR", chatName);
     
       if (props.userchans) {
-        const channel = props.userchans.find((chan) => chan.name === chatName);
+        const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
     
         console.log("CHAN POPULATED", channel);
     
@@ -749,7 +760,7 @@ else {
           const channelMembers = props?.members;
           console.log("Channel Members:", channelMembers);
           const filteredMembers = channelMembers.filter(
-            (member) => member !== channel.owner?.username && member !== props.yourId
+            (member: any) => member !== channel.owner?.username && member !== props.yourId
           );
           console.log("FILTERED MEMBERS:", filteredMembers);
     
@@ -766,7 +777,7 @@ else {
       console.log("USERLIST POPULATED", props.userchans, "FOR", chatName);
     
       if (props.userchans) {
-        const channel = props.userchans.find((chan) => chan.name === chatName);
+        const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
     
         console.log("CHAN POPULATED", channel);
     
@@ -774,7 +785,7 @@ else {
           const channelusers = props?.users;
           console.log("Channel users:::::", channelusers);
           const filteredusers = channelusers.filter(
-            (user) => user.username !== channel.owner?.username && user.username !== props.yourId
+            (user: { username: any; }) => user.username !== channel.owner?.username && user.username !== props.yourId
           );
           console.log("FILTERED users:::::", filteredusers);
     
@@ -786,7 +797,7 @@ else {
     };
     
     const filteredUsers = UserListPublic(props.currentChat.chatName);
-    const filteredUsersUsernames = filteredUsers?.map((user) => user.username);
+    const filteredUsersUsernames = filteredUsers?.map((user: { username: any; }) => user.username);
     
   function seeProfile(username: string): void {
     console.log("SEE PROFILE of", username, "if you want to find the User you need to put this.userservice.findonebyname")
@@ -901,7 +912,7 @@ else {
         <div>
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Users</h3>
 <ul>
-  {props.users?.map((user, i) => (
+  {props.users?.map((user: { username: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }, i: React.Key | null | undefined) => (
     user.username !== props.currentUser.username && (
       <li key={i}>
         <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>
@@ -1037,7 +1048,7 @@ else {
 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members except owner and yourself</h3>
 
   <ul>
-  {filteredMembersUsernames?.map((user, i) => (
+  {filteredMembersUsernames?.map((user: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined, i: React.Key | null | undefined) => (
 user!== props.currentUser.username && (
 <li key={i}>
   <label>

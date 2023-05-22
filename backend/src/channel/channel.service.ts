@@ -7,6 +7,7 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Message } from 'src/message/entities/message.entity';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -24,12 +25,16 @@ export class ChannelService {
  ) {}
 
   async create(createChannelDto: CreateChannelDto) {
-    const channel = this.channelRepository.create(createChannelDto);
+    const hashedPassword = await bcrypt.hash(createChannelDto.password, 12);
+
+    const channel = await this.channelRepository.create({...createChannelDto, password: hashedPassword, });
     return this.channelRepository.save(channel);
   }
 
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const channel = this.channelRepository.create(createChannelDto);
+    const hashedPassword = await bcrypt.hash(createChannelDto.password, 12);
+
+    const channel = await this.channelRepository.create({...createChannelDto, password: hashedPassword, });
     return this.channelRepository.save(channel);
   }
   
