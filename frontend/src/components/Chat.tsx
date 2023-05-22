@@ -6,7 +6,9 @@ import Message from '@/components/Message';
 import bcrypt from 'bcryptjs';
 import { Container, SideBar,ChatPanel, TextBox, BodyContainer, ChannelInfo, Row, Messages, Pass, ModalContainer, Button3, ModalContainer2, CloseButton} from '@/styles/chat.module';
 
-function Chat(props: { createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: any[]; addMember: (arg0: string) => void; currentUser: { blockedUsers: any; adminUsers: any; username: any; }; blockedUsers: { [x: string]: string | string[]; }; yourId: string | number; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }; userChannels: { [x: string]: any[]; }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: string; }) => void; accessType: string; messages: any[]; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; allUsers: any[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined; }) {
+function Chat(props)
+// props: { createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: any[]; addMember: (arg0: string) => void; currentUser: { blockedUsers: any; adminUsers: any; username: any; }; blockedUsers: { [x: string]: string | string[]; }; yourId: string | number; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }; userChannels: { [x: string]: any[]; }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: string; }) => void; accessType: string; messages: any[]; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; allUsers: any[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined; }) 
+{
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [usersToAdd, setUsersToAdd] = useState('');
@@ -618,8 +620,23 @@ else {
   }
 
   function playPong(): void {
+
+    let otherUser;
+    if (props.members[0] === props.yourId)
+      otherUser = props.members[1];
+    else
+      otherUser = props.members[0];
+    props.inviteToPlay(props.yourId, otherUser)
   
     console.log("PLAY PONNNNG with 2 usernames. User to find with userservice.findonebyname()", props.members[0], props.members[1])
+  }
+
+
+  function acceptInvite(): void {
+
+    console.log("<3 JUST CLICKED ON ACCEPT INVITE. BOTH USERS ARE THEREFORE IN THE ROOM. <3")
+    console.log("if you want to find their username:", props.members[0], props.members[1])
+    // props.inviteReceived = false; // trouver le moyen de reset à false
   }
 
     return (
@@ -777,12 +794,15 @@ else {
 
 {(isDM &&
   <ChannelInfo>
-  <div style={{ marginLeft: 'auto' }}>
-  <Button3 onClick={() => playPong()}>
-    Play pong
-  </Button3>
-</div>
 
+
+      <div style={{ marginLeft: 'auto' }}>
+        {props.inviteReceived ? (
+          <Button3 onClick={acceptInvite}>Accept Pong Invite</Button3>
+        ) : (
+          <Button3 onClick={playPong}>Play pong</Button3>
+        )}
+      </div>
   </ChannelInfo>
 )}
 {showModal2 && (

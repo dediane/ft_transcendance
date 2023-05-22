@@ -333,6 +333,30 @@ async handleMuteMember(socket: Socket, payload: any) {
     socket.emit('join room', this.messages[roomName]);
   }
 
+
+  @SubscribeMessage('sendInvitation')
+  async handlePongInvite(socket: Socket, data : any) {
+
+    const { sender , receiver} = data;
+
+    const senderr = await this.userService.findOneByName(sender);
+    const receiverr = await this.userService.findOneByName(receiver);
+    const receiverUser = this.users.find(user => user.username === receiverr.username);
+    console.log("//////********receiverUser",  receiverUser)
+
+    if (receiverUser) {
+    console.log("in receiver user", receiverUser)
+      const receiverSockets = receiverUser.sockets;
+      receiverSockets.forEach(receiverSocket => {
+        this.server.to(receiverSocket).emit('receiveInvitation', { sender: senderr });
+      });
+    } 
+  // else {
+  //   // Handle the case when the receiver is not found or does not have any active sockets
+  //   // You can emit an error event or take appropriate action.
+  // }
+  }
+
   @SubscribeMessage('send message')
   async handleMessage(socket: Socket, data: any) {
     if (data) {

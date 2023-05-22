@@ -87,7 +87,7 @@ export class ChannelService {
       .leftJoinAndSelect('channel.admins', 'admins')
       .leftJoinAndSelect('channel.mutedMembers', 'mutedMembers')
       .leftJoinAndSelect('channel.owner', 'owner')
-      .select(['channel.id', 'channel.name', 'members', 'bannedUsers', 'admins', 'mutedMembers', 'owner'])
+      .select(['channel.id', 'channel.dm', 'channel.name', 'members', 'bannedUsers', 'admins', 'mutedMembers', 'owner'])
       .getOne();
   
     return channel;
