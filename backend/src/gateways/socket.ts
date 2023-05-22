@@ -53,6 +53,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
     const users = await this.messageService.findAll();
+    
+    /*if (this.isGameStart = true)  
+    {
+      const payload(userid: userid)
+      socket.emit("playing game", payload);
+    }  
+    */
   }
 
  async handleDisconnect(socket: Socket) {
@@ -381,6 +388,7 @@ for (const user of this.users) {
   player1: string;
   player2: string;
   speed = 1;
+  time = 25;
   // data i use for the logistic
 
 
@@ -461,8 +469,8 @@ for (const user of this.users) {
         async handleJoinGameServer(socket: Socket, gamedata : any) {
           // this have to be change for the responssive
           // and set the width and height to 500 / 500
-          this.width = gamedata.width;
-          this.height = gamedata.height;
+          this.width = 500;
+          this.height = 500;
           this.puck = new Puck(this.width, this.height, false);
           if (!this.paddle_left)
             this.paddle_left = new Paddle(this.width, this.height, true, false, gamedata.id, gamedata.name)
@@ -513,6 +521,7 @@ for (const user of this.users) {
 
         async addscore(id_room: string) {
           console.log("PASSE PAR ADD SCORE BACK")
+          this.isGameStart = false;
           const luser = await this.userService.findOnebyId(this.paddle_left.id)
           const ruser = await this.userService.findOnebyId(this.paddle_right.id)
           const lwin = luser.wins;
@@ -573,7 +582,7 @@ for (const user of this.users) {
           };
           this.server.to(this.room_id).emit("puck update", (payload));
         }
-        setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
+        setTimeout(this.updateBall.bind(this, socket), this.time); // Bind the `this` context to the function
       }
     }
 
@@ -655,8 +664,8 @@ for (const user of this.users) {
     async handleJoinGameServerExtra(socket: Socket, gamedata : any) {
       // this have to be change for the responssive
       // and set the width and height to 500 / 500
-      this.width = gamedata.width;
-      this.height = gamedata.height;
+      this.width = 500;
+      this.height = 500;
       this.puck = new Puck(this.width, this.height, true);
       if (!this.paddle_left)
         this.paddle_left = new Paddle(this.width, this.height, true, true, gamedata.id, gamedata.name)
@@ -694,7 +703,7 @@ for (const user of this.users) {
           };
           this.server.to(this.room_id).emit("puck update", (payload));
         }
-        setTimeout(this.updateBall.bind(this, socket), 30); // Bind the `this` context to the function
+        setTimeout(this.updateBall.bind(this, socket), this.time); // Bind the `this` context to the function
       }
     }
 

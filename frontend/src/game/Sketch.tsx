@@ -19,16 +19,40 @@ import React from 'react';
     //console.log("la width param %d, la height param %d", w, h);
     let p5WrapperDiv = document.getElementById("canvas_size")
     const username = AuthService.getUsername();
-    console.log("socket username->", username);
-    //console.log("id socket -> ", socket.id);
-    console.log("> Begin function canvas")
-    let width = p5WrapperDiv?.clientWidth || window.innerWidth;
-    let height = p5WrapperDiv?.clientHeight || window.innerHeight;
-    console.log("clienbtHeight", width)
-    console.log("clienbtHeight", height)
-    let puck = new Puck(p5, width, height);
-    let paddle_left = new Paddle(p5, width, height, true, false);
-    let paddle_right = new Paddle(p5, width, height, false, false);
+
+    // fixed canvas in backend
+    const canvasw = 500;
+    const canvash = 500;
+    
+    
+    let cwidth = p5WrapperDiv?.clientWidth || window.innerWidth;
+    let cheight = p5WrapperDiv?.clientHeight || window.innerHeight;
+    
+    // Calculate the aspect ratio of the canvas and window
+    const canvasratio = canvasw / canvash;
+    const winratio = cwidth / cheight;
+
+    // Calculate the available width and height based on the aspect ratio
+    let width: number;
+    let height: number;
+
+    if (winratio > canvasratio) {
+      height = cheight;
+      width = height * winratio;
+    } else {
+      width = cwidth;
+      height = width / canvasratio;
+    }
+
+   /*
+    width = 500;
+    height = 500;
+   */
+    console.log("clienbtHeight", cwidth)
+    console.log("clienbtHeight", cheight)
+    let puck = new Puck(p5, cwidth, cheight);
+    let paddle_left = new Paddle(p5, cwidth, cheight, true, false);
+    let paddle_right = new Paddle(p5, cwidth, cheight, false, false);
     let left_score: number = 0;
     let right_score: number = 0;
     
@@ -188,22 +212,32 @@ import React from 'react';
     if (element == null)
     {
       console.log("use the window canvas T-T")
-      width = window.innerWidth;
-      height = window.innerHeight;
+      cwidth = window.innerWidth;
+      cheight = window.innerHeight;
     }
     else
     {
       console.log("pass par notre div define hihi")
-      width = element.clientWidth;
-      height = element.clientHeight;
+      cwidth = element.clientWidth;
+      cheight = element.clientHeight;
     }
     // send to back new width and height to upfate whith puck paddle
 
+    // new winratio
+    const winratio = cwidth / cheight;
+
+    if (winratio > canvasratio) {
+      height = cheight;
+      width = height * winratio;
+    } else {
+      width = cwidth;
+      height = width / canvasratio;
+    }
 
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
-    paddle_left.update_resize(width, height, true);
-    paddle_right.update_resize(width, height, false);
+    //paddle_left.update_resize(width, height, true);
+    //paddle_right.update_resize(width, height, false);
     puck.update_resize(width, height);
   }
 }
