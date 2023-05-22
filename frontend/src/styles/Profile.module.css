@@ -13,7 +13,9 @@
 
 .profilepicture {
     border-radius: 150px;
-    max-width: 90px;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
     margin-left: auto;
     margin-right: auto;
     margin-top: 5px;
@@ -21,9 +23,87 @@
 }
 
 .h1{
-    font-size: large;
-    font-weight: 700;
+    font-size: x-large;
+    font-weight: 600;
     text-align: center;
+    color: #ff4b96;
+}
+
+.subtitle {
+    font-size: large;
+    font-weight: 500;
+    color: #902ce2;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.minicard {
+    margin: 10px;
+    border-radius: 16px;
+    border-color: #53ab66;
+    background-color: #b5ffc5;
+    border: 1px solid #53ab66;
+    flex-basis: 33%;
+    text-align: center;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+}
+
+.minicard2 {
+    margin: 10px;
+    border-radius: 16px;
+    border-color: #dd4f4f;
+    background-color: #ffb6b9;
+    border: 1px solid #dd4f4f;
+    flex-basis: 33%;
+    text-align: center;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+}
+
+.minicard3 {
+    margin: 10px;
+    border-radius: 16px;
+    border-color: #b5b5b5;
+    background-color: #ffffff;
+    border: 1px solid #9d9d9d;
+    flex-basis: 33%;
+    text-align: center;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}  
+
+.stats{
+    font-size: large;
+    font-weight: 500;
+    color: #1e1e1e;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.mainbox {
+    margin: 10px;
+    padding: 10px;
+    
+}
+
+
+.subcard {
+    margin: 10px;
+    padding: 0px 10px;
+}
+
+.subcard2 {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding-bottom: 20px;
 }
 
 .button { 
@@ -99,6 +179,24 @@ background-image: linear-gradient(to right, #bd84ff, #e0bbff);
 	color: #fff;
 }
 
+.editbutton { 
+    display: block;
+    width: 80px;
+    border-radius: 0.5rem;
+    background-color: #ffffff7e;
+    border: solid 1px #000000;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #000000;
+}
+
+.editbutton:hover { 
+    background-color: #ffffff;
+}
 
 
 .buttonalert:hover {
@@ -198,4 +296,25 @@ background-image: linear-gradient(to right, #ff6fab, #ffa2c1);
     color: black;
     text-decoration: none;
     cursor: pointer;
+  }
+
+  .fileInput {
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f7f7f7;
+    color: #333;
+    font-size: 14px;
+    width: 95%;
+  }
+
+  .selectedImage {
+    max-width: 300px;
+    height: auto;
+    display: block;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 10px;
   }

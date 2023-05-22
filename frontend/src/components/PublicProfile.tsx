@@ -21,6 +21,7 @@ export const PublicProfil = () => {
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
 
+    // public?username={username}
     useEffect(()=>{
         const fetch_profile = async() => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -68,3 +69,4 @@ const Asset = ({title , value} : {title: string, value :any}) => {
         </div>
     )
 }
+

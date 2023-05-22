@@ -13,7 +13,7 @@ const getBase64 = (file: any) => {
 };
 
 
-const useAvatarLogic = (handleUpload) => {
+const useAvatarLogic = (handleUpload :any) => {
     // State to hold avatar
     const [avatar, setAvatar] = useState(null);
     const [avatarb64, setAvatarb64] : any = useState(null);
@@ -58,17 +58,17 @@ export const AvatarUploader = ({handleUpload}: any) => {
 
     // Render the component
     return (
-      <div>
+      <div className={styles.subcard2}>
         {/* <img src={img == false ? "https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80": `${img}` } className={styles.profilepicture}></img> */}
-        <h2>Avatar Uploader</h2>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <h2 className={styles.subtitle}>Choose an image</h2>
+        <input type="file" accept="image/*" onChange={handleFileChange} className={styles.fileInput}/>
         {avatar && (
           <div>
             <p>Selected Avatar:</p>
-            <img src={URL.createObjectURL(avatar)} alt="Selected Avatar" />
+            <img src={URL.createObjectURL(avatar)} alt="Selected Avatar" className={styles.selectedImage} />
           </div>
         )}
-        <button onClick={handleSubmit}>Upload</button>
+        <button onClick={handleSubmit} className={styles.button}>Upload</button>
       </div>
     );
   };

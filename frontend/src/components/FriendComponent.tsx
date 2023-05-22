@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import userService from "@/services/user-service";
 import styles from "@/styles/Profile.module.css";
 import _, { remove } from "lodash";
+import Link from "next/link";
 
 export const Friends = () => {
   const [inputValue, setInputValue] = useState("");
@@ -67,14 +68,16 @@ export const Friends = () => {
   return (
     <div>
       {/* Friends List */}
-      <h2 className="text-pink-600 text-lg">My friends</h2>
-      {friends.map((current: any, key: any) => {
+      <h2 className={styles.h1}>My friends</h2>
+      {friends.length ? friends.map((current: any, key: any) => {
         const { username, id } = current;
         console.log("FRIEND CURRENT", current)
         return (
           <div key={key} className="">
             <div className={styles.listelement}>
-              {username}
+              <Link href={`/public?username=${username}`} className="hover:underline hover:font-medium hover:text-violet-600">
+                  {username}
+              </Link>
               <button
                 onClick={() => removeFriend(id)}
                 className={styles.littlebutton}
@@ -84,7 +87,7 @@ export const Friends = () => {
             </div>
           </div>
         );
-      })}
+      }) : <div>You don't have friends yet...</div>}
 
       {/* Search Bar */}
       <div className="my-4">
@@ -102,7 +105,9 @@ export const Friends = () => {
             return (
               <div key={key} className="">
                 <div className={styles.listelement}>
+                  <Link href={`/public?username=${username}`} className="hover:underline hover:font-medium hover:text-violet-600">
                   {username}
+                  </Link>
                   {!isFriend && (
                     <button
                       onClick={() => addFriend(id)}
