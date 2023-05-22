@@ -636,7 +636,11 @@ else {
 
     console.log("<3 JUST CLICKED ON ACCEPT INVITE. BOTH USERS ARE THEREFORE IN THE ROOM. <3")
     console.log("if you want to find their username:", props.members[0], props.members[1])
-    // props.inviteReceived = false; // trouver le moyen de reset à false
+
+    props.setInviteReceivedMap((prevMap) => ({
+      ...prevMap,
+      [chatName]: false,
+    }));
   }
 
     return (
@@ -797,7 +801,7 @@ else {
 
 
       <div style={{ marginLeft: 'auto' }}>
-        {props.inviteReceived ? (
+        {props.inviteReceivedMap[props.currentChat.chatName] ? (
           <Button3 onClick={acceptInvite}>Accept Pong Invite</Button3>
         ) : (
           <Button3 onClick={playPong}>Play pong</Button3>

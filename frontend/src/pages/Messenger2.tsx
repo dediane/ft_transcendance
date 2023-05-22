@@ -11,6 +11,8 @@ function Messenger2() {
   const [connected, setConnected] = useState(false);
   const [channels, setChannels] = useState({});
   const [inviteReceived, setInviteReceived] = useState(false);
+  const [inviteReceivedMap, setInviteReceivedMap] = useState({});
+
   const [passwordError , setPasswordError] = useState(true);
   const [currentChat, setCurrentChat] = useState({
     isChannel: true,
@@ -88,6 +90,7 @@ function Messenger2() {
     const data = {
       sender: sender,
       receiver: otherUser,
+      chatName: currentChat.chatName,
     }
 
     const payload = {
@@ -453,11 +456,16 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       
     socketRef.current.on('receiveInvitation', (data: any) => {
 
-      const { sender } = data;
+      const { sender, receiver, chatName } = data;
       console.log("RECEIVEINVITATION MESSENGER2", sender)
       const username = sender.username;
       alert("received invite")
-      setInviteReceived(true);
+      // setInviteReceived(true);
+
+      setInviteReceivedMap((prevMap) => ({
+        ...prevMap,
+        [chatName]: true,
+      }));
         // confirm(`Received invitation from ${sender}. Do you accept?`);
         // const payload = {
         //   content: `You just received an invitation to play pong from ${username}. Do you accept?`,
@@ -599,6 +607,9 @@ console.log("||||||||accessType", accessType)
         userChannels={userChannels}
         admins={admins}
         inviteReceived={inviteReceived}
+        inviteReceivedMap={inviteReceivedMap}
+        setInviteReceivedMap={setInviteReceivedMap}
+
       />
     );
   }

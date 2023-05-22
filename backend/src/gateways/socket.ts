@@ -337,7 +337,7 @@ async handleMuteMember(socket: Socket, payload: any) {
   @SubscribeMessage('sendInvitation')
   async handlePongInvite(socket: Socket, data : any) {
 
-    const { sender , receiver} = data;
+    const { sender , receiver, chatName} = data;
 
     const senderr = await this.userService.findOneByName(sender);
     const receiverr = await this.userService.findOneByName(receiver);
@@ -348,7 +348,7 @@ async handleMuteMember(socket: Socket, payload: any) {
     console.log("in receiver user", receiverUser)
       const receiverSockets = receiverUser.sockets;
       receiverSockets.forEach(receiverSocket => {
-        this.server.to(receiverSocket).emit('receiveInvitation', { sender: senderr });
+        this.server.to(receiverSocket).emit('receiveInvitation', { sender: senderr, receiver : receiver, chatName : chatName});
       });
     } 
   // else {
