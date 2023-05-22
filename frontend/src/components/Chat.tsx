@@ -547,6 +547,23 @@ active={props.currentChat.chatName === room.name}
 </Row>
   )
 }
+
+const handleJoinChannel = () => {
+  // Check password
+  const channels = props.userChannels[props.yourId];
+  const channel = channels?.find(channel => channel.name === props.currentChat.chatName);
+  if (channel.password === userPassword)
+  {
+    const isMember = channel?.members?.some(member => member.username === props.yourId);
+    // if (!isMember(channel.name))
+    if (!isMember)
+      props.addMember(props.yourId);
+  }
+  else
+  {
+    <span style={{color: 'red'}}>Try again.</span>
+  }
+};
     
     function renderUser(user){
       console.log("render user");
@@ -622,21 +639,27 @@ else {
   );
 }
 
-        if (props.accessType === 'protected') {
+        if (props.accessType === 'protected' && !isMember(props.currentChat.chatName)) {
   body = (
     <>
          <Pass>
           
       <input type="password" placeholder="Enter password" onChange={(e) => setUserPassword(e.target.value)} />
-      <Button3 onClick={() => props.checkChatPassword(userPassword)}>Join {props.currentChat.chatName}</Button3>
+      <Button3 onClick={handleJoinChannel}>Join {props.currentChat.chatName}</Button3>
+{/* <Button3 onClick={() => props.checkChatPassword(userPassword)}>Join {props.currentChat.chatName}</Button3>
+       {!props.passwordError && !isMember(props.currentChat.chatName) &&
+        props.addMember(props.yourId)
+      } */}
       {/* {props.passwordError  && <span style={{color: 'red'}}>Try again.</span>} */}
-    
+     
     </Pass> 
     </>
   );
+
+
   if (!props.passwordError)
   {
-    props.addMember(props.yourId);
+    // props.addMember(props.yourId);
 
     body = (
       <Messages>
@@ -912,10 +935,11 @@ else {
      </SideBar>
 
      <ChatPanel>
-      {((!isDM) && (!isBanned) && (!(props.accessType === "protected" && props.passwordError))) && props.currentChat.chatName && (
+      {/* {((!isDM) && (!isBanned) && (!(props.accessType === "protected" && props.passwordError))) && props.currentChat.chatName && ( */}
+        {((!isDM) && (!isBanned) &&  isMember(props.currentChat.chatName)  && props.currentChat.chatName &&
         <ChannelInfo>
-        <p style={{ fontWeight: 500, fontSize: '0.875rem' }}> {props.currentChat.chatName}</p>
-            <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p>
+        {/* <p style={{ fontWeight: 500, fontSize: '0.875rem' }}> {props.currentChat.chatName}</p> */}
+            {/* <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p> */}
 
             {(!isDM && props.userchans[0] && !((props.accessType !== 'private')  && !isAdmin)) && (
               <button onClick={openModal2} style={{ lineHeight: '0.5' }}>
@@ -951,6 +975,9 @@ else {
     {isAdmin  &&  (props.accessType !== 'private') &&
       <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredUsersUsernames}  banFunction={banMember} muteFunction={muteMember} />
     }
+    {/* {isAdmin &&
+      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
+    } */}
 </div>
     <div>
       {isOwner && (props.accessType === 'protected') && (
@@ -1089,8 +1116,9 @@ user!== props.currentUser.username && (
 {body}
 
         </BodyContainer>
-        {isMember(props.currentChat.chatName) && (!isBanned) && (!(props.accessType == "protected" && (props.passwordError))) &&(props.currentChat.chatName) && 
-         <TextBox
+        {/* {isMember(props.currentChat.chatName) && (!isBanned) && (!(props.accessType == "protected" && (props.passwordError))) &&(props.currentChat.chatName) &&  */}
+        {isMember(props.currentChat.chatName) && (!isBanned) && props.currentChat.chatName &&
+        <TextBox
          className={showModal2 ? "show-modal" : ""}
             value={props.message}
             onChange={props.handleMessageChange}
