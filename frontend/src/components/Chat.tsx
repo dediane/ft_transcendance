@@ -941,7 +941,7 @@ else {
         {/* <p style={{ fontWeight: 500, fontSize: '0.875rem' }}> {props.currentChat.chatName}</p> */}
             {/* <p style={{ fontWeight: 500, fontSize: '0.875rem' }}>{props.members?.join(', ')}</p> */}
 
-            {(!isDM && props.userchans[0] && !((props.accessType !== 'private')  && !isAdmin)) && (
+            {(!isDM && props.userchans[0] ) && (
               <button onClick={openModal2} style={{ lineHeight: '0.5' }}>
       <span style={{ margin: '0', padding: '0', letterSpacing: '-0.2em' }}>___</span>
       <br/>
@@ -969,15 +969,15 @@ else {
     <CloseButton onClick={closeModal2}>X</CloseButton>
     
     <div>
-    {isAdmin  &&  (props.accessType === 'private') &&
+    {/* {isAdmin  &&  (props.accessType === 'private') &&
       <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
     }
     {isAdmin  &&  (props.accessType !== 'private') &&
       <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredUsersUsernames}  banFunction={banMember} muteFunction={muteMember} />
-    }
-    {/* {isAdmin &&
-      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
     } */}
+    {isAdmin &&
+      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
+    }
 </div>
     <div>
       {isOwner && (props.accessType === 'protected') && (
@@ -1030,7 +1030,9 @@ else {
         modalId="add-user-modal"
         buttonText="Add User"
       />
-       {isOwner && (props.accessType !== 'public') && (
+       {isOwner && 
+      //  (props.accessType !== 'public') && 
+       (
       <div>
 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members except owner and yourself</h3>
 
@@ -1057,7 +1059,9 @@ user!== props.currentUser.username && (
 ))}
       </ul>
     </div>)}
-    {isOwner && (props.accessType === 'public' || props.accessType === 'protected') && (
+
+
+    {/* {isOwner && (props.accessType === 'public' || props.accessType === 'protected') && (
 <div>
 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members</h3>
 <ul>
@@ -1086,7 +1090,8 @@ user!== props.currentUser.username && (
   ))}
 </ul>
 </div>
-    )}
+    )} */}
+
     </div>
 {isOwner &&
   <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
@@ -1098,7 +1103,7 @@ user!== props.currentUser.username && (
   </Button3>
   </div>
 }
-{props.accessType === 'private' &&
+{/* {props.accessType === 'private' && */}
 <div style={{ display: 'flex', alignItems: 'center' , justifyContent: 'center'}}>
 <Button3 onClick={() => {
       props.removeMember(props.yourId);
@@ -1108,7 +1113,7 @@ user!== props.currentUser.username && (
       Leave Chan
     </Button3>	
     </div>
-}
+{/* } */}
   </ModalContainer2>
 )}
         <BodyContainer className={showModal2 ? "show-modal" : ""}>
