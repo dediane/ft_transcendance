@@ -9,13 +9,15 @@ import { Activate2fa } from "@/components/TwoFactor";
 import { AvatarUploader } from "@/components/Avatar";
 import { Friends } from "@/components/FriendComponent";
 import { Profil } from "@/components/ProfileComponent";
+import { Stat } from "@chakra-ui/react";
+import { Stats } from "@/components/Stats";
 
 export default function Homepage() {
     return (
         <>
         <div className={styles.container}>
             <FriendModule />
-            {/* <Buttons /> */}
+            <StatsModule />
             <ProfileModule />
         </div>
         </>
@@ -70,3 +72,12 @@ const FriendModule = () => {
         </div>
     )
 }
+
+const StatsModule = () => {
+    return(
+        <div className={styles.card}>
+        <Stats />
+        </div>
+    )
+}
+

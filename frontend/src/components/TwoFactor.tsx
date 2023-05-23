@@ -4,7 +4,7 @@ import styles from '@/styles/Profile.module.css';
 import { useRouter } from 'next/router';
 import authenticationService from '@/services/authentication-service';
 
-export const Activate2fa = ({qrcode}: any) => {
+export const Activate2fa = ({qrcode}: any, {is2fa} :any) => {
     const router = useRouter();
     const [inputValues, setInputValues] = useState({
         twoFactorAuthenticationCode: '',});
@@ -40,8 +40,7 @@ export const Activate2fa = ({qrcode}: any) => {
         className={styles.inputbox}
         />
         {console.log("INPUT VALUES: ", inputValues)}
-        <button className={styles.button} onClick={() => enable2fa()}>Activate</button>
-        <button className={styles.button} onClick={() => disable2fa()}>Disable</button>
+        {is2fa ?  <button className={styles.button} onClick={() => disable2fa()}>Disable</button> : <button className={styles.button} onClick={() => enable2fa()}>Activate</button>}
         </>
     )
 }

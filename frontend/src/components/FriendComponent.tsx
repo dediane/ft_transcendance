@@ -71,7 +71,7 @@ export const Friends = () => {
       <h2 className={styles.h1}>My friends</h2>
       {friends.length ? friends.map((current: any, key: any) => {
         const { username, id } = current;
-        console.log("FRIEND CURRENT", current)
+        // console.log("FRIEND CURRENT", current)
         return (
           <div key={key} className="">
             <div className={styles.listelement}>
