@@ -620,6 +620,7 @@ else {
     const filteredUsersUsernames = filteredUsers?.map((user: { username: any; }) => user.username);
     
   function seeProfile(username: string): void {
+    window.location.href = `/public?username=${username}`;
     console.log("SEE PROFILE of", username, "if you want to find the User you need to put this.userservice.findonebyname")
   }
 
