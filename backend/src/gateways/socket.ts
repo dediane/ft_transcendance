@@ -18,6 +18,7 @@ import  Paddle  from 'src/game/paddle';
 import { GameService } from 'src/game/game.service';
 import { CreateGameDto } from 'src/game/dto/create-game.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { User } from 'src/user/entities/user.entity';
 
 type GameProps = {
   id: number;
@@ -49,6 +50,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     javascript: [],
   };
   private games = new Map<number, GameProps>();
+  private queue = new Map<number, User>();
 
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
@@ -385,8 +387,8 @@ for (const user of this.users) {
   paddle_left : Paddle;
   paddle_right : Paddle;
   fscore = 5;
-  player1: string;
-  player2: string;
+  player1: User;
+  player2: User;
   speed = 1;
   time = 25;
   // data i use for the logistic
@@ -399,7 +401,7 @@ for (const user of this.users) {
         data : any) 
     {
       const {message, userid, username} = data;
-      if (!this.room_id)
+      if (!this.room_id || this.room_id == "")
       {
         const gameDto: CreateGameDto = {
           score1 : 0,
@@ -409,44 +411,35 @@ for (const user of this.users) {
         if (!game)
           return ;
         this.room_id = game.id.toString();
+        console.log("game id is ", game.id)
       } // generate the data id
-     const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
-      if ((connectedSockets && connectedSockets.size === 1))
-      {
-        const game = await this.gameService.findOne(Number(this.room_id))
-        if (this.player2 && username === this.player2)
-        {
-          console.log("same person bye 1")
-          return ; // same person so return
-        }
-        const user = await this.userService.findOnebyId(userid)
-        const up : UpdateUserDto = {
-          gamePlayer1: [game],
-        };
-        await this.userService.update(userid, up);
-        this.player1 = user.username; // set the player 1
-        console.log("       SET PLAYER 1")
-        console.log("player 1 is ", this.player1)
-        console.log("player 2 is ", this.player2)
-      }
+      const user = await this.userService.findOnebyId(userid)
+      console.log("user is ", user.username)
+      console.log("queue size is ", this.queue.size)
+      if (this.queue.size == 0)
+        this.queue.set(userid, user)
       else
       {
-        const game = await this.gameService.findOne(Number(this.room_id))
-        if (this.player1 && username === this.player1)
+        const usr = this.queue.get(userid);
+        if (usr)
         {
-          console.log("same person bye 2")
-          return ; // same person so return
+          socket.emit("room_join_error", {
+            error: "You canno't join with 2 tab!",
+          });
+          return ;
         }
-        const user = await this.userService.findOnebyId(userid)
-        const up : UpdateUserDto = {
-          gamePlayer2: [game],
-        };
-        await this.userService.update(userid, up);
-        this.player2 = user.username; // set the player 2
-        console.log("       SET PLAYER 2")
-        console.log("player 1 is ", this.player1)
-        console.log("player 2 is ", this.player2)
-      } // a revoir -> i dont think that works 
+        else
+          this.queue.set(userid, user) // add a new user not same as the first
+      }
+      if (this.queue.size == 2)
+      {
+        const it = this.queue.entries();
+        const usr1 = it.next().value[1];
+        const usr2 = it.next().value[1];
+        this.player1 = usr1;
+        this.player2 = usr2;
+      }
+      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
       { // already 2 people in the room
@@ -459,6 +452,8 @@ for (const user of this.users) {
         // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
         { // we have 2 people so start game
+          this.queue.delete(this.player1.id);
+          this.queue.delete(this.player2.id);
           this.server.to(this.room_id).emit("start_game", {});
         }
       }
@@ -469,13 +464,15 @@ for (const user of this.users) {
         async handleJoinGameServer(socket: Socket, gamedata : any) {
           // this have to be change for the responssive
           // and set the width and height to 500 / 500
-          this.width = 500;
-          this.height = 500;
+          // this.width = 500;
+          // this.height = 500;
+          this.width = gamedata.width;
+          this.height = gamedata.height;
           this.puck = new Puck(this.width, this.height, false);
           if (!this.paddle_left)
-            this.paddle_left = new Paddle(this.width, this.height, true, false, gamedata.id, gamedata.name)
+            this.paddle_left = new Paddle(this.width, this.height, true, false, this.player1.id, this.player1.username)
           else
-            this.paddle_right = new Paddle(this.width, this.height, false, false, gamedata.id, gamedata.name)
+            this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2.id, this.player2.username)
           await socket.join(this.room_id);
           if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
           { // si on a deux user start game 
@@ -522,12 +519,8 @@ for (const user of this.users) {
         async addscore(id_room: string) {
           console.log("PASSE PAR ADD SCORE BACK")
           this.isGameStart = false;
-          const luser = await this.userService.findOnebyId(this.paddle_left.id)
-          const ruser = await this.userService.findOnebyId(this.paddle_right.id)
-          const lwin = luser.wins;
-          const rlose = ruser.losses;
-          const llose = luser.losses;
-          const rwin = ruser.wins;
+          const luser = await this.userService.findOnebyId2(this.paddle_left.id)
+          const ruser = await this.userService.findOnebyId2(this.paddle_right.id)
           if (this.puck.left_score = this.fscore)
           {              
             luser.wins += 1;
@@ -538,24 +531,21 @@ for (const user of this.users) {
             luser.losses += 1;
             ruser.wins += 1;
           }
-              const updateuserdto : UpdateUserDto = {
-                wins : luser.wins,
-                losses: luser.losses,
-              }
+          await this.userService.update(this.paddle_left.id, luser);
+          await this.userService.update(this.paddle_right.id, ruser);
 
-              const updateuserdto2 : UpdateUserDto = {
-                wins : ruser.wins,
-                losses: ruser.losses,
-              }
-              // await this.userService.update(this.paddle_left.id, updateuserdto);
-              // await this.userService.update(this.paddle_right.id, updateuserdto2);
-              // here true await this.userService.update(this.paddle_left.id, luser);
-              // here true await this.userService.update(this.paddle_right.id, ruser);
-              setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
+          const upgame = await this.gameService.findOne(Number(id_room))
+          upgame.player1 = luser;
+          upgame.player2 = ruser;
+          upgame.score1 = this.puck.left_score;
+          upgame.score2 = this.puck.right_score;
+          await this.gameService.update(Number(id_room), upgame);
+          setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
         }
         
         end_game(id_room: string) {
           this.server.to(id_room).emit("end game");
+          this.room_id = "";
         }
 
         // function helper to game position
@@ -607,42 +597,42 @@ for (const user of this.users) {
         this.room_id = game.id.toString();
       } // generate id game
       const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
-      if ((connectedSockets && connectedSockets.size === 1))
-      {
-        const game = await this.gameService.findOne(Number(this.room_id))
-        if (this.player2 && username === this.player2)
-        {
-          console.log("same person bye 1")
-          return ;
-        }
-        const user = await this.userService.findOnebyId(userid)
-        const up : UpdateUserDto = {
-          gamePlayer1: [game],
-        };
-        await this.userService.update(userid, up);
-        this.player1 = user.username;
-        console.log("       SET PLAYER 1")
-        console.log("player 1 is ", this.player1)
-        console.log("player 2 is ", this.player2)
-      }
-      else
-      {
-        const game = await this.gameService.findOne(Number(this.room_id))
-        if (this.player1 && username === this.player1)
-        {
-          console.log("same person bye 2")
-          return ;
-        }
-        const user = await this.userService.findOnebyId(userid)
-        const up : UpdateUserDto = {
-          gamePlayer2: [game],
-        };
-        await this.userService.update(userid, up);
-        this.player2 = user.username;
-        console.log("       SET PLAYER 2")
-        console.log("player 1 is ", this.player1)
-        console.log("player 2 is ", this.player2)
-      } // a revoir 
+      // if ((connectedSockets && connectedSockets.size === 1))
+      // {
+      //   const game = await this.gameService.findOne(Number(this.room_id))
+      //   if (this.player2 && username === this.player2)
+      //   {
+      //     console.log("same person bye 1")
+      //     return ;
+      //   }
+      //   const user = await this.userService.findOnebyId(userid)
+      //   const up : UpdateUserDto = {
+      //     gamePlayer1: [game],
+      //   };
+      //   await this.userService.update(userid, up);
+      //   this.player1 = user.username;
+      //   console.log("       SET PLAYER 1")
+      //   console.log("player 1 is ", this.player1)
+      //   console.log("player 2 is ", this.player2)
+      // }
+      // else
+      // {
+      //   const game = await this.gameService.findOne(Number(this.room_id))
+      //   if (this.player1 && username === this.player1)
+      //   {
+      //     console.log("same person bye 2")
+      //     return ;
+      //   }
+      //   const user = await this.userService.findOnebyId(userid)
+      //   const up : UpdateUserDto = {
+      //     gamePlayer2: [game],
+      //   };
+      //   await this.userService.update(userid, up);
+      //   this.player2 = user.username;
+      //   console.log("       SET PLAYER 2")
+      //   console.log("player 1 is ", this.player1)
+      //   console.log("player 2 is ", this.player2)
+      // } // a revoir 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
       { // already 2 people in the room

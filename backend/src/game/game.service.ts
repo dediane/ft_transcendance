@@ -44,9 +44,8 @@ export class GameService {
   async update(id: number, updateGameDto: UpdateGameDto) {
     const game = await this.GameRepository.findOne({ where: { id } });
     if (!game) {
-      throw new Error(`Channel with ID ${id} not found`);
+      throw new Error(`Game with ID ${id} not found`);
     }
-    
     Object.assign(game, updateGameDto);
     return this.GameRepository.save(game);
   }
