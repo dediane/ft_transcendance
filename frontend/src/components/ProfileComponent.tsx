@@ -23,6 +23,7 @@ export const Profil = () => {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [isAvatar, setIsAvatar] = useState(false);
+    const [AvatarUrl, setAvatarUrl] = useState("");
 
     useEffect(()=>{
         const fetch_profile = async() => {
@@ -67,12 +68,16 @@ export const Profil = () => {
         setIsAvatar(!isAvatar);
     };
 
+    const handleAvatar = (user :any) => {
+        setAvatarUrl(user.getAvatar());
+    }
+
     return (
         <>
             <div className={styles.mainbox}>
                 <h3 className={styles.h1}>My profile</h3>
                 <div>
-                {!user.avatar && <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
+                {!user.avatar && <img src="/default.png" className={styles.profilepicture}>
                 </img>}
                 {user.avatar && <img src={`${user.avatar}`} className={styles.profilepicture}/> }
                 {isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>}

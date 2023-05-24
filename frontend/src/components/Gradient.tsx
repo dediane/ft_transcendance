@@ -616,21 +616,4 @@ class Gradient {
     }
 }
 
-
-
-
-/*
-*Finally initializing the Gradient class, assigning a canvas to it and calling Gradient.connect() which initializes everything,
-* Use Gradient.pause() and Gradient.play() for controls.
-*
-* Here are some default property values you can change anytime:
-* Amplitude:    Gradient.amp = 0
-* Colors:       Gradient.sectionColors (if you change colors, use normalizeColor(#hexValue)) before you assign it.
-*
-*
-* Useful functions
-* Gradient.toggleColor(index)
-* Gradient.updateFrequency(freq)
-*/
-
 export { Gradient }

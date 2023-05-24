@@ -34,7 +34,6 @@ const Buttons = () => {
         fetch_profile()
     }, [])
     const handlePlay = () => {
-        console.log(user)
     }
     return (
     <div className="my-auto m-8 min-w-[25%] items-center flex-1">

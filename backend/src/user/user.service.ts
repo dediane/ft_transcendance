@@ -43,6 +43,16 @@ export class UserService {
   
     return users;
   }
+
+  async getAvatar(username: string): Promise<string | undefined> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.avatar', 'avatar')
+      .where('user.username = :username', { username })
+      .getOne();
+    
+    return user?.avatar;
+  }
   
   async blockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
     // Find the user who is blocking
@@ -77,8 +87,8 @@ export class UserService {
     .select('user')
     .where('user.username = :username', { username})
     .getOne()
-    const {wins, losses, id} = user;
-    return {wins, losses, username, id};
+    const {wins, losses, id, avatar} = user;
+    return {wins, losses, username, id, avatar};
   }
 
   async search(params: string) {
@@ -105,6 +115,7 @@ export class UserService {
     .select('user')
     .where('user.id = :id', {id})
     .getOne();
+    delete user.password
     return user;
   }
   async removeFriendRequest(sender_id: any, receiver_id: any): Promise<void> {

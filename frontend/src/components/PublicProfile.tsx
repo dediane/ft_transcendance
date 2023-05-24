@@ -17,7 +17,7 @@ export default function Homepage() {
 }
 
 export const PublicProfil = () => {
-    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false})
+    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
 
@@ -29,6 +29,7 @@ export const PublicProfil = () => {
             if (!username) router.push('profile');
             const result = await userService.findPublicUser(username as string)
             setUser({...result})
+            console.log(result)
         }
         fetch_profile()
     }, [])
@@ -36,18 +37,17 @@ export const PublicProfil = () => {
     const handleCloseModal = () => {
         setShowModal(false);
     };
-
     return (
         <>
          <div className={styles.card}>
             <div className="col-span-3">
                 <div className="">
                     <h3 className={styles.h1}>{user.username}'s profil</h3>
-                    <img src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&w=1000&q=80" className={styles.profilepicture}>
-                    </img>
-                    <h4>Profil infos</h4>
-                    <hr/>
+                    {user.avatar ? <img src={user.avatar} className={styles.profilepicture} /> : <img src="/default.png" className={styles.profilepicture}/>}
+                    <h4 className={styles.subtitle}>Profil infos</h4>
+                <div className={styles.stats}>
                         <Asset title={'username'} value={user.username} />
+                </div>
                         <Asset title={'Wins:'} value={user.wins} />
                         <Asset title={'Losses:'} value={user.losses} />
                     </div>

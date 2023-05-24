@@ -17,6 +17,7 @@ export class AuthService {
         const user = await this.usersService.findOnebyEmail(email);
         if (user && await bcrypt.compare(password, user.password)) {
             delete user.password
+            delete user.avatar
             return {status: true, user};
         }
         //add 2fa

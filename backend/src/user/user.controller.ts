@@ -6,6 +6,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { get } from 'http';
 
 @Controller('user')
 export class UserController {
@@ -17,9 +18,17 @@ export class UserController {
   }
 
   @UseGuards(Jwt2faAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @UseGuards(Jwt2faAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get('avatar')
+  getAvatar(@Request() req) {
+    return this.userService.getAvatar(req.user.username);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -46,7 +55,6 @@ export class UserController {
   @Post('avatar')
   async uploadAvatar(@Body() body: any, @Request() req) {
     // Handle image upload logic here
-    console.log('Image uploaded:', body.img_base64);
     if(!body.img_base64)
       return { status: false, error: 'Image not provided' };
     console.log(req.user.id)
