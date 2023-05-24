@@ -51,6 +51,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   };
   private games = new Map<number, GameProps>();
   private queue = new Map<number, User>();
+  private queueE = new Map<number, User>();
 
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
@@ -391,6 +392,7 @@ for (const user of this.users) {
   player2: User;
   speed = 1;
   time = 25;
+  plready = 0;
   // data i use for the logistic
 
 
@@ -458,16 +460,22 @@ for (const user of this.users) {
         }
       }
     }
-
+/*
       @SubscribeMessage('player ready')
-      readyplayer(socket: Socket)
+      async readyplayer(socket: Socket, gamedata : any)
       {
-        console.log("player ready");
+        this.plready++;
+        console.log("player ready ", this.plready);
+        //if (this.plready < 2)
+          await socket.join(this.room_id);
+        if (this.plready == 2)
+          this.handleJoinGameServer(gamedata)
       }
+*/
         
         // start game from pong.txt 
         @SubscribeMessage('start game')
-        async handleJoinGameServer(socket: Socket, gamedata : any) {
+        async handleJoinGameServer( socket: Socket, gamedata : any) {
           // this have to be change for the responssive
           // and set the width and height to 500 / 500
           // this.width = 500;
@@ -480,11 +488,12 @@ for (const user of this.users) {
           else
             this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2.id, this.player2.username)
           await socket.join(this.room_id);
+          console.log("socket room size is ", this.server.sockets.adapter.rooms.get(this.room_id).size)
           if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
           { // si on a deux user start game 
             console.log("------------- LA POUR WOUAIS ------------")
             this.isGameStart = true;
-            this.updateBall(socket);
+            this.updateBall();
           }
         }
   
@@ -556,7 +565,7 @@ for (const user of this.users) {
         }
 
         // function helper to game position
-    updateBall(socket: Socket) {
+    updateBall() {
       //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
         this.addscore(this.room_id);
@@ -579,11 +588,23 @@ for (const user of this.users) {
           };
           this.server.to(this.room_id).emit("puck update", (payload));
         }
-        setTimeout(this.updateBall.bind(this, socket), this.time); // Bind the `this` context to the function
+        setTimeout(this.updateBall.bind(this), this.time); // Bind the `this` context to the function
       }
     }
 
-
+    room_idE: string;
+    isGameStartE = false;
+    widthE: number;
+    heightE: number;
+    puckE: Puck;
+    paddle_leftE : Paddle;
+    paddle_rightE : Paddle;
+    fscoreE = 5;
+    player1E: User;
+    player2E: User;
+    speedE = 1;
+    timeE = 25;
+    plreadyE = 0;
     ///////////////////////: Extra Game /////////////////////
     // join game extra from home_game
     @SubscribeMessage("join_game_extra")
@@ -592,7 +613,7 @@ for (const user of this.users) {
       data : any)
     {
       const {message, userid, username} = data;
-      if (!this.room_id)
+      if (!this.room_idE)
       {
         const gameDto: CreateGameDto = {
           score1 : 0,
@@ -601,9 +622,35 @@ for (const user of this.users) {
         const game = await this.gameService.create(gameDto);
         if (!game)
           return ;
-        this.room_id = game.id.toString();
+        this.room_idE = game.id.toString();
       } // generate id game
-      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
+      const user = await this.userService.findOnebyId(userid)
+      console.log("user is ", user.username)
+      console.log("queue size is ", this.queueE.size)
+      if (this.queueE.size == 0)
+        this.queueE.set(userid, user)
+      else
+      {
+        const usr = this.queueE.get(userid);
+        if (usr)
+        {
+          socket.emit("room_join_error", {
+            error: "You canno't join with 2 tab!",
+          });
+          return ;
+        }
+        else
+          this.queueE.set(userid, user) // add a new user not same as the first
+      }
+      if (this.queueE.size == 2)
+      {
+        const it = this.queueE.entries();
+        const usr1 = it.next().value[1];
+        const usr2 = it.next().value[1];
+        this.player1E = usr1;
+        this.player2E = usr2;
+      }
+      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_idE);
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
       { // already 2 people in the room
@@ -611,12 +658,12 @@ for (const user of this.users) {
           error: "Room is full please wait the game end to play!",
         });
       } else {
-        await socket.join(this.room_id);
+        await socket.join(this.room_idE);
         this.server.emit("room_joined");
         
-        if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
+        if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2) 
         { // we have 2 people to play
-          this.server.to(this.room_id).emit("start_game_extra", {});
+          this.server.to(this.room_idE).emit("start_game_extra", {});
         }
       }
     }
@@ -625,72 +672,98 @@ for (const user of this.users) {
     async handleJoinGameServerExtra(socket: Socket, gamedata : any) {
       // this have to be change for the responssive
       // and set the width and height to 500 / 500
-      this.height = gamedata.height;
-      this.width = gamedata.width;
-      this.puck = new Puck(this.width, this.height, true);
-      if (!this.paddle_left)
-        this.paddle_left = new Paddle(this.width, this.height, true, true, gamedata.id, gamedata.name)
+      this.heightE = gamedata.height;
+      this.widthE = gamedata.width;
+      this.puckE = new Puck(this.widthE, this.heightE, true);
+      if (!this.paddle_leftE)
+        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, true, gamedata.id, gamedata.name)
       else
-        this.paddle_right = new Paddle(this.width, this.height, false, true, gamedata.id, gamedata.name)
-      await socket.join(this.room_id);
-      if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
+        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, true, gamedata.id, gamedata.name)
+      await socket.join(this.room_idE);
+      if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2) 
       { // si on a deux user start game 
-        this.isGameStart = true;
+        this.isGameStartE = true;
         this.updateBallExtra(socket);
       }
     }
 
     updateBallExtra(socket: Socket) {
       //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
-      if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
-        this.addscore(this.room_id);
+      if (!this.isGameStartE || this.puckE.left_score == this.fscoreE || this.puckE.right_score == this.fscoreE) {
+        this.addscoree(this.room_idE);
         // socket emit
         return;
       }
       else {
-        if (this.puck) { // Check if this.puck is defined
-          this.puck.update();
-          this.speed = this.puck.edges();
-          console.log("speed extra ", this.speed) 
-          this.speed = this.puck.checkPaddleLeft(this.paddle_left);
-          this.speed = this.puck.checkPaddleRight(this.paddle_right);
-          const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
-          if (this.paddle_left && this.paddle_right)
+        if (this.puckE) { // Check if this.puck is defined
+          this.puckE.update();
+          this.speedE = this.puckE.edges();
+          console.log("speed extra ", this.speedE) 
+          this.speedE = this.puckE.checkPaddleLeft(this.paddle_leftE);
+          this.speedE = this.puckE.checkPaddleRight(this.paddle_rightE);
+          const payload = {x : this.puckE.x, y : this.puckE.y, lscore: this.puckE.left_score, rscore: this.puckE.right_score}
+          if (this.paddle_leftE && this.paddle_rightE)
           {
-            this.paddle_left.update();
-            this.paddle_right.update();
-            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right.name}
-            this.server.to(this.room_id).emit("paddle update", (payloadp));
+            this.paddle_leftE.update();
+            this.paddle_rightE.update();
+            const payloadp = {prx: this.paddle_rightE.x, pry: this.paddle_rightE.y, prw: this.paddle_rightE.w, prh: this.paddle_rightE.h, pln: this.paddle_leftE.name, plx: this.paddle_leftE.x, ply: this.paddle_leftE.y, plw: this.paddle_leftE.w, plh: this.paddle_leftE.h, prn: this.paddle_rightE.name}
+            this.server.to(this.room_idE).emit("paddle update", (payloadp));
           };
-          this.server.to(this.room_id).emit("puck update", (payload));
+          this.server.to(this.room_idE).emit("puck update", (payload));
         }
-        setTimeout(this.updateBall.bind(this, socket), this.time); // Bind the `this` context to the function
+        setTimeout(this.updateBall.bind(this, socket), this.timeE); // Bind the `this` context to the function
       }
     }
 
     @SubscribeMessage('KeyPressed extra')
     async KeyPressed(socket: Socket, gamedata : any) { 
-      if (gamedata.name == this.paddle_left.name)
+      if (gamedata.name == this.paddle_leftE.name)
       {
         if (gamedata.key == 'j')
         {
-          this.paddle_left.move(-10 * this.speed);
+          this.paddle_leftE.move(-10 * this.speedE);
         }
         if (gamedata.key == 'n')
         {
-          this.paddle_left.move(10 * this.speed);
+          this.paddle_leftE.move(10 * this.speedE);
         }
       }
-      else if (gamedata.name == this.paddle_right.name)
+      else if (gamedata.name == this.paddle_rightE.name)
       {
         if (gamedata.key == 'j')
         {
-            this.paddle_right.move(-10 * this.speed);
+            this.paddle_rightE.move(-10 * this.speedE);
         }
         else if (gamedata.key == 'n')
         {
-            this.paddle_right.move(10 * this.speed);
+            this.paddle_rightE.move(10 * this.speedE);
       }
       }
+    }
+    async addscoree(id_room: string) {
+      console.log("PASSE PAR ADD SCORE BACK")
+      this.isGameStartE = false;
+      const luser = await this.userService.findOnebyId2(this.paddle_leftE.id)
+      const ruser = await this.userService.findOnebyId2(this.paddle_rightE.id)
+      if (this.puckE.left_score = this.fscoreE)
+      {              
+        luser.wins += 1;
+        ruser.losses += 1;
+      }
+      else if (this.puckE.right_score = this.fscoreE)
+      {
+        luser.losses += 1;
+        ruser.wins += 1;
+      }
+      await this.userService.update(this.paddle_leftE.id, luser);
+      await this.userService.update(this.paddle_rightE.id, ruser);
+
+      const upgame = await this.gameService.findOne(Number(id_room))
+      upgame.player1 = luser;
+      upgame.player2 = ruser;
+      upgame.score1 = this.puckE.left_score;
+      upgame.score2 = this.puckE.right_score;
+      await this.gameService.update(Number(id_room), upgame);
+      setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
     }
 }
