@@ -18,16 +18,6 @@ const PopBox = styled.textarea`
     font-weight: 500;
 `;
 
-
-// const Button = styled.button`
-//   padding: 10px;
-//   border-radius: 5px;
-//   background-color: #4CAF50;
-//   color: white;
-//   margin-right: 10px;
-//   cursor: pointer;
-// `;
-
 const Button = styled.button`
   padding: 10px;
   border-radius: 5px;

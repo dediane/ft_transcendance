@@ -110,12 +110,19 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   }
   console.log("userdata id and name", userdata.id, userdata.name)
   const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
+
   if (channels) {
   const channelNames = channels.map(channel => channel.name);
+  if (channelNames.length === 0) {
+    console.log("no chans");
+    this.server.to(socket.id).emit('join room', { channels: channels });
+  }
   console.log("CHANNELLNAMES ???", channelNames);
    this.server.to(socket.id).emit('all chans',channelNames);
    this.server.emit('connected users', this.users);
+
     for (const channel of channels) {
+
       const channelName = channel.name;
       const accessType = channel.accessType;
       const blockedUsers =  await this.userService.getBlockedUsers(userdata.id);
@@ -125,8 +132,9 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       const mutedMembers = channel.mutedMembers?.map(user => user.username);
       const admins = channel.admins?.map(user => user.username);
       const bannedmembers = channel.bannedUsers?.map(user => user.username);
+      console.log("????????owner SOCKET", channel.owner.username)
       const owner = channel.owner.username;
-      // console.log("owner SOCKET", owner)
+
       socket.join(channelName);
       if (!this.messages[channelName]) {
         this.messages[channelName] = []; // add new room if it doesn't exist
@@ -159,6 +167,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     console.log(`attempting (${roomName}) room (${accessType}) creation. password is (${password}) and creator is (${datachan.creator})`)
     const usr = await this.userService.findOnebyId(datachan.creator);
     const existingChannel = await this.channelService.findOneByName(roomName);
+    
     if (!existingChannel) {
       console.log(`room (${roomName})  doesn't exist so let's create it`)
       const channelDto: CreateChannelDto = {
@@ -172,7 +181,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       };
 
     const newChannel = await this.channelService.createChannel(channelDto);
-     this.server.emit('new chan', this.channelService.findAll()); // broadcast to all connected sockets
+    const channels = await this.channelService.findAll()
+     this.server.emit('new chan', channels ); // broadcast to all connected sockets
     //  this.server.to(socket.id).emit('new chan', { channelName: roomName}); // broadcast to all connected sockets
     }
   }
@@ -185,7 +195,10 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
     console.log(`SOCKET CREATE DM with (${username1}) and (${username2})`)
     
     const newChannel = await this.channelService.createDm(username1, username2);
-     this.server.emit('new chan', this.channelService.findAll());
+    //  this.server.emit('new chan', this.channelService.findAll());
+
+     const channels = await this.channelService.findAll()
+     this.server.emit('new chan', channels );
     }
   
 
@@ -197,10 +210,13 @@ async handleRemoveChannel(socket: Socket, channelName: string) {
   if (existingChannel) {
   console.log('existing channel', existingChannel.name, existingChannel.id)
     await this.channelService.remove(existingChannel.id);
-    this.server.emit('new chan', this.channelService.findAll());
-  } else {
-    socket.emit('error', `Channel ${channelName} does not exist.`);
-  }
+    // this.server.emit('new chan', this.channelService.findAll());
+    const channels = await this.channelService.findAll()
+    this.server.emit('new chan', channels );
+  } 
+  // else {
+  //   socket.emit('error', `Channel ${channelName} does not exist.`);
+  // }
 }
 
 @SubscribeMessage('change password')
@@ -209,7 +225,9 @@ async handleChatPassword(socket: Socket, data: any) {
   const updateChannelDto: UpdateChannelDto = {password: newPassword, name: channelName };
 
  await this.channelService.changeChannelPassword(userId, updateChannelDto);
- this.server.emit('new chan', this.channelService.findAll());
+//  this.server.emit('new chan', this.channelService.findAll());
+ const channels = await this.channelService.findAll()
+ this.server.emit('new chan', channels );
 
 }
 
@@ -219,18 +237,20 @@ async handleRemoveChatPassword(socket: Socket, data: any) {
 const { userId, channelName } = data;
 
 await this.channelService.removeChannelPassword(userId, channelName);
-this.server.emit('new chan', this.channelService.findAll());
+// this.server.emit('new chan', this.channelService.findAll());
+const channels = await this.channelService.findAll()
+this.server.emit('new chan', channels );
 
 }
 
 
-@SubscribeMessage('check password')
-async handlecheckChatPassword(socket: Socket, data: any) {
-  const { userId, channelName, userInput } = data;
-  const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
-  console.log("channel pass is correct or not : ", bool);
-  this.server.to(socket.id).emit('is userinput correct', bool);
-}
+// @SubscribeMessage('check password')
+// async handlecheckChatPassword(socket: Socket, data: any) {
+//   const { userId, channelName, userInput } = data;
+//   const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
+//   console.log("channel pass is correct or not : ", bool);
+//   this.server.to(socket.id).emit('is userinput correct', bool);
+// }
 
 @SubscribeMessage('add member')
 async handleAddMember(socket: Socket, payload: any) {
@@ -240,7 +260,9 @@ async handleAddMember(socket: Socket, payload: any) {
   const chan = await this.channelService.findOneByName(channelName);
   const bool = await this.channelService.addMember(channelName, AdminId, username);
   this.server.emit("member adding", {memberadded: bool, username: username})
-  this.server.emit('new chan', this.channelService.findAll());
+  // this.server.emit('new chan', this.channelService.findAll());
+  const channels = await this.channelService.findAll()
+  this.server.emit('new chan', channels );
 }
 
 
@@ -250,7 +272,9 @@ async handleAddAdmin(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.addAdmin(channelName, AdminId, username);
- this.server.emit('new chan', this.channelService.findAll());
+//  this.server.emit('new chan', this.channelService.findAll());
+ const channels = await this.channelService.findAll()
+ this.server.emit('new chan', channels );
 }
 
 @SubscribeMessage('remove admin')
@@ -260,7 +284,9 @@ async handleRemovAdmin(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeAdmin(channelName, AdminId, username);
- this.server.emit('new chan', this.channelService.findAll());
+//  this.server.emit('new chan', this.channelService.findAll());
+ const channels = await this.channelService.findAll()
+ this.server.emit('new chan', channels );
 }
 
 
@@ -272,7 +298,9 @@ async handleRemoveMember(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeMember(channelName, AdminId, username);
-  this.server.emit('new chan', this.channelService.findAll());
+  // this.server.emit('new chan', this.channelService.findAll());
+  const channels = await this.channelService.findAll()
+  this.server.emit('new chan', channels );
 }
 
 @SubscribeMessage('block user')
@@ -303,7 +331,9 @@ async handleBanMember(socket: Socket, payload: any) {
     console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.banMember(channelName, AdminId, username);
-  this.server.emit('new chan', this.channelService.findAll());
+  // this.server.emit('new chan', this.channelService.findAll());
+  const channels = await this.channelService.findAll()
+  this.server.emit('new chan', channels );
 }
 
 @SubscribeMessage('mute member')
@@ -323,6 +353,30 @@ async handleMuteMember(socket: Socket, payload: any) {
       this.messages[roomName] = []; // add new room if it doesn't exist
     }
     socket.emit('join room', this.messages[roomName]);
+  }
+
+
+  @SubscribeMessage('sendInvitation')
+  async handlePongInvite(socket: Socket, data : any) {
+
+    const { sender , receiver, chatName} = data;
+
+    const senderr = await this.userService.findOneByName(sender);
+    const receiverr = await this.userService.findOneByName(receiver);
+    const receiverUser = this.users.find(user => user.username === receiverr.username);
+    console.log("//////********receiverUser",  receiverUser)
+
+    if (receiverUser) {
+    console.log("in receiver user", receiverUser)
+      const receiverSockets = receiverUser.sockets;
+      receiverSockets.forEach(receiverSocket => {
+        this.server.to(receiverSocket).emit('receiveInvitation', { sender: senderr, receiver : receiver, chatName : chatName});
+      });
+    } 
+  // else {
+  //   // Handle the case when the receiver is not found or does not have any active sockets
+  //   // You can emit an error event or take appropriate action.
+  // }
   }
 
   @SubscribeMessage('send message')
