@@ -25,9 +25,11 @@ import React from 'react';
     const canvash = 500;
     
     
+    let width = p5WrapperDiv?.clientWidth || window.innerWidth;
+    let height = p5WrapperDiv?.clientHeight || window.innerHeight;
+    /*
     let cwidth = p5WrapperDiv?.clientWidth || window.innerWidth;
     let cheight = p5WrapperDiv?.clientHeight || window.innerHeight;
-    
     // Calculate the aspect ratio of the canvas and window
     const canvasratio = canvasw / canvash;
     const winratio = cwidth / cheight;
@@ -43,16 +45,16 @@ import React from 'react';
       width = cwidth;
       height = width / canvasratio;
     }
-
+*/
    /*
     width = 500;
     height = 500;
    */
-    console.log("clienbtHeight", cwidth)
-    console.log("clienbtHeight", cheight)
-    let puck = new Puck(p5, cwidth, cheight);
-    let paddle_left = new Paddle(p5, cwidth, cheight, true, false);
-    let paddle_right = new Paddle(p5, cwidth, cheight, false, false);
+    console.log("clienbtHeight", width)
+    console.log("clienbtHeight", height)
+    let puck = new Puck(p5, width, height);
+    let paddle_left = new Paddle(p5, width, height, true, false);
+    let paddle_right = new Paddle(p5, width, height, false, false);
     let left_score: number = 0;
     let right_score: number = 0;
     
@@ -212,18 +214,19 @@ import React from 'react';
     if (element == null)
     {
       console.log("use the window canvas T-T")
-      cwidth = window.innerWidth;
-      cheight = window.innerHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
     }
     else
     {
       console.log("pass par notre div define hihi")
-      cwidth = element.clientWidth;
-      cheight = element.clientHeight;
+      width = element.clientWidth;
+      height = element.clientHeight;
     }
     // send to back new width and height to upfate whith puck paddle
 
     // new winratio
+    /*
     const winratio = cwidth / cheight;
 
     if (winratio > canvasratio) {
@@ -233,6 +236,7 @@ import React from 'react';
       width = cwidth;
       height = width / canvasratio;
     }
+    */
 
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);

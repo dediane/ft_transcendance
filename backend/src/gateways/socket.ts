@@ -458,6 +458,12 @@ for (const user of this.users) {
         }
       }
     }
+
+      @SubscribeMessage('player ready')
+      readyplayer(socket: Socket)
+      {
+        console.log("player ready");
+      }
         
         // start game from pong.txt 
         @SubscribeMessage('start game')
@@ -476,6 +482,7 @@ for (const user of this.users) {
           await socket.join(this.room_id);
           if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
           { // si on a deux user start game 
+            console.log("------------- LA POUR WOUAIS ------------")
             this.isGameStart = true;
             this.updateBall(socket);
           }
@@ -597,42 +604,6 @@ for (const user of this.users) {
         this.room_id = game.id.toString();
       } // generate id game
       const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_id);
-      // if ((connectedSockets && connectedSockets.size === 1))
-      // {
-      //   const game = await this.gameService.findOne(Number(this.room_id))
-      //   if (this.player2 && username === this.player2)
-      //   {
-      //     console.log("same person bye 1")
-      //     return ;
-      //   }
-      //   const user = await this.userService.findOnebyId(userid)
-      //   const up : UpdateUserDto = {
-      //     gamePlayer1: [game],
-      //   };
-      //   await this.userService.update(userid, up);
-      //   this.player1 = user.username;
-      //   console.log("       SET PLAYER 1")
-      //   console.log("player 1 is ", this.player1)
-      //   console.log("player 2 is ", this.player2)
-      // }
-      // else
-      // {
-      //   const game = await this.gameService.findOne(Number(this.room_id))
-      //   if (this.player1 && username === this.player1)
-      //   {
-      //     console.log("same person bye 2")
-      //     return ;
-      //   }
-      //   const user = await this.userService.findOnebyId(userid)
-      //   const up : UpdateUserDto = {
-      //     gamePlayer2: [game],
-      //   };
-      //   await this.userService.update(userid, up);
-      //   this.player2 = user.username;
-      //   console.log("       SET PLAYER 2")
-      //   console.log("player 1 is ", this.player1)
-      //   console.log("player 2 is ", this.player2)
-      // } // a revoir 
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
       { // already 2 people in the room
@@ -654,8 +625,8 @@ for (const user of this.users) {
     async handleJoinGameServerExtra(socket: Socket, gamedata : any) {
       // this have to be change for the responssive
       // and set the width and height to 500 / 500
-      this.width = 500;
-      this.height = 500;
+      this.height = gamedata.height;
+      this.width = gamedata.width;
       this.puck = new Puck(this.width, this.height, true);
       if (!this.paddle_left)
         this.paddle_left = new Paddle(this.width, this.height, true, true, gamedata.id, gamedata.name)
