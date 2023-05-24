@@ -19,6 +19,7 @@ import { GameService } from 'src/game/game.service';
 import { CreateGameDto } from 'src/game/dto/create-game.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { User } from 'src/user/entities/user.entity';
+import { subscribeOn } from 'rxjs';
 
 type GameProps = {
   id: number;
@@ -819,5 +820,12 @@ for (const user of this.users) {
       upgame.score2 = this.puckE.right_score;
       await this.gameService.update(Number(id_room), upgame);
       setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
+    }
+    @SubscribeMessage("chat pong")
+    chat_pong(socket: Socket, payload : any)
+    {
+      console.log("we are in chat pong")
+      console.log("user 1 ", payload.user1);
+      console.log("user 2 ", payload.user2);
     }
 }

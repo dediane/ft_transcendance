@@ -10,6 +10,8 @@ import {ContextGame} from '../game/GameContext'
 function Chat(props)
 // props: { createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: any[]; addMember: (arg0: string) => void; currentUser: { blockedUsers: any; adminUsers: any; username: any; }; blockedUsers: { [x: string]: string | string[]; }; yourId: string | number; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }; userChannels: { [x: string]: any[]; }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: string; }) => void; accessType: string; messages: any[]; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; allUsers: any[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined; }) 
 {
+  const [InviteAcceptedMap, setInviteAcceptedMap] = useState({});
+
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [usersToAdd, setUsersToAdd] = useState('');
@@ -31,8 +33,6 @@ function Chat(props)
 
   const [showDmPopup, setDmPopup] = useState(false);
 
-
- 
 
   const openDmModal = () => {
     setDmPopup(true);
@@ -632,8 +632,10 @@ else {
     else
       otherUser = props.members[0];
     props.inviteToPlay(props.yourId, otherUser)
-  
     console.log("PLAY PONNNNG with 2 usernames. User to find with userservice.findonebyname()", props.members[0], props.members[1])
+    setTimeout(() => {
+      window.location.href = `/waiting`;
+    }, 5 * 1000);
   }
 
   function acceptInvite(): void {
@@ -643,15 +645,19 @@ else {
 
     props.setInviteReceivedMap((prevMap) => ({
       ...prevMap,
-      [chatName]: false,
+      [props.currentChat.chatName]: false,
     }));
-    // const {socket} = React.useContext(ContextGame);
-    // const payload = {
-    //   user1 : props.members[0],
-    //   user2 : props.members[1],
-    // }
-    // socket.emit('chat pong', payload);
-    // window.location.href = `/pong`;
+    const payload = {
+      user1 : props.members[0],
+      user2 : props.members[1],
+    }
+    console.log("REDIRECTION PONG")
+    setInviteAcceptedMap((prevMap) => ({
+      ...prevMap,
+      [props.currentChat.chatName]: true,
+    }));
+    console.log("setInviteAcceptedMap ACCEPTING set to : ", InviteAcceptedMap[props.currentChat.chatName] );
+    window.location.href = `/waiting`;
   }
 
     return (
