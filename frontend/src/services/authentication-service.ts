@@ -61,8 +61,15 @@ class AuthService {
     }
 
     getUsername() {
-        return this.decode(this.getToken()).username;
-    }
+        const token = this.getToken();
+        if (token) {
+          return this.decode(token).username;
+        } else {
+          return null; 
+        }
+    // return this.decode(this.getToken()).username;
+
+}
 
     isLocal() {
         return this.decode(this.getToken()).local;
@@ -76,9 +83,7 @@ class AuthService {
         const token = this.getToken();
         return (token && this.isValid(token));
     }
-    getUsername() {
-        return this.decode(this.getToken()).username;
-    }
+   
 }
 
 export default new AuthService();

@@ -407,19 +407,32 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       id: AuthService.getId(),
       name: AuthService.getUsername(),
     };
+    if (userdata.name == "")
+    {
+      window.location.href = "/login";
+    }
 
  socketRef.current  = io("http://localhost:8000", {
   // userdata : userdata,
   reconnection: true, 
-  pingInterval: 1, // Interval to send ping packets to the client (in milliseconds)
-  pingTimeout: 5,
+  // pingInterval: 1, // Interval to send ping packets to the client (in milliseconds)
+  // pingTimeout: 5,
   // query: { token },
-  query: { token, userdata },
+  query: { token },
 });
     socketRef.current.on("connect", () => {
       console.log("connected to server");
       setConnected(true);
+    socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
+
     });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("~~~~~~~~~~~~reconnecting to server~~~~~~~~~~~~");
+      setConnected(false);
+    // socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
+    });
+
     socketRef.current.on("all user's chans", (channels) => {
       console.log("!!!!all user's chans messenger2!!channels is populated???", channels);
       setUserChans(channels);
@@ -459,25 +472,10 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       const { sender, receiver, chatName } = data;
       console.log("RECEIVEINVITATION MESSENGER2", sender)
       const username = sender.username;
-      alert("received invite")
-      // setInviteReceived(true);
-
       setInviteReceivedMap((prevMap) => ({
         ...prevMap,
         [chatName]: true,
       }));
-        // confirm(`Received invitation from ${sender}. Do you accept?`);
-        // const payload = {
-        //   content: `You just received an invitation to play pong from ${username}. Do you accept?`,
-        //   to: currentChat.isChannel ? currentChat.chatName : currentChat.receiverId,
-        //   sender: AuthService.getUsername(),
-        //   senderid: AuthService.getId(),
-        //   chatName: currentChat.chatName,
-        //   isChannel: currentChat.isChannel,
-        // };
-        // socketRef.current.emit("send message", payload);
-        // Display a notification or prompt to the receiver to accept or decline the invitation
-        // showInvitationReceivedPrompt(sender);
 
     });
       
