@@ -93,20 +93,31 @@ export const Profil = () => {
     }
 
     const handleDynamic = () => {
-        console.log("DYNAMIC");
+        setErrorMessage("");
         setIsDynanic(!isDynamic);
     }
 
-    const handleUsername = (user: any) => {
-        console.log("CLICK")
-    }
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [inputValues, setInputValues] = useState<any>();
     const checkAvailability = async() => {
+        setErrorMessage("");
+        if (!inputValues)
+        {
+            handleDynamic();
+            return;
+        }
         const res = await userService.updateUsername(user.username, inputValues);
-        if (res == true)
+        if (res.status == true)
+        {
+            setErrorMessage("");
             setUser({...user, username: inputValues})
-        handleDynamic();
+            handleDynamic()
+        }
+        else {
+            setErrorMessage('Username already taken.');
+        }
+;
     }
 
     return (
@@ -126,12 +137,16 @@ export const Profil = () => {
                     
                     { isDynamic ?
                     <div className="p-3">
-                    <p className="text-lg text-zinc-500 ">username editable</p>
+                    <p className="text-lg text-zinc-500 ">username</p>
+                    <div className={styles.inputContainer}>
                     <input 
                     onChange={(e) => setInputValues(e.target.value)}
                     placeholder={user.username}
+                    className={styles.littleinput}
                     />
-                    <button onClick={checkAvailability} className="">Change</button>
+                    <button onClick={checkAvailability} className={styles.littlebuttonblack}>update</button>
+                    </div>
+                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                     </div>
                     //<EditUsername value={user.username}/> 
                     : <Asset title={'username'} value={user.username} />}

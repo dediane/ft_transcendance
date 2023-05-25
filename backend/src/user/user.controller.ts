@@ -67,10 +67,10 @@ export class UserController {
   @Post('updateusername')
   async updateUsername(@Body() req: any) {
     if (!req.newusername)
-      return { error: 'No username provided' };
+      return {  status: false, error: 'No username provided' };
     const res = await this.userService.findAndUpdateUserByUsername(req.username, req.newusername)
     if (res == false)
-      return { error: 'Username already taken' };
+      return { status: false, error: 'Username already taken' };
     else 
       return ({status: true, message: "Username successfully updated"});
   }

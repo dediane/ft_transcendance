@@ -148,6 +148,36 @@
 	color: #fff;
 }
 
+.inputContainer {
+    display: flex;
+    align-items: center;
+  }
+
+.littleinput {
+    background-color: #ffffff40;
+    width: 60%;
+    display: flex;
+    font-size: medium;
+    font-weight: 400;
+}
+
+.littlebuttonblack { 
+    width: 80px;
+    border-radius: 0.5rem;
+    background-image: linear-gradient(to right, #262626, #444444);
+    padding-top: 0.15rem;
+    padding-bottom: 0.25rem;
+    margin-left: auto;
+    margin-right: 0;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #fff;
+}
+
+.littlebuttonblack:hover {
+    background-image: linear-gradient(to right, #3c3c3c, #5b5b5b);
+}
+
 .littlebutton:hover {
     background-image: linear-gradient(to right,#ff6fab, #ffa2c1);
     }
