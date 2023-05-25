@@ -117,6 +117,14 @@ import React from 'react';
             window.location.href = "/home_game";
           });
 
+          socket?.on("same parsonne error"), () => {
+            console.log("connect with same id haha")
+            alert("connect with same id");
+            setTimeout(() => {
+              window.location.href = `/home_game`;
+            }, 2 * 1000);
+          } // code qui marce même pas mdrr
+
           socket?.on("paddle update", (payload : any) => {
             console.log("update paddle");
             padl_x = payload.plx; 

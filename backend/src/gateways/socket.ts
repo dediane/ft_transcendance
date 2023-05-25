@@ -554,13 +554,13 @@ for (const user of this.users) {
           {
             this.paddle_left = new Paddle(this.width, this.height, true, false, this.player1.id, this.player1.username)
             this.sock.set(this.player1.id, socket);
-            console.log("socket 1 " + socket + " avec player " + this.player1.username + " avec userid " + this.player1.id);
+            console.log("@@@socket 1 " + socket + " avec player " + this.player1.username + " avec userid " + this.player1.id);
           }
-          else if (!this.paddle_right)
+          if (!this.paddle_right)
           {
             this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2.id, this.player2.username)
             this.sock.set(this.player2.id, socket);
-            console.log("socket 2 " + socket + " avec player " + this.player2.username + " avec userid " + this.player2.id)
+            console.log("@@@socket 2 " + socket + " avec player " + this.player2.username + " avec userid " + this.player2.id)
           }
           await socket.join(this.room_id);
           console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_id).size)
@@ -569,14 +569,22 @@ for (const user of this.users) {
           if (this.server.sockets.adapter.rooms.get(this.room_id).size == 2 && this.isGameStart == false) 
             { // si on a deux user start game 
               console.log("---------------------- LA POUR WOUAIS ---------------------------")
-              console.log("***********************#############*****************************")
-              console.log("***********************####111######*****************************")
-              console.log("***********************####111######*****************************")
-              console.log("***********************####111######*****************************")
-              console.log("***********************####111######*****************************")
-              console.log("***********************####111######*****************************")
-              console.log("***********************#############*****************************")
+              console.log("***********************##############****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************##############****************************")
               console.log("user enter with isGameStart ", this.isGameStart);
+              if (this.paddle_left.id == this.paddle_right.id)
+              {
+                console.log("lalalalalaa T-T")
+                socket.emit("same personne error", {
+                  error: "You canno't join with 2 tab!",
+                });
+                return ;
+              }
               this.isGameStart = true;
               this.updateBall();
             }
