@@ -81,10 +81,6 @@ export function JoinRoom(props: IJoinRoomProps)
   return <div>
       <JoinRoomContainer >
         <h4> Join the {props.mode} Pong game </h4>
-        {/* <RoomIdInput 
-        placeholder="Room ID" 
-        value={roomName} 
-        onChange={handleRoomName}/> /* changement pour lancer la game */ }
         <JoinButton type="submit" disabled={isJoining} onClick={joinRoom}>{isJoining ? "Joining ... " : "Join" }</JoinButton>
       </JoinRoomContainer>
   </div>

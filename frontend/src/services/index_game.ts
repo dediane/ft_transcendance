@@ -6,12 +6,8 @@ class GameService {
 
     public async joinGameRoom(socket : React.MutableRefObject<undefined>, roomId: string, mode: string ): Promise<boolean>
     {
-        console.log("ldefnjk, room id -> ", roomId);
-        console.log("before emit");
         const payload = {message: roomId, userid: AuthService.getId(), username: AuthService.getUsername()}
         return new Promise((rs, rj) => {
-            // socket.emit("join_game", {message: roomId} ); // ici on lance la game envoie un socket au back sauf que la socket n'est pas recu par le back et quand on l'envoie pas ca crash car elle existe pas
-            // socket.emit("join_game", roomId ); // ici on lance la game envoie un socket au back sauf que la socket n'est pas recu par le back et quand on l'envoie pas ca crash car elle existe pas
             if (mode == "Classic")
             {
                 socket.current?.emit("join_game", payload ); // ici on lance la game envoie un socket au back sauf que la socket n'est pas recu par le back et quand on l'envoie pas ca crash car elle existe pas

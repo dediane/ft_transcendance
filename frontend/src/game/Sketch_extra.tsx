@@ -116,7 +116,7 @@ p5.updateWithProps = props => {
 
       // keyReleased and keyPressed for the gamers
       p5.keyReleased = () => {
-        socket?.emit("KeyReleased");
+        socket?.emit("KeyReleasedExtra");
       }
 
       p5.keyPressed = () => {

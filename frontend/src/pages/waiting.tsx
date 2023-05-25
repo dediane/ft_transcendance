@@ -1,16 +1,34 @@
 import Game from '@/components/Game'
 import React, { useEffect, useRef } from 'react'
-import styles from "../styles/Game.module.css"
 import io, {Socket} from "socket.io-client"
+import styled from '@emotion/styled';
+import AuthService from "../services/authentication-service"
+import ConnectService from '@/components/Connect';
+import {ContextGame} from "@/game/GameContext";
 
-
+const WelcomeText = styled.h1`
+  margin: 0;
+  color: #8e44ad;
+  display: flex;
+  flex-direct: column;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default function wait() {
     
+    const {socket} = React.useContext(ContextGame);
+    if (!socket)
+        return ;
+    const join = async () => {
+        const joinned = await ConnectService.Connect(socket);
+    }
+    join();
 
     return (
         <div>
-            <h1>Wait your mate to play</h1>
+            <WelcomeText style={{fontWeight: 'bold', fontSize: "2rem"}}>
+                Wait your mate come to play </WelcomeText> 
         </div>
     )
 }

@@ -588,7 +588,6 @@ for (const user of this.users) {
         }
 
         async addscore(id_room: string) {
-          console.log("PASSE PAR ADD SCORE BACK")
           this.isGameStart = false;
           const luser = await this.userService.findOnebyId2(this.paddle_left.id)
           const ruser = await this.userService.findOnebyId2(this.paddle_right.id)
@@ -681,6 +680,7 @@ for (const user of this.users) {
       } // generate id game
       const user = await this.userService.findOnebyId(userid)
       console.log("user is ", user.username)
+      console.log("gamid is ", this.room_idE)
       console.log("queue size is ", this.queueE.size)
       if (this.queueE.size == 0)
         this.queueE.set(userid, user)
@@ -718,6 +718,8 @@ for (const user of this.users) {
         
         if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2) 
         { // we have 2 people to play
+          this.queueE.delete(this.player1E.id);
+          this.queueE.delete(this.player2E.id);
           this.server.to(this.room_idE).emit("start_game_extra", {});
         }
       }
@@ -743,9 +745,9 @@ for (const user of this.users) {
     }
 
     updateBallExtra(socket: Socket) {
-      //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStartE || this.puckE.left_score == this.fscoreE || this.puckE.right_score == this.fscoreE) {
-        this.addscoree(this.room_idE);
+        console.log("game extra start is ", this.isGameStartE)
+        this.addscoreE(this.room_idE);
         // socket emit
         return;
       }
@@ -753,7 +755,6 @@ for (const user of this.users) {
         if (this.puckE) { // Check if this.puck is defined
           this.puckE.update();
           this.speedE = this.puckE.edges();
-          console.log("speed extra ", this.speedE) 
           this.speedE = this.puckE.checkPaddleLeft(this.paddle_leftE);
           this.speedE = this.puckE.checkPaddleRight(this.paddle_rightE);
           const payload = {x : this.puckE.x, y : this.puckE.y, lscore: this.puckE.left_score, rscore: this.puckE.right_score}
@@ -766,7 +767,7 @@ for (const user of this.users) {
           };
           this.server.to(this.room_idE).emit("puck update", (payload));
         }
-        setTimeout(this.updateBall.bind(this, socket), this.timeE); // Bind the `this` context to the function
+        setTimeout(this.updateBallExtra.bind(this, socket), this.timeE); // Bind the `this` context to the function
       }
     }
 
@@ -795,8 +796,12 @@ for (const user of this.users) {
       }
       }
     }
-    async addscoree(id_room: string) {
-      console.log("PASSE PAR ADD SCORE BACK")
+    @SubscribeMessage('KeyReleasedExtra')
+    async KeyRealaesedExtra(socket: Socket) {
+      this.paddle_leftE.move(0);
+      this.paddle_rightE.move(0);
+    }
+    async addscoreE(id_room: string) {
       this.isGameStartE = false;
       const luser = await this.userService.findOnebyId2(this.paddle_leftE.id)
       const ruser = await this.userService.findOnebyId2(this.paddle_rightE.id)
@@ -821,11 +826,16 @@ for (const user of this.users) {
       await this.gameService.update(Number(id_room), upgame);
       setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
     }
+
     @SubscribeMessage("chat pong")
     chat_pong(socket: Socket, payload : any)
     {
+      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
       console.log("we are in chat pong")
-      console.log("user 1 ", payload.user1);
-      console.log("user 2 ", payload.user2);
+      /*console.log("user 1 ", payload.userid);
+      console.log("user 2 ", payload.username);*/
+      //this.server.emit("in game");
     }
+
+
 }
