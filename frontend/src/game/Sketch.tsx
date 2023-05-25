@@ -19,11 +19,37 @@ import React from 'react';
     //console.log("la width param %d, la height param %d", w, h);
     let p5WrapperDiv = document.getElementById("canvas_size")
     const username = AuthService.getUsername();
-    console.log("socket username->", username);
-    //console.log("id socket -> ", socket.id);
-    console.log("> Begin function canvas")
+
+    // fixed canvas in backend
+    const canvasw = 500;
+    const canvash = 500;
+    
+    
     let width = p5WrapperDiv?.clientWidth || window.innerWidth;
     let height = p5WrapperDiv?.clientHeight || window.innerHeight;
+    /*
+    let cwidth = p5WrapperDiv?.clientWidth || window.innerWidth;
+    let cheight = p5WrapperDiv?.clientHeight || window.innerHeight;
+    // Calculate the aspect ratio of the canvas and window
+    const canvasratio = canvasw / canvash;
+    const winratio = cwidth / cheight;
+
+    // Calculate the available width and height based on the aspect ratio
+    let width: number;
+    let height: number;
+
+    if (winratio > canvasratio) {
+      height = cheight;
+      width = height * winratio;
+    } else {
+      width = cwidth;
+      height = width / canvasratio;
+    }
+*/
+   /*
+    width = 500;
+    height = 500;
+   */
     console.log("clienbtHeight", width)
     console.log("clienbtHeight", height)
     let puck = new Puck(p5, width, height);
@@ -85,6 +111,11 @@ import React from 'react';
             // puck.x, puck.y, puck.r
             // to show
           });
+          
+          socket?.on("end game", () => {
+            console.log("redirection my bro")
+            window.location.href = "/home_game";
+          });
 
           socket?.on("paddle update", (payload : any) => {
             console.log("update paddle");
@@ -120,15 +151,9 @@ import React from 'react';
             else if (p5.key == 'n') {
               socket?.emit("KeyPressed", {name: userdata.name, key: 'n'});
             }
-            // if (p5.key == 'w')
-            // socket?.emit("KeyPressed right", {name: padr_n, key: 'w'});
-            // else if (p5.key == 's') {
-            //   socket?.emit("KeyPressed right", {name: padr_n, key: 's'});
-            // }
           }
         }
       }
-      // ici faire emit et on avec des appelle de function
     };
     
   // Puck Class
@@ -150,7 +175,6 @@ import React from 'react';
         let str = "Player " + paddle_left.name + " win !!"
         p5.fill(0, 102, 153);
         p5.text(str, width / 2 - 225, height / 2 + 50)
-
         return ;
       }
       if (right_score == score) {
@@ -201,11 +225,23 @@ import React from 'react';
     }
     // send to back new width and height to upfate whith puck paddle
 
+    // new winratio
+    /*
+    const winratio = cwidth / cheight;
+
+    if (winratio > canvasratio) {
+      height = cheight;
+      width = height * winratio;
+    } else {
+      width = cwidth;
+      height = width / canvasratio;
+    }
+    */
 
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
-    paddle_left.update_resize(width, height, true);
-    paddle_right.update_resize(width, height, false);
+    //paddle_left.update_resize(width, height, true);
+    //paddle_right.update_resize(width, height, false);
     puck.update_resize(width, height);
   }
 }

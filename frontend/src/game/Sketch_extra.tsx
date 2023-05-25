@@ -6,31 +6,10 @@ import { useState, useEffect } from "react";
 import { io } from 'socket.io-client';
 import { useRef } from 'react';
 import  AuthService from "../services/authentication-service"
+import { Socket } from 'socket.io-client';
+import { MySketchProps } from '@/components/Game';
 
-
-const socket = () => {
-  // socket.emit("start")
-  const socketRef = useRef();
-  
-  useEffect(() => {
-    
-      const userdata = {
-          id: AuthService.getId(),
-          name: AuthService.getUsername(),
-        };
-      
-        socketRef.current.on("update ball", () => { // receive from back
-          console.log("connected to server");
-        });
-      
-        socketRef.current.emit("launch ball"); // envoie au back
-        console.log(`Received message from server:`);
-      
-      }, []);
-      
-  }
-  
-  export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
+export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
 
 
 
@@ -57,6 +36,99 @@ const socket = () => {
   let speed: number = 1;
 
 
+// here socket
+const token =  AuthService.getToken();
+//let start = false;
+let puckx: number;
+let pucky: number
+
+let padr_x: number;
+let padr_y: number;
+let padr_w: number;
+let padr_h: number;
+let padr_n: string;
+
+let padl_x: number;
+let padl_y: number;
+let padl_w: number;
+let padl_h: number;
+let padl_n: string;
+
+if (!token) {
+  // Redirect to the login page
+  window.location.href = "/login";
+}
+
+
+const userdata = {
+  id: AuthService.getId(),
+  name: AuthService.getUsername(),
+};
+
+let socket = Socket;
+const payload = {width: width, height: height, id: userdata.id, name: userdata.name}
+
+p5.updateWithProps = props => {
+  let socket = props.socket.current;
+  
+  if (props.socket) {
+    if (socket)
+    {
+      socket?.emit("start game extra", payload);
+      
+      socket?.on("puck update", (payload : any) => {
+        
+        puckx = payload.x; 
+        pucky = payload.y;
+        left_score = payload.lscore;
+        right_score = payload.rscore;
+        //puck.show(puckx, pucky);
+        
+        // need data for showwing the ball we need
+        // puck.x, puck.y, puck.r
+        // to show
+      });
+      
+      socket?.on("end game", () => {
+        console.log("redirection my bro")
+        window.location.href = "/home_game";
+      });
+
+      socket?.on("paddle update", (payload : any) => {
+        padl_x = payload.plx; 
+        padl_y = payload.ply;
+        padl_w = payload.plw;
+        padl_h = payload.plh;
+        padl_n = payload.pln;
+        
+        padr_x = payload.prx; 
+        padr_y = payload.pry;
+        padr_w = payload.prw;
+        padr_h = payload.prh;
+        padr_n = payload.prn;
+
+        //console.log("on lance la ball avec data ", puckx, pucky)
+        
+        // need data for showwing the ball we need
+        // puck.x, puck.y, puck.r
+        // to show
+      });
+
+      // keyReleased and keyPressed for the gamers
+      p5.keyReleased = () => {
+        socket?.emit("KeyReleasedExtra");
+      }
+
+      p5.keyPressed = () => {
+        if (p5.key == 'j')
+          socket?.emit("KeyPressed extra", {name: userdata.name, key: 'j'});
+        else if (p5.key == 'n') {
+          socket?.emit("KeyPressed extra", {name: userdata.name, key: 'n'});
+        }
+      }
+    }
+  }
+};
 
   window.addEventListener('resize', windowResized);
   p5.setup = () => {
@@ -70,38 +142,39 @@ const socket = () => {
 
     if (left_score == score || right_score == score) {
       if (left_score == score) {
-        p5.text("FINISH", width / 2 - 100, height / 2 - 50);
-        p5.text("LEFT PLAYER WIN", width / 2 - 225, height / 2 + 50)
-        return (<Confetti width={1440} height={150} />)
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "Player " + paddle_left.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+        return ;
       }
       if (right_score == score) {
-        p5.text("FINISH", width / 2 - 100, height / 2 - 50);
-        p5.text("RIGHT PLAYER WIN", width / 2 - 225, height / 2 + 50)
-        return (<Confetti width={1440} height={150} />)
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "Player " + paddle_right.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+        return;
       }
     }
     else {
       center_bar();
 
-      speed = puck.checkPaddleLeft(paddle_left, true, speed);
-      speed = puck.checkPaddleRight(paddle_right, true, speed);
 
       // show and update the paddles
-      paddle_left.show(true);
-      paddle_right.show(true);
-      paddle_left.update();
-      paddle_right.update();
+
+      paddle_left.show(true, padl_x, padl_y, padl_w, padl_h, padl_n);
+      paddle_right.show(true, padr_x, padr_y, padr_w, padr_h, padr_n);
 
       // show and update the puck
-      puck.update();
-      [left_score, right_score] = puck.edges(left_score, right_score);
-      puck.show();
+      puck.show(puckx, pucky);
 
       // show scores
       p5.fill(255);
       p5.textSize(45);
       p5.text(left_score, width / 2 - 35, 40)
+      p5.text(paddle_left.name, 100, 40)
       p5.text(right_score, width / 2 + 30, 40)
+      p5.text(paddle_right.name, width - 100, 40)
     }
   };
 
@@ -110,25 +183,6 @@ const socket = () => {
     for (let i: number = 0; i < height; i += 10) {
       p5.rect(width / 2 + 8, i, 10, 15);
       i += 10;
-    }
-  }
-
-  // keyReleased and keyPressed for the gamers
-
-  p5.keyReleased = () => {
-    paddle_left.move(0);
-    paddle_right.move(0);
-  }
-  p5.keyPressed = () => {
-    if (p5.key == 'a')
-      paddle_left.move(-10 * speed);
-    else if (p5.key == 'z') {
-      paddle_left.move(10 * speed);
-    }
-    if (p5.key == 'j')
-      paddle_right.move(-10);
-    else if (p5.key == 'n') {
-      paddle_right.move(10);
     }
   }
 
@@ -150,8 +204,8 @@ const socket = () => {
 
     console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
-    paddle_left.update_resize(width, height, true);
-    paddle_right.update_resize(width, height, false);
-    puck.update_resize(width, height);
+    //paddle_left.update_resize(width, height, true);
+    //paddle_right.update_resize(width, height, false);
+    //puck.update_resize(width, height);
   }
 }

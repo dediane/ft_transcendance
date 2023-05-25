@@ -15,7 +15,8 @@ export class GameService {
   }
 
   create(createGameDto: CreateGameDto) {
-    return 'This action adds a new game';
+    const game = this.GameRepository.create(createGameDto);
+    return this.GameRepository.save(game);
   }
 
   async findAll() {
@@ -29,16 +30,28 @@ export class GameService {
     //return `This action returns all game`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} game`;
+  async findOne(id: number) {
+    const game = await this.GameRepository
+      .createQueryBuilder('game')
+      .where('game.id = :id', { id })
+      .leftJoinAndSelect('game.player1', 'player1')
+      .leftJoinAndSelect('game.player2', 'player2')
+      .select(['game.id', 'player1.username', 'player2.username', 'game.score1', 'game.score2'])
+      .getOne();
+    return game;
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
+  async update(id: number, updateGameDto: UpdateGameDto) {
+    const game = await this.GameRepository.findOne({ where: { id } });
+    if (!game) {
+      throw new Error(`Game with ID ${id} not found`);
+    }
+    Object.assign(game, updateGameDto);
+    return this.GameRepository.save(game);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} game`;
+  async remove(id: number) {
+    await this.GameRepository.delete(id);
   }
   startGame()
   {

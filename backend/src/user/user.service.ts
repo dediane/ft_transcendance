@@ -196,8 +196,16 @@ export class UserService {
   }
 
 async update(id: number, updateUserDto: UpdateUserDto) {
-  console.log("passe par userservice update")
-  return `This action updates a #${id} user`;
+  const user = await this.userRepository.findOne({ where: { id } });
+  if (!user) {
+    throw new Error(`user with ID ${id} not found`);
+  }
+  
+  Object.assign(user, updateUserDto);
+  // user.wins = updateUserDto.wins;
+  // user.losses = updateUserDto.losses;
+  return this.userRepository.save(user);
+
 } 
 
     async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {

@@ -34,21 +34,6 @@ const MainContainer = styled.div`
 
 
 function HomeGame() {
-  
-  
-  
-  // const connectSocket = async() => {
-    //   const socket = await SocketService
-    //   .connect("http://localhost:8000")
-    //   .catch((err : any) => {
-      //     console.log("Error: ", err);
-      //   })
-      // }
-
-      
-
-
-
       
     return (
     <HomeGameContainer>
@@ -57,7 +42,7 @@ function HomeGame() {
       <MainContainer>
         <ul>
           <JoinRoom mode="Classic"/>
-          {/* <JoinRoom mode="Extra"/>  */}
+          <JoinRoom mode="Extra"/> 
         </ul>
       </MainContainer>
     </HomeGameContainer>
