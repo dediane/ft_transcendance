@@ -17,8 +17,8 @@ export const Navbar = () => {
             Play</a>
         </li>
         <li>
-          <a href="#" className={styles.link}>
-            Stats</a>
+          <a href="/history" className={styles.link}>
+            History</a>
         </li>
         <li>
           <a href="/login" className={styles.link}>
