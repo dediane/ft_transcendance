@@ -1,10 +1,8 @@
-import authenticationService from "@/services/authentication-service";
 import userService from "@/services/user-service";
 import { useEffect, useState } from "react";
 import styles from "../styles/Profile.module.css"
 import { useRouter } from "next/router";
-import { LayoutGroupContext } from "framer-motion";
-import _, { remove } from "lodash";
+import { Asset, Asset2, Asset3, Asset4, Asset5, Asset6 } from "./Stats";
 
 export default function Homepage() {
     return (
@@ -18,7 +16,6 @@ export default function Homepage() {
 
 export const PublicProfil = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
-    const [showModal, setShowModal] = useState(false);
     const router = useRouter();
 
     // public?username={username}
@@ -34,39 +31,33 @@ export const PublicProfil = () => {
         fetch_profile()
     }, [])
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
     return (
         <>
-         <div className={styles.card}>
+        <div className={styles.card}>
             <div className="col-span-3">
                 <div className="">
                     <h3 className={styles.h1}>{user.username}'s profil</h3>
                     {user.avatar ? <img src={user.avatar} className={styles.profilepicture} /> : <img src="/default.png" className={styles.profilepicture}/>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
-                <div className={styles.stats}>
-                        <Asset title={'username'} value={user.username} />
-                </div>
-                        <Asset title={'Wins:'} value={user.wins} />
-                        <Asset title={'Losses:'} value={user.losses} />
+                    <div className={styles.stats}>
+                    <Asset title={'username'} value={user.username} />
                     </div>
-                <div className={styles.modal}>
                 </div>
-            <hr/>
             </div>
         </div>
+        <div className={styles.card}>
+            <h4 className={styles.h1}>{user.username}'s Stats</h4>
+                <div className={styles.stats}>
+                     <div className={styles.row}>
+                        <Asset4 title={'Games'} value={user.wins + user.losses} />
+                        <Asset2 title={'Wins'} value={user.wins} />
+                        <Asset3 title={'Losses'} value={user.losses} />
+                    </div>
+                    {/* <StackedBarChart percentage={user.wins + user.losses === 0 ? 0 : Math.round((user.wins / (user.wins + user.losses)) * 100)} /> */}
+                    <Asset5 title={'Points'} value={(user.wins * 50) + (user.losses * 10)}/>
+                    <Asset6 title={'Winrate'} value={user.wins + user.losses === 0 ? 0 : Math.round((user.wins / (user.wins + user.losses)) * 100)} />
+                </div>
+             </div>
         </>
     )
 }
-
-
-const Asset = ({title , value} : {title: string, value :any}) => {
-    return(
-        <div className="p-3">
-        <p className="text-xs text-gray-500 ">{title} </p>
-        <p>{value}</p>
-        </div>
-    )
-}
-

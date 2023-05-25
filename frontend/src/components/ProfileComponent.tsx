@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { Activate2fa } from "@/components/TwoFactor";
 import { AvatarUploader } from "@/components/Avatar";
 import { Button } from "@chakra-ui/react";
+import { FaEdit } from "react-icons/fa";
 
 const Asset = ({title , value} : {title: string, value :any}) => {
     return(
@@ -16,6 +17,24 @@ const Asset = ({title , value} : {title: string, value :any}) => {
     )
 }
 
+const EditUsername = ({value} : {value :any}) => {
+    const [inputValues, setInputValues] = useState<any>();
+    const checkAvailability = async() => {
+        await userService.updateUsername(value, inputValues);
+    }
+    return(
+        <div className="p-3">
+        <p className="text-lg text-zinc-500 ">username editable</p>
+        <input 
+        onChange={(e) => setInputValues(e.target.value)}
+        placeholder={value}
+        />
+        <button onClick={checkAvailability}>Change</button>
+        </div>
+    )
+}
+
+
 export const Profil = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
     const [qrcode, setQrcode] = useState('');
@@ -24,6 +43,7 @@ export const Profil = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isAvatar, setIsAvatar] = useState(false);
     const [AvatarUrl, setAvatarUrl] = useState("");
+    const [isDynamic, setIsDynanic] = useState(false);
 
     useEffect(()=>{
         const fetch_profile = async() => {
@@ -35,7 +55,7 @@ export const Profil = () => {
         if(!authenticationService.getToken()) 
             router.push('/login')
         fetch_profile()
-    }, [])
+    }, [isDynamic])
 
     const logout = () => {
         authenticationService.deleteToken()
@@ -72,6 +92,23 @@ export const Profil = () => {
         setAvatarUrl(user.getAvatar());
     }
 
+    const handleDynamic = () => {
+        console.log("DYNAMIC");
+        setIsDynanic(!isDynamic);
+    }
+
+    const handleUsername = (user: any) => {
+        console.log("CLICK")
+    }
+
+    const [inputValues, setInputValues] = useState<any>();
+    const checkAvailability = async() => {
+        const res = await userService.updateUsername(user.username, inputValues);
+        if (res == true)
+            setUser({...user, username: inputValues})
+        handleDynamic();
+    }
+
     return (
         <>
             <div className={styles.mainbox}>
@@ -84,9 +121,20 @@ export const Profil = () => {
                 {isAvatar && <AvatarUploader handleUpload={handleAvatarUpload}/>}
                 </div>
                     
-                <h4 className={styles.subtitle}>My infos</h4>
+                <h4 className={styles.subtitle}>My infos <FaEdit className={styles.icon} onClick={handleDynamic}/></h4>
                 <div className={styles.stats}>
-                    <Asset title={'username'} value={user.username} />
+                    
+                    { isDynamic ?
+                    <div className="p-3">
+                    <p className="text-lg text-zinc-500 ">username editable</p>
+                    <input 
+                    onChange={(e) => setInputValues(e.target.value)}
+                    placeholder={user.username}
+                    />
+                    <button onClick={checkAvailability} className="">Change</button>
+                    </div>
+                    //<EditUsername value={user.username}/> 
+                    : <Asset title={'username'} value={user.username} />}
                     <Asset title={'email'} value={user.email} />
                 </div>
                 

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Activate2fa } from "@/components/TwoFactor";
 import { AvatarUploader } from "@/components/Avatar";
 
-const Asset = ({title , value} : {title: string, value :any}) => {
+export const Asset = ({title , value} : {title: string, value :any}) => {
     return(
         <div className="p-3">
         <p className="text-lg text-zinc-500 ">{title} </p>
@@ -15,7 +15,7 @@ const Asset = ({title , value} : {title: string, value :any}) => {
     )
 }
 
-const Asset2 = ({title , value} : {title: string, value :any}) => {
+export const Asset2 = ({title , value} : {title: string, value :any}) => {
     return(
         <div className={styles.minicard}>
             <div className="p-3">
@@ -27,7 +27,7 @@ const Asset2 = ({title , value} : {title: string, value :any}) => {
     )
 }
 
-const Asset3 = ({title , value} : {title: string, value :any}) => {
+export const Asset3 = ({title , value} : {title: string, value :any}) => {
     return(
         <div className={styles.minicard2}>
             <div className="p-3">
@@ -39,7 +39,7 @@ const Asset3 = ({title , value} : {title: string, value :any}) => {
     )
 }
 
-const Asset4 = ({title , value} : {title: string, value :any}) => {
+export const Asset4 = ({title , value} : {title: string, value :any}) => {
     return(
         <div className={styles.minicard3}>
             <div className="p-3">
@@ -51,7 +51,7 @@ const Asset4 = ({title , value} : {title: string, value :any}) => {
     )
 }
 
-const Asset5 = ({title , value} : {title: string, value :any}) => {
+export const Asset5 = ({title , value} : {title: string, value :any}) => {
     return(
         <div className={styles.minicard3}>
             <div className="p-3">
@@ -63,7 +63,7 @@ const Asset5 = ({title , value} : {title: string, value :any}) => {
     )
 }
 
-const Asset6 = ({title , value} : {title: string, value :any}) => {
+export const Asset6 = ({title , value} : {title: string, value :any}) => {
     return(
         <div className={styles.minicard3}>
             <div className="p-3">
@@ -104,11 +104,7 @@ const Asset6 = ({title , value} : {title: string, value :any}) => {
 
 export const Stats = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
-    const [qrcode, setQrcode] = useState('');
-    const [showModal, setShowModal] = useState(false);
     const router = useRouter();
-    const [isOpen, setIsOpen] = useState(false);
-    const [isAvatar, setIsAvatar] = useState(false);
 
     useEffect(()=>{
         const fetch_profile = async() => {
@@ -124,7 +120,7 @@ export const Stats = () => {
     return (
         <>
          <div>
-            <h4 className={styles.subtitle}>My Stats</h4>
+            <h4 className={styles.h1}>My Stats</h4>
             <div className={styles.stats}>
                 <div className={styles.row}>
                     <Asset4 title={'Games'} value={user.wins + user.losses} />

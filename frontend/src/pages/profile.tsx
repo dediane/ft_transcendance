@@ -1,4 +1,3 @@
-import authenticationService from "@/services/authentication-service";
 import userService from "@/services/user-service";
 import { useEffect, useState } from "react";
 import styles from "../styles/Profile.module.css"
@@ -9,7 +8,6 @@ import { Activate2fa } from "@/components/TwoFactor";
 import { AvatarUploader } from "@/components/Avatar";
 import { Friends } from "@/components/FriendComponent";
 import { Profil } from "@/components/ProfileComponent";
-import { Stat } from "@chakra-ui/react";
 import { Stats } from "@/components/Stats";
 
 export default function Homepage() {

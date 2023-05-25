@@ -61,4 +61,17 @@ export class UserController {
     await this.userService.updateAvatar(req.user.id, body.img_base64);
     return { status: true };
   }
+
+  @UseGuards ( Jwt2faAuthGuard )
+  @UseGuards ( JwtAuthGuard )
+  @Post('updateusername')
+  async updateUsername(@Body() req: any) {
+    if (!req.newusername)
+      return { error: 'No username provided' };
+    const res = await this.userService.findAndUpdateUserByUsername(req.username, req.newusername)
+    if (res == false)
+      return { error: 'Username already taken' };
+    else 
+      return ({status: true, message: "Username successfully updated"});
+  }
 }

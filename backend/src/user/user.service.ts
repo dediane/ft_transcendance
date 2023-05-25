@@ -53,6 +53,30 @@ export class UserService {
     
     return user?.avatar;
   }
+
+  async findAndUpdateUserByUsername(username: string, newusername: string): Promise<boolean> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username: newusername })
+      .getOne();
+
+    if (user) {
+      return false;
+    }
+    const myuser = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username })
+      .getOne();
+
+    await this.userRepository.update( myuser.id, {username: newusername});
+    return true;
+  }
+
+  // async updateUsername(username: string): Promise<string | undefined> {
+  //   .createQueryBuilder('user')
+  //   .select('user.username = :username', { username})
+    
+  // }
   
   async blockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
     // Find the user who is blocking

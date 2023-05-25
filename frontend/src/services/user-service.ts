@@ -62,6 +62,10 @@ export default {
   async avatar (img_base64: string) {
     return axiosInstance.post("/user/avatar", {img_base64}).then((res: { data: any }) => res.data)
   },
+
+  async updateUsername (username:string, newusername: string) {
+    return axiosInstance.post("/user/updateusername", {username, newusername}).then((res: {data: any}) => res.data)
+  }
 }
 
   //Create42 route GET /auth/42 

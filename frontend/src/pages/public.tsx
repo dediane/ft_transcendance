@@ -12,6 +12,7 @@ export default function Homepage() {
         <>
         <div className={styles.container}>
             <PublicProfil />
+            
         </div>
         </>
     )
