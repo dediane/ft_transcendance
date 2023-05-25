@@ -24,7 +24,7 @@ export  class Puck {
         this.r = 12;
         this.x = width / 2;     //init in back
         this.y = height / 2;    //init in back
-        this.puck_speed = 6;
+        this.puck_speed = 8;
         this.left_score = 0;
         this.right_score = 0;
         //this.angle = Math.random(- Math.PI / 4, Math.PI / 4);

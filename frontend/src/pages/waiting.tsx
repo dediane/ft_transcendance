@@ -23,7 +23,9 @@ export default function wait() {
     const join = async () => {
         const joinned = await ConnectService.Connect(socket);
     }
-    join();
+    useEffect(() => {
+        join();
+      });
 
     return (
         <div>

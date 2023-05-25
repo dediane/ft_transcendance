@@ -7,11 +7,9 @@ class ConnectService {
     public async Connect(socket : React.MutableRefObject<undefined>) {        
         if (!socket)
             return ;
-        console.log("here before emit connect")
-        //const payload = {userid: await AuthService.getId(), username: await AuthService.getUsername()}
-        socket.current?.emit("chat pong");
-        
-        console.log("here after emit connect")
+        const payload = {userid: await AuthService.getId(), username: await AuthService.getUsername()}
+        console.log("in Connect user is  ", payload.userid, payload.username);
+        socket.current?.emit("chat pong", payload);
         
     }
 }
