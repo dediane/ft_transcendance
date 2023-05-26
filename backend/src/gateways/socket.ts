@@ -659,26 +659,26 @@ for (const user of this.users) {
         async KeyPressedr(socket: Socket, gamedata : any) { 
           if (gamedata.name == this.paddle_left.name)
           {
-            if (gamedata.key == 'j')
+            if (gamedata.key == 'w')
             {
-              this.paddle_left.move(-10);
+              this.paddle_left.move(-20);
             }
-            if (gamedata.key == 'n')
+            if (gamedata.key == 's')
             {
-              this.paddle_left.move(10);
+              this.paddle_left.move(20);
             }
           }
           else if (gamedata.name == this.paddle_right.name)
           {
-            if (gamedata.key == 'j')
+            if (gamedata.key == 'w')
             {
               console.log("back keyPressed up ", gamedata.name)
-                this.paddle_right.move(-10);
+                this.paddle_right.move(-20);
             }
-            else if (gamedata.key == 'n')
+            else if (gamedata.key == 's')
             {
               console.log("back keyPressed down ", gamedata.name)
-                this.paddle_right.move(10);
+                this.paddle_right.move(20);
           }
           }
         }
@@ -962,24 +962,24 @@ for (const user of this.users) {
     async KeyPressed(socket: Socket, gamedata : any) { 
       if (gamedata.name == this.paddle_leftE.name)
       {
-        if (gamedata.key == 'j')
+        if (gamedata.key == 'w')
         {
-          this.paddle_leftE.move(-10 * this.speedE);
+          this.paddle_leftE.move(-20 * this.speedE);
         }
-        if (gamedata.key == 'n')
+        if (gamedata.key == 's')
         {
-          this.paddle_leftE.move(10 * this.speedE);
+          this.paddle_leftE.move(20 * this.speedE);
         }
       }
       else if (gamedata.name == this.paddle_rightE.name)
       {
-        if (gamedata.key == 'j')
+        if (gamedata.key == 'w')
         {
-            this.paddle_rightE.move(-10 * this.speedE);
+            this.paddle_rightE.move(-20 * this.speedE);
         }
-        else if (gamedata.key == 'n')
+        else if (gamedata.key == 's')
         {
-            this.paddle_rightE.move(10 * this.speedE);
+            this.paddle_rightE.move(20 * this.speedE);
       }
       }
     }
@@ -1194,26 +1194,26 @@ for (const user of this.users) {
         async KeyPressedC(socket: Socket, gamedata : any) { 
           if (gamedata.name == this.paddle_leftC.name)
           {
-            if (gamedata.key == 'j')
+            if (gamedata.key == 'w')
             {
-              this.paddle_leftC.move(-10);
+              this.paddle_leftC.move(-20);
             }
-            if (gamedata.key == 'n')
+            if (gamedata.key == 's')
             {
-              this.paddle_leftC.move(10);
+              this.paddle_leftC.move(20);
             }
           }
           else if (gamedata.name == this.paddle_rightC.name)
           {
-            if (gamedata.key == 'j')
+            if (gamedata.key == 'w')
             {
               console.log("back keyPressed up ", gamedata.name)
-                this.paddle_rightC.move(-10);
+                this.paddle_rightC.move(-20);
             }
-            else if (gamedata.key == 'n')
+            else if (gamedata.key == 's')
             {
               console.log("back keyPressed down ", gamedata.name)
-                this.paddle_rightC.move(10);
+                this.paddle_rightC.move(20);
           }
           }
         }

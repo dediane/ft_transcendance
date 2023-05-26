@@ -148,10 +148,10 @@ import React from 'react';
 
           p5.keyPressed = () => {
             console.log("keyPressed by ", userdata.name);
-            if (p5.key == 'j')
-              socket?.emit("KeyPressed", {name: userdata.name, key: 'j'});
-            else if (p5.key == 'n') {
-              socket?.emit("KeyPressed", {name: userdata.name, key: 'n'});
+            if (p5.key == 'w')
+              socket?.emit("KeyPressed", {name: userdata.name, key: 'w'});
+            else if (p5.key == 's') {
+              socket?.emit("KeyPressed", {name: userdata.name, key: 's'});
             }
           }
         }

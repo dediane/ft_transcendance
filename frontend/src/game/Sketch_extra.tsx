@@ -127,10 +127,10 @@ p5.updateWithProps = props => {
       }
 
       p5.keyPressed = () => {
-        if (p5.key == 'j')
-          socket?.emit("KeyPressed extra", {name: userdata.name, key: 'j'});
-        else if (p5.key == 'n') {
-          socket?.emit("KeyPressed extra", {name: userdata.name, key: 'n'});
+        if (p5.key == 'w')
+          socket?.emit("KeyPressed extra", {name: userdata.name, key: 'w'});
+        else if (p5.key == 's') {
+          socket?.emit("KeyPressed extra", {name: userdata.name, key: 's'});
         }
       }
     }
