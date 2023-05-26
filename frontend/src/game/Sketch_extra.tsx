@@ -53,6 +53,7 @@ let padl_y: number;
 let padl_w: number;
 let padl_h: number;
 let padl_n: string;
+let left = false;
 
 if (!token) {
   // Redirect to the login page
@@ -114,6 +115,12 @@ p5.updateWithProps = props => {
         // to show
       });
 
+      socket?.on("user left extra", () => {
+          
+        console.log("we receive lefttttt")
+        left = true;
+      }); 
+
       // keyReleased and keyPressed for the gamers
       p5.keyReleased = () => {
         socket?.emit("KeyReleasedExtra");
@@ -140,7 +147,7 @@ p5.updateWithProps = props => {
   p5.draw = () => {
     p5.background(p5.color('#dad6ff'));
 
-    if (left_score == score || right_score == score) {
+    if (left_score == score || right_score == score || left == true) {
       if (left_score == score) {
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_left.name + " win !!"
@@ -154,6 +161,14 @@ p5.updateWithProps = props => {
         p5.fill(0, 102, 153);
         p5.text(str, width / 2 - 225, height / 2 + 50)
         return;
+      }
+      if (left == true)
+      {
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "User left the game, You win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+        return ;
       }
     }
     else {

@@ -54,6 +54,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private queue = new Map<number, User>();  // userid, user
   private sock = new Map<number, Socket>(); // userid, socket
   private sockn = new Map<number, Socket[]>()
+  private socknE = new Map<number, Socket[]>()
   private queueE = new Map<number, User>(); // userid, user
   private sockE = new Map<number, Socket>();// userid, socket
 
@@ -93,9 +94,23 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log("In Extra game")
     const user = this.getByValue(this.sockE, socket);
     if (user)
-      console.log("We find the user ", user)
-    else
-      console.log("no user T-T");
+    {
+      this.isGameStartE = false;
+      if (user == this.paddle_leftE.id)
+      {
+        console.log("user to leave is ", this.paddle_leftE.name);
+        this.puckE.left_score = 0;
+        this.puckE.right_score = this.fscoreE
+        this.user_leftE = true;
+      }
+      else if (user == this.paddle_rightE.id)
+      {
+        console.log("user to leave is ", this.paddle_rightE.name);
+        this.puckE.right_score = 0;
+        this.puckE.left_score = this.fscoreE
+        this.user_leftE = true;
+      }
+    }
   }
   const userIndex = this.users.findIndex((u) => u.sockets.includes(socket.id));
   if (userIndex >= 0) {
@@ -477,6 +492,7 @@ for (const user of this.users) {
   speed = 1;
   time = 25;
   user_left = false;
+  user_leftE = false;
   // data i use for the logistic
 
 
@@ -685,6 +701,7 @@ for (const user of this.users) {
         
         end_game(id_room: string) {
         this.user_left = false;
+        this.user_leftE = false;
           this.server.to(id_room).emit("end game");
         }
 
@@ -716,6 +733,26 @@ for (const user of this.users) {
       }
     }
 
+    
+    // helper
+    getByValue(map : Map<number, Socket>, searchValue: Socket) {
+      for (let [key, value] of map.entries()) {
+        if (value === searchValue)
+          return key;
+      }
+    }
+
+    // Function to get the userId from a given socket
+    getUserIdFromSocket(socket) {
+      for (const [userId, socketArray] of this.sockn.entries()) {
+        // Check if the socket is present in the socket array
+        if (socketArray.includes(socket)) {
+          return userId; // Found the matching socket, return the userId
+        }
+      }
+      return null; // Socket not found
+    }
+    ///////////////////////: Extra Game /////////////////////
     room_idE: string;
     isGameStartE = false;
     widthE: number;
@@ -728,34 +765,13 @@ for (const user of this.users) {
     player2E: User;
     speedE = 1;
     timeE = 25;
-    plreadyE = 0;
-
-    // helper
-    getByValue(map : Map<number, Socket>, searchValue: Socket) {
-      for (let [key, value] of map.entries()) {
-        if (value === searchValue)
-          return key;
-      }
-    }
-
-  // Function to get the userId from a given socket
-   getUserIdFromSocket(socket) {
-      for (const [userId, socketArray] of this.sockn.entries()) {
-        // Check if the socket is present in the socket array
-        if (socketArray.includes(socket)) {
-          return userId; // Found the matching socket, return the userId
-        }
-      }
-      return null; // Socket not found
-    }
-    ///////////////////////: Extra Game /////////////////////
     // join game extra from home_game
     @SubscribeMessage("join_game_extra")
     public async joinExtraGame( 
       socket: Socket,
       data : any)
-    {
-      const {message, userid, username} = data;
+      {
+        const {message, userid, username} = data;
       if (!this.room_idE)
       {
         const gameDto: CreateGameDto = {
@@ -822,18 +838,53 @@ for (const user of this.users) {
       this.widthE = gamedata.width;
       this.puckE = new Puck(this.widthE, this.heightE, true);
       if (!this.paddle_leftE)
-        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, true, gamedata.id, gamedata.name)
+      {
+        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, false, this.player1E.id, this.player1E.username)
+        this.sockE.set(this.player1E.id, socket);
+        const socketArray = this.socknE.get(gamedata.id);
+        
+        if (socketArray) {
+          // Socket array already exists, so push the new socket into it
+          socketArray.push(socket);
+        } else {
+          // Socket array doesn't exist, create a new array with the new socket and set it in the Map
+          const newSocketArray: Socket[] = [socket];
+          this.socknE.set(gamedata.id, newSocketArray);
+        }
+      }
       else
-        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, true, gamedata.id, gamedata.name)
+      {
+        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, false, this.player2E.id, this.player2E.username)
+        this.sockE.set(this.player2E.id, socket);
+        const socketArray = this.socknE.get(gamedata.id);
+        
+        if (socketArray) {
+          // Socket array already exists, so push the new socket into it
+          socketArray.push(socket);
+        } else {
+          // Socket array doesn't exist, create a new array with the new socket and set it in the Map
+          const newSocketArray: Socket[] = [socket];
+          this.socknE.set(gamedata.id, newSocketArray);
+        }
+      }
       await socket.join(this.room_idE);
-      if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2) 
+      if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2 && this.isGameStartE == false) 
       { // si on a deux user start game 
+        console.log("---------------------- LA POUR WOUAIS ---------------------------")
+        console.log("***********************##############****************************")
+        console.log("***********************####1111######****************************")
+        console.log("***********************####1111######****************************")
+        console.log("***********************####1111######****************************")
+        console.log("***********************####1111######****************************")
+        console.log("***********************####1111######****************************")
+        console.log("***********************##############****************************")
+        console.log("user enter with isGameStart ", this.isGameStart);
         this.isGameStartE = true;
-        this.updateBallExtra(socket);
+        this.updateBallExtra();
       }
     }
 
-    updateBallExtra(socket: Socket) {
+    updateBallExtra() {
       if (!this.isGameStartE || this.puckE.left_score == this.fscoreE || this.puckE.right_score == this.fscoreE) {
         console.log("game extra start is ", this.isGameStartE)
         this.addscoreE(this.room_idE);
@@ -856,7 +907,7 @@ for (const user of this.users) {
           };
           this.server.to(this.room_idE).emit("puck update", (payload));
         }
-        setTimeout(this.updateBallExtra.bind(this, socket), this.timeE); // Bind the `this` context to the function
+        setTimeout(this.updateBallExtra.bind(this), this.timeE); // Bind the `this` context to the function
       }
     }
 
@@ -892,14 +943,18 @@ for (const user of this.users) {
     }
     async addscoreE(id_room: string) {
       this.isGameStartE = false;
+      this.sockE.delete(this.paddle_leftE.id);
+      this.sockE.delete(this.paddle_rightE.id);
+      this.socknE.delete(this.paddle_leftE.id);
+      this.socknE.delete(this.paddle_rightE.id);
       const luser = await this.userService.findOnebyId2(this.paddle_leftE.id)
       const ruser = await this.userService.findOnebyId2(this.paddle_rightE.id)
-      if (this.puckE.left_score = this.fscoreE)
+      if (this.puckE.left_score == this.fscoreE)
       {              
         luser.wins += 1;
         ruser.losses += 1;
       }
-      else if (this.puckE.right_score = this.fscoreE)
+      else if (this.puckE.right_score ==this.fscoreE)
       {
         luser.losses += 1;
         ruser.wins += 1;
@@ -913,6 +968,13 @@ for (const user of this.users) {
       upgame.score1 = this.puckE.left_score;
       upgame.score2 = this.puckE.right_score;
       await this.gameService.update(Number(id_room), upgame);
+      this.room_idE = "";
+      this.paddle_leftE.cleanup();
+      this.paddle_rightE.cleanup();
+      this.paddle_leftE = undefined;
+      this.paddle_rightE = undefined;
+      if (this.user_leftE)
+        this.server.to(id_room).emit("user left extra");
       setTimeout(this.end_game.bind(this, id_room),  5 * 1000)
     }
 
