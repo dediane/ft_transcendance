@@ -39,7 +39,7 @@ export default class Paddle {
         if (left == false)
             console.log("paddle constructor type --> right")
         else
-            console.log("paddle constructor type --> false")
+            console.log("paddle constructor type --> left")
         console.log("our player is ", this.id, this.name);
     };
 
@@ -52,6 +52,20 @@ export default class Paddle {
         this.y += this.ychange;
         this.y = this.constrainValue(this.y, this.h / 2,  this.height - this.h / 2);
         // constrain the paddle to quit the canvas window //
+    }
+    cleanup(){
+        console.log("clean up user ", this.name)
+        this.x= 0;
+        this.y= 0;
+        this.xspeed= 0;
+        this.yspeed= 0;
+        this.w= 0;
+        this.h= 0;
+        this.width= 0;
+        this.height= 0;
+        this.ychange= 0;
+        this.id= 0;
+        this.name= "";
     }
 
     update_resize(w:number, h:number, left: boolean)

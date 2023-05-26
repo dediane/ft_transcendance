@@ -53,6 +53,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private games = new Map<number, GameProps>(); // gameid, gameprops
   private queue = new Map<number, User>();  // userid, user
   private sock = new Map<number, Socket>(); // userid, socket
+  private sockn = new Map<number, Socket[]>()
   private queueE = new Map<number, User>(); // userid, user
   private sockE = new Map<number, Socket>();// userid, socket
 
@@ -66,7 +67,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   if (this.isGameStart)
   {
     console.log("In Classic game")
-    const user = this.getByValue(this.sock, socket);
+    //const user = this.getByValue(this.sock, socket);
+    const user = this.getUserIdFromSocket(socket);
+
+// if (userId) {
+//   console.log("User ID:", userId);
+// } else {
+//   console.log("Socket not found in the sockn Map.");
+// }
     if (user)
     {
       this.isGameStart = false;
@@ -555,12 +563,32 @@ for (const user of this.users) {
             this.paddle_left = new Paddle(this.width, this.height, true, false, this.player1.id, this.player1.username)
             this.sock.set(this.player1.id, socket);
             console.log("@@@socket 1 " + socket + " avec player " + this.player1.username + " avec userid " + this.player1.id);
+            const socketArray = this.sockn.get(gamedata.id);
+            
+            if (socketArray) {
+              // Socket array already exists, so push the new socket into it
+              socketArray.push(socket);
+            } else {
+              // Socket array doesn't exist, create a new array with the new socket and set it in the Map
+              const newSocketArray: Socket[] = [socket];
+              this.sockn.set(gamedata.id, newSocketArray);
+            }
           }
-          if (!this.paddle_right)
+          else
           {
             this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2.id, this.player2.username)
             this.sock.set(this.player2.id, socket);
             console.log("@@@socket 2 " + socket + " avec player " + this.player2.username + " avec userid " + this.player2.id)
+            const socketArray = this.sockn.get(gamedata.id);
+            
+            if (socketArray) {
+              // Socket array already exists, so push the new socket into it
+              socketArray.push(socket);
+            } else {
+              // Socket array doesn't exist, create a new array with the new socket and set it in the Map
+              const newSocketArray: Socket[] = [socket];
+              this.sockn.set(gamedata.id, newSocketArray);
+            }
           }
           await socket.join(this.room_id);
           console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_id).size)
@@ -577,14 +605,6 @@ for (const user of this.users) {
               console.log("***********************####1111######****************************")
               console.log("***********************##############****************************")
               console.log("user enter with isGameStart ", this.isGameStart);
-              if (this.paddle_left.id == this.paddle_right.id)
-              {
-                console.log("lalalalalaa T-T")
-                socket.emit("same personne error", {
-                  error: "You canno't join with 2 tab!",
-                });
-                return ;
-              }
               this.isGameStart = true;
               this.updateBall();
             }
@@ -656,12 +676,16 @@ for (const user of this.users) {
           upgame.score2 = this.puck.right_score;
           console.log("***** game update : left score " +  this.puck.left_score + " right score " + this.puck.right_score)
           await this.gameService.update(Number(id_room), upgame);
+          this.room_id = "";
+          this.paddle_left.cleanup();
+          this.paddle_right.cleanup();
+          this.paddle_left = undefined;
+          this.paddle_right = undefined;
           setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
         }
         
         end_game(id_room: string) {
           this.server.to(id_room).emit("end game");
-          this.room_id = "";
         }
 
         // function helper to game position
@@ -713,6 +737,17 @@ for (const user of this.users) {
         if (value === searchValue)
           return key;
       }
+    }
+
+  // Function to get the userId from a given socket
+   getUserIdFromSocket(socket) {
+      for (const [userId, socketArray] of this.sockn.entries()) {
+        // Check if the socket is present in the socket array
+        if (socketArray.includes(socket)) {
+          return userId; // Found the matching socket, return the userId
+        }
+      }
+      return null; // Socket not found
     }
     ///////////////////////: Extra Game /////////////////////
     // join game extra from home_game
