@@ -48,7 +48,7 @@ export default class Paddle {
     //     // constrain the paddle to quit the canvas window //
     // }
 
-    update_resize(wi:number, h:number, left: boolean, x: number, w: number)
+    update_resize(w:number, h:number, left: boolean)
     {
         this.width = w;
         this.height = h;
@@ -58,13 +58,9 @@ export default class Paddle {
             this.x = this.width - this.w;
     }
 
-    // move (steps: number) {
-    //     this.ychange = steps;
-    // }
-
     show(e: boolean, x: number, y: number, w: number, h: number, n: string){
-        const canvasWidth = 500; // Fixed canvas width
-        const canvasHeight = 500; // Fixed canvas height
+        const canvasWidth = 1000; // Fixed canvas width
+        const canvasHeight = 1000; // Fixed canvas height
 
         // Calculate the ratio for x and y positions
         let xratio = this.width / canvasWidth;
@@ -73,15 +69,17 @@ export default class Paddle {
         // Apply the ratio to the x and y positions
         let tx = x * xratio;
         let ty = y * yratio;
+        let tw = w * xratio;
+        let th = h * yratio;
         if (e == false){   
             this.p.fill(255);
             this.p.rectMode(this.p.CENTER); // -> here to change center //
-            this.p.rect(tx, ty, w, h);
+            this.p.rect(tx, ty, tw, th);
         } else {
             this.p.fill(this.p.color('#8d2bd2')); 
             this.p.noStroke();
             this.p.rectMode(this.p.CENTER); // -> here to change center //
-            this.p.rect(tx, ty, w, h, 7);
+            this.p.rect(tx, ty, tw, th, 7);
         }
         this.name = n;
     }

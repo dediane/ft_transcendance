@@ -21,8 +21,8 @@ import React from 'react';
     const username = AuthService.getUsername();
 
     // fixed canvas in backend
-    const canvasw = 500;
-    const canvash = 500;
+    const canvasw = 1000;
+    const canvash = 1000;
     
     
     /*
@@ -46,10 +46,7 @@ import React from 'react';
       width = cwidth;
       height = width / canvasratio;
     }
-   /*
-    width = 500;
-    height = 500;
-   */
+
     console.log("clienbtHeight", width)
     console.log("clienbtHeight", height)
     let puck = new Puck(p5, width, height);
@@ -253,8 +250,8 @@ import React from 'react';
     
 
     p5.resizeCanvas(width, height);
-    //paddle_left.update_resize(width, height, true);
-    //paddle_right.update_resize(width, height, false);
-    //puck.update_resize(width, height);
+    paddle_left.update_resize(width, height, true);
+    paddle_right.update_resize(width, height, false);
+    puck.update_resize(width, height);
   }
 }

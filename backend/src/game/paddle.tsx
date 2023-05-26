@@ -17,9 +17,9 @@ export default class Paddle {
     constructor( width: number, height: number, left: boolean, e: boolean, id: number, name: string) {
         this.w = 20;
         if (e == true)
-            this.h = 150;
+            this.h = 250;
         else
-            this.h = 100;
+            this.h = 150;
         // width and height of my paddle
 
         this.width = width;
@@ -68,15 +68,6 @@ export default class Paddle {
         this.name= "";
     }
 
-    update_resize(w:number, h:number, left: boolean)
-    {
-        this.width = w;
-        this.height = h;
-        if (left == true)
-            this.x = this.w;
-        else 
-            this.x = this.width - this.w;
-    }
 
     move (steps: number) {
         this.ychange = steps;

@@ -595,8 +595,8 @@ for (const user of this.users) {
           // and set the width and height to 500 / 500
           // this.width = 500;
           // this.height = 500;
-          this.width = 500;
-          this.height = 500;
+          this.width = 1000;
+          this.height = 1000;
           this.puck = new Puck(this.width, this.height, false);
           if (!this.paddle_left)
           {
