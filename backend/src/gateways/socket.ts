@@ -52,11 +52,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   };
   private games = new Map<number, GameProps>(); // gameid, gameprops
   private queue = new Map<number, User>();  // userid, user
-  private sock = new Map<number, Socket>(); // userid, socket
+  private queueE = new Map<number, User>(); // userid, user
   private sockn = new Map<number, Socket[]>()
   private socknE = new Map<number, Socket[]>()
-  private queueE = new Map<number, User>(); // userid, user
+  private socknC = new Map<number, Socket[]>()
+  private sock = new Map<number, Socket>(); // userid, socket
   private sockE = new Map<number, Socket>();// userid, socket
+  private sockC = new Map<number, Socket>();// userid, socket
 
   async handleConnection(socket: Socket) {
     console.log('Socket connected:', socket.id);
@@ -109,6 +111,30 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.puckE.right_score = 0;
         this.puckE.left_score = this.fscoreE
         this.user_leftE = true;
+      }
+    }
+  }
+  if (this.isGameStartC)
+  {
+    console.log("In Chat game")
+    //const user = this.getByValue(this.sock, socket);
+    const user = this.getUserIdFromSocket(socket);
+    if (user)
+    {
+      this.isGameStartC = false;
+      if (user == this.paddle_leftC.id)
+      {
+        console.log("user to leave is ", this.paddle_leftC.name);
+        this.puckC.left_score = 0;
+        this.puckC.right_score = this.fscoreC
+        this.user_leftC = true;
+      }
+      else if (user == this.paddle_rightC.id)
+      {
+        console.log("user to leave is ", this.paddle_rightC.name);
+        this.puckC.right_score = 0;
+        this.puckC.left_score = this.fscore
+        this.user_leftC = true;
       }
     }
   }
@@ -493,6 +519,7 @@ for (const user of this.users) {
   time = 25;
   user_left = false;
   user_leftE = false;
+  user_leftC = false;
   // data i use for the logistic
 
 
@@ -704,7 +731,6 @@ for (const user of this.users) {
           this.paddle_left = undefined;
           this.paddle_right = undefined;
           this.user_left = false;
-          this.user_leftE = false;
           this.room_idE = "";
           if (this.paddle_leftE && this.paddle_rightE)
           {
@@ -713,6 +739,16 @@ for (const user of this.users) {
           }
           this.paddle_leftE = undefined;
           this.paddle_rightE = undefined;
+          this.user_leftE = false;
+          this.room_idC = "";
+          if (this.paddle_leftC && this.paddle_rightC)
+          {
+            this.paddle_leftC.cleanup();
+            this.paddle_rightC.cleanup();
+          }
+          this.paddle_leftC = undefined;
+          this.paddle_rightC = undefined;
+          this.user_leftC = false;
           this.server.to(id_room).emit("end game");
         }
 
@@ -984,15 +1020,240 @@ for (const user of this.users) {
       setTimeout(this.end_game.bind(this, id_room),  5 * 1000)
     }
 
-    @SubscribeMessage("chat pong")
-    chat_pong(socket: Socket, payload : any)
+    //////////////////////////////: Chat Pong Game
+
+    room_idC: string;
+    isGameStartC = false;
+    widthC: number;
+    heightC: number;
+    puckC: Puck;
+    paddle_leftC : Paddle;
+    paddle_rightC : Paddle;
+    fscoreC = 5;
+    player1C: User;
+    player2C: User;
+    speedC = 1;
+    timeC = 25;
+
+    @SubscribeMessage("join_game chat")
+    public async joinGamechat( 
+        socket: Socket,
+        data : any) 
     {
-      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-      console.log("we are in chat pong")
-      /*console.log("user 1 ", payload.userid);
-      console.log("user 2 ", payload.username);*/
-      //this.server.emit("in game");
+      console.log("chat game join server back with socket " + socket.id + " game.data id " + data.id + data.name)
+      const {userid, username} = data;
+      if (!this.room_idC || this.room_idC == "")
+      {
+        const gameDto: CreateGameDto = {
+          score1 : 0,
+          score2 : 0,
+        };
+        const game = await this.gameService.create(gameDto);
+        if (!game)
+          return ;
+        this.room_idC = game.id.toString();
+        console.log("game id is ", game.id)
+      } // generate the data id
+      const user = await this.userService.findOnebyId(userid);
+      console.log("user is ", user.username);
+      console.log("queue size is ", this.queue.size);
+      if (this.queue.size == 0)
+      {
+        this.queue.set(userid, user);
+      }
+      else
+      {
+        const usr = this.queue.get(userid);
+        if (usr)
+        {
+          return ;
+        }
+        else
+          this.queue.set(userid, user) // add a new user not same as the first
+      }
+      if (this.queue.size == 2)
+      {
+        console.log("ILs set les deux users size queue 2")
+        const it = this.queue.entries();
+        const usr1 = it.next().value[1];
+        const usr2 = it.next().value[1];
+        this.player1C = usr1;
+        this.player2C = usr2;
+      }
+      const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_idC);
+      const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
+      if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
+      { // already 2 people in the room 
+        console.log("ouais pour lui ils sont plain lol")
+      } else {
+        await socket.join(this.room_idC);
+        this.server.emit("room_joined chat");
+        // send that a person join the room
+        if (this.server.sockets.adapter.rooms.get(this.room_idC).size === 2) 
+        { // we have 2 people so start game
+          this.queue.delete(this.player1C.id);
+          this.queue.delete(this.player2C.id);
+          this.server.to(this.room_idC).emit("start_game chat", {});
+        }
+      }
     }
+        
+        // start game from pong.txt 
+        @SubscribeMessage('start game chat')
+        async handleJoinGameServerFromChat( socket: Socket, gamedata : any) {
 
+          this.widthC = 500;
+          this.heightC = 500;
+          this.puckC = new Puck(this.widthC, this.heightC, false);
+          if (!this.paddle_leftC)
+          {
+            this.paddle_leftC = new Paddle(this.widthC, this.heightC, true, false, this.player1C.id, this.player1C.username)
+            this.sockC.set(this.player1C.id, socket);
+            const socketArray = this.socknC.get(gamedata.id);
+            
+            if (socketArray) {
+              // Socket array already exists, so push the new socket into it
+              socketArray.push(socket);
+            } else {
+              // Socket array doesn't exist, create a new array with the new socket and set it in the Map
+              const newSocketArray: Socket[] = [socket];
+              this.sockn.set(gamedata.id, newSocketArray);
+            }
+          }
+          else
+          {
+            this.paddle_rightC = new Paddle(this.widthC, this.heightC, false, false, this.player2C.id, this.player2C.username)
+            this.sock.set(this.player2C.id, socket);
+            const socketArray = this.socknC.get(gamedata.id);
+            
+            if (socketArray) {
+              // Socket array already exists, so push the new socket into it
+              socketArray.push(socket);
+            } else {
+              // Socket array doesn't exist, create a new array with the new socket and set it in the Map
+              const newSocketArray: Socket[] = [socket];
+              this.sockn.set(gamedata.id, newSocketArray);
+            }
+          }
+          await socket.join(this.room_idC);
+          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_idC).size)
+          console.log("sock size is ", this.sockC.size)
+          console.log("isGameStart is " + this.isGameStartC)
+          if (this.server.sockets.adapter.rooms.get(this.room_idC).size == 2 && this.isGameStartC == false) 
+            { // si on a deux user start game 
+              console.log("---------------------- LA POUR WOUAIS ---------------------------")
+              console.log("***********************##############****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************####1111######****************************")
+              console.log("***********************##############****************************")
+              console.log("user enter with isGameStart ", this.isGameStartC);
+              this.isGameStartC = true;
+              this.updateBallChat();
+            }
+          }
 
+                  // function helper to game position
+    updateBallChat() {
+      //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
+      if (!this.isGameStartC || this.puckC.left_score == this.fscoreC || this.puckC.right_score == this.fscoreC) {
+        this.addscoreC(this.room_idC);
+        // socket emit
+        return;
+      }
+      else {
+        if (this.puckC) { // Check if this.puck is defined
+          this.puckC.update();
+          this.puckC.edges();
+          this.puckC.checkPaddleLeft(this.paddle_leftC);
+          this.puckC.checkPaddleRight(this.paddle_rightC);
+          const payload = {x : this.puckC.x, y : this.puckC.y, lscoreC: this.puckC.left_score, rscoreC: this.puckC.right_score}
+          if (this.paddle_leftC && this.paddle_rightC)
+          {
+            this.paddle_leftC.update();
+            this.paddle_rightC.update()
+            const payloadp = {prx: this.paddle_rightC.x, pry: this.paddle_rightC.y, prw: this.paddle_rightC.w, prh: this.paddle_rightC.h, pln: this.paddle_leftC.name, plx: this.paddle_leftC.x, ply: this.paddle_leftC.y, plw: this.paddle_leftC.w, plh: this.paddle_leftC.h, prn: this.paddle_rightC.name}
+            this.server.to(this.room_idC).emit("paddle update chat", (payloadp));
+          };
+          this.server.to(this.room_idC).emit("puck update chat", (payload));
+        }
+        setTimeout(this.updateBallChat.bind(this), this.timeC); // Bind the `this` context to the function
+      }
+    }
+  
+
+        @SubscribeMessage('KeyReleased chat')
+        async KeyRealaesedChat(socket: Socket) {
+          this.paddle_leftC.move(0);
+          this.paddle_rightC.move(0);
+        }
+
+        @SubscribeMessage('KeyPressed chat')
+        async KeyPressedC(socket: Socket, gamedata : any) { 
+          if (gamedata.name == this.paddle_leftC.name)
+          {
+            if (gamedata.key == 'j')
+            {
+              this.paddle_leftC.move(-10);
+            }
+            if (gamedata.key == 'n')
+            {
+              this.paddle_leftC.move(10);
+            }
+          }
+          else if (gamedata.name == this.paddle_rightC.name)
+          {
+            if (gamedata.key == 'j')
+            {
+              console.log("back keyPressed up ", gamedata.name)
+                this.paddle_rightC.move(-10);
+            }
+            else if (gamedata.key == 'n')
+            {
+              console.log("back keyPressed down ", gamedata.name)
+                this.paddle_rightC.move(10);
+          }
+          }
+        }
+
+        async addscoreC(id_room: string) {
+          console.log("pass par addscore")
+          console.log("left score " + this.puckC.left_score + " user " + this.paddle_leftC.name)
+          console.log("right score " + this.puckC.right_score + " user " + this.paddle_rightC.name)
+          this.isGameStartC = false;
+          this.sockC.delete(this.paddle_leftC.id);
+          this.sockC.delete(this.paddle_rightC.id);
+          this.socknC.delete(this.paddle_leftC.id);
+          this.socknC.delete(this.paddle_rightC.id);
+          const luser = await this.userService.findOnebyId2(this.paddle_leftC.id)
+          const ruser = await this.userService.findOnebyId2(this.paddle_rightC.id)
+          if (this.puckC.left_score == this.fscoreC)
+          {
+            console.log("left win")     
+            luser.wins += 1;
+            ruser.losses += 1;
+          }
+          else if (this.puckC.right_score == this.fscoreC)
+          {
+            console.log("right win")
+            luser.losses += 1;
+            ruser.wins += 1;
+          }
+          await this.userService.update(this.paddle_leftC.id, luser);
+          await this.userService.update(this.paddle_rightC.id, ruser);
+
+          const upgame = await this.gameService.findOne(Number(id_room))
+          upgame.player1 = luser;
+          upgame.player2 = ruser;
+          upgame.score1 = this.puckC.left_score;
+          upgame.score2 = this.puckC.right_score;
+          console.log("***** game update : left score " +  this.puckC.left_score + " right score " + this.puckC.right_score)
+          await this.gameService.update(Number(id_room), upgame);
+          if (this.user_leftC)
+          this.server.to(id_room).emit("user left chat");
+          setTimeout(this.end_game.bind(this, id_room),  5 * 1000)
+        }
+        
 }
