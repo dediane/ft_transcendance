@@ -839,7 +839,7 @@ for (const user of this.users) {
       this.puckE = new Puck(this.widthE, this.heightE, true);
       if (!this.paddle_leftE)
       {
-        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, false, this.player1E.id, this.player1E.username)
+        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, true, this.player1E.id, this.player1E.username)
         this.sockE.set(this.player1E.id, socket);
         const socketArray = this.socknE.get(gamedata.id);
         
@@ -854,7 +854,7 @@ for (const user of this.users) {
       }
       else
       {
-        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, false, this.player2E.id, this.player2E.username)
+        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, true, this.player2E.id, this.player2E.username)
         this.sockE.set(this.player2E.id, socket);
         const socketArray = this.socknE.get(gamedata.id);
         
