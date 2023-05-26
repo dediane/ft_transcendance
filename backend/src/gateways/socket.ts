@@ -568,8 +568,8 @@ for (const user of this.users) {
           // and set the width and height to 500 / 500
           // this.width = 500;
           // this.height = 500;
-          this.width = gamedata.width;
-          this.height = gamedata.height;
+          this.width = 500;
+          this.height = 500;
           this.puck = new Puck(this.width, this.height, false);
           if (!this.paddle_left)
           {
@@ -689,19 +689,30 @@ for (const user of this.users) {
           upgame.score2 = this.puck.right_score;
           console.log("***** game update : left score " +  this.puck.left_score + " right score " + this.puck.right_score)
           await this.gameService.update(Number(id_room), upgame);
-          this.room_id = "";
-          this.paddle_left.cleanup();
-          this.paddle_right.cleanup();
-          this.paddle_left = undefined;
-          this.paddle_right = undefined;
           if (this.user_left)
-            this.server.to(id_room).emit("user left");
-          setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
+          this.server.to(id_room).emit("user left");
+          setTimeout(this.end_game.bind(this, id_room),  5 * 1000)
         }
         
         end_game(id_room: string) {
-        this.user_left = false;
-        this.user_leftE = false;
+          this.room_id = "";
+          if (this.paddle_left && this.paddle_right)
+          {
+            this.paddle_left.cleanup();
+            this.paddle_right.cleanup();
+          }
+          this.paddle_left = undefined;
+          this.paddle_right = undefined;
+          this.user_left = false;
+          this.user_leftE = false;
+          this.room_idE = "";
+          if (this.paddle_leftE && this.paddle_rightE)
+          {
+            this.paddle_leftE.cleanup();
+            this.paddle_rightE.cleanup();
+          }
+          this.paddle_leftE = undefined;
+          this.paddle_rightE = undefined;
           this.server.to(id_room).emit("end game");
         }
 
@@ -968,11 +979,6 @@ for (const user of this.users) {
       upgame.score1 = this.puckE.left_score;
       upgame.score2 = this.puckE.right_score;
       await this.gameService.update(Number(id_room), upgame);
-      this.room_idE = "";
-      this.paddle_leftE.cleanup();
-      this.paddle_rightE.cleanup();
-      this.paddle_leftE = undefined;
-      this.paddle_rightE = undefined;
       if (this.user_leftE)
         this.server.to(id_room).emit("user left extra");
       setTimeout(this.end_game.bind(this, id_room),  5 * 1000)

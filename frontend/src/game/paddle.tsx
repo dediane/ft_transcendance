@@ -63,15 +63,25 @@ export default class Paddle {
     // }
 
     show(e: boolean, x: number, y: number, w: number, h: number, n: string){
+        const canvasWidth = 500; // Fixed canvas width
+        const canvasHeight = 500; // Fixed canvas height
+
+        // Calculate the ratio for x and y positions
+        let xratio = this.width / canvasWidth;
+        let yratio = this.height / canvasHeight;
+
+        // Apply the ratio to the x and y positions
+        let tx = x * xratio;
+        let ty = y * yratio;
         if (e == false){   
             this.p.fill(255);
             this.p.rectMode(this.p.CENTER); // -> here to change center //
-            this.p.rect(x, y, w, h);
+            this.p.rect(tx, ty, w, h);
         } else {
             this.p.fill(this.p.color('#8d2bd2')); 
             this.p.noStroke();
             this.p.rectMode(this.p.CENTER); // -> here to change center //
-            this.p.rect(x, y, w, h, 7);
+            this.p.rect(tx, ty, w, h, 7);
         }
         this.name = n;
     }

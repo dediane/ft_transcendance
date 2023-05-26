@@ -35,7 +35,7 @@ export default class Puck {
 
 
     show(x: number, y: number) {
-        /*
+        
         const canvasWidth = 500; // Fixed canvas width
         const canvasHeight = 500; // Fixed canvas height
 
@@ -45,9 +45,9 @@ export default class Puck {
 
         // Apply the ratio to the x and y positions
         let tx = x * xratio;
-        let ty = y * yratio;*/
+        let ty = y * yratio;
         this.p.fill(255);
-        this.p.ellipse(x, y, this.r * 2, this.r * 2);
+        this.p.ellipse(tx, ty, this.r * 2, this.r * 2);
     }
 
     update_resize(w: number, h: number){

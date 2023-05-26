@@ -25,9 +25,10 @@ import React from 'react';
     const canvash = 500;
     
     
+    /*
     let width = p5WrapperDiv?.clientWidth || window.innerWidth;
     let height = p5WrapperDiv?.clientHeight || window.innerHeight;
-    /*
+    */
     let cwidth = p5WrapperDiv?.clientWidth || window.innerWidth;
     let cheight = p5WrapperDiv?.clientHeight || window.innerHeight;
     // Calculate the aspect ratio of the canvas and window
@@ -45,7 +46,6 @@ import React from 'react';
       width = cwidth;
       height = width / canvasratio;
     }
-*/
    /*
     width = 500;
     height = 500;
@@ -221,25 +221,26 @@ import React from 'react';
       i += 10;
     }
   }
-
+  
   function windowResized() {
+    console.log("window resized P5 function called w: %d, h: %d", width, height);
     var element = document.getElementById("canvas_size");
     if (element == null)
     {
       console.log("use the window canvas T-T")
-      width = window.innerWidth;
-      height = window.innerHeight;
+      cwidth = window.innerWidth;
+      cheight = window.innerHeight;
     }
     else
     {
       console.log("pass par notre div define hihi")
-      width = element.clientWidth;
-      height = element.clientHeight;
+      cwidth = element.clientWidth;
+      cheight = element.clientHeight;
     }
     // send to back new width and height to upfate whith puck paddle
 
     // new winratio
-    /*
+    
     const winratio = cwidth / cheight;
 
     if (winratio > canvasratio) {
@@ -249,12 +250,11 @@ import React from 'react';
       width = cwidth;
       height = width / canvasratio;
     }
-    */
+    
 
-    console.log("window resized P5 function called w: %d, h: %d", width, height);
     p5.resizeCanvas(width, height);
     //paddle_left.update_resize(width, height, true);
     //paddle_right.update_resize(width, height, false);
-    puck.update_resize(width, height);
+    //puck.update_resize(width, height);
   }
 }
