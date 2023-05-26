@@ -59,7 +59,7 @@ import React from 'react';
     let right_score: number = 0;
     
     const token =  AuthService.getToken();
-    //let start = false;
+    let left = false;
     let puckx: number;
     let pucky: number
 
@@ -117,14 +117,6 @@ import React from 'react';
             window.location.href = "/home_game";
           });
 
-          socket?.on("same parsonne error"), () => {
-            console.log("connect with same id haha")
-            alert("connect with same id");
-            setTimeout(() => {
-              window.location.href = `/home_game`;
-            }, 2 * 1000);
-          } // code qui marce même pas mdrr
-
           socket?.on("paddle update", (payload : any) => {
             console.log("update paddle");
             padl_x = payload.plx; 
@@ -146,6 +138,11 @@ import React from 'react';
             // to show
           });
 
+          socket?.on("user left", () => {
+          
+            console.log("we receive lefttttt")
+            left = true;
+          });       
           // keyReleased and keyPressed for the gamers
           p5.keyReleased = () => {
             console.log("player key relased ")
@@ -177,7 +174,7 @@ import React from 'react';
   p5.draw = () => {
     p5.background(0);
     let score = 5
-    if (left_score == score || right_score == score) {
+    if (left_score == score || right_score == score || left == true) {
       if (left_score == score) {
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_left.name + " win !!"
@@ -188,6 +185,14 @@ import React from 'react';
       if (right_score == score) {
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_right.name + " win !!"
+        p5.fill(0, 102, 153);
+        p5.text(str, width / 2 - 225, height / 2 + 50)
+        return ;
+      }
+      if (left == true)
+      {
+        p5.text("End Game", width / 2 - 100, height / 2 - 50);
+        let str = "User left the game, You win !!"
         p5.fill(0, 102, 153);
         p5.text(str, width / 2 - 225, height / 2 + 50)
         return ;

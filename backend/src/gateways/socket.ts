@@ -69,12 +69,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log("In Classic game")
     //const user = this.getByValue(this.sock, socket);
     const user = this.getUserIdFromSocket(socket);
-
-// if (userId) {
-//   console.log("User ID:", userId);
-// } else {
-//   console.log("Socket not found in the sockn Map.");
-// }
     if (user)
     {
       this.isGameStart = false;
@@ -83,12 +77,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log("user to leave is ", this.paddle_left.name);
         this.puck.left_score = 0;
         this.puck.right_score = this.fscore
+        this.user_left = true;
       }
       else if (user == this.paddle_right.id)
       {
         console.log("user to leave is ", this.paddle_right.name);
         this.puck.right_score = 0;
         this.puck.left_score = this.fscore
+        this.user_left = true;
       }
     }
   }
@@ -480,6 +476,7 @@ for (const user of this.users) {
   player2: User;
   speed = 1;
   time = 25;
+  user_left = false;
   // data i use for the logistic
 
 
@@ -562,7 +559,6 @@ for (const user of this.users) {
           {
             this.paddle_left = new Paddle(this.width, this.height, true, false, this.player1.id, this.player1.username)
             this.sock.set(this.player1.id, socket);
-            console.log("@@@socket 1 " + socket + " avec player " + this.player1.username + " avec userid " + this.player1.id);
             const socketArray = this.sockn.get(gamedata.id);
             
             if (socketArray) {
@@ -578,7 +574,6 @@ for (const user of this.users) {
           {
             this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2.id, this.player2.username)
             this.sock.set(this.player2.id, socket);
-            console.log("@@@socket 2 " + socket + " avec player " + this.player2.username + " avec userid " + this.player2.id)
             const socketArray = this.sockn.get(gamedata.id);
             
             if (socketArray) {
@@ -652,6 +647,8 @@ for (const user of this.users) {
           this.isGameStart = false;
           this.sock.delete(this.paddle_left.id);
           this.sock.delete(this.paddle_right.id);
+          this.sockn.delete(this.paddle_left.id);
+          this.sockn.delete(this.paddle_right.id);
           const luser = await this.userService.findOnebyId2(this.paddle_left.id)
           const ruser = await this.userService.findOnebyId2(this.paddle_right.id)
           if (this.puck.left_score == this.fscore)
@@ -681,10 +678,13 @@ for (const user of this.users) {
           this.paddle_right.cleanup();
           this.paddle_left = undefined;
           this.paddle_right = undefined;
+          if (this.user_left)
+            this.server.to(id_room).emit("user left");
           setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
         }
         
         end_game(id_room: string) {
+        this.user_left = false;
           this.server.to(id_room).emit("end game");
         }
 
@@ -692,7 +692,6 @@ for (const user of this.users) {
     updateBall() {
       //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
-        console.log("we have game start " + this.isGameStart + "; left score is " + this.puck.left_score + "; and right score id " + this.puck.right_score)
         this.addscore(this.room_id);
         // socket emit
         return;
@@ -914,7 +913,7 @@ for (const user of this.users) {
       upgame.score1 = this.puckE.left_score;
       upgame.score2 = this.puckE.right_score;
       await this.gameService.update(Number(id_room), upgame);
-      setTimeout(this.end_game.bind(this, id_room),  10 * 1000)
+      setTimeout(this.end_game.bind(this, id_room),  5 * 1000)
     }
 
     @SubscribeMessage("chat pong")
