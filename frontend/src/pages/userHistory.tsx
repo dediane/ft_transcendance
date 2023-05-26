@@ -2,32 +2,49 @@ import {useEffect, useState} from "react"
 import gameService from "@/services/game-service"
 import styles from "@/styles/History.module.css"
 import Link from "next/link"
-import UserHistory from "./userHistory"
+import userService from "@/services/user-service"
+import { useRouter } from "next/router"
+import authenticationService from "@/services/authentication-service"
 
-export default function History () {
+export default function UserHistory () {
     return (
         <>
-        <Games />
-        <UserHistory />
+        <UserGames />
         </>
     )
 }
 
-export const Games = () => {
-    const [games, setGames] = useState<any>([])
-    useEffect (() => {
-        const fetchGames = async () => {
-            const res = await gameService.get_games()
+export const UserGames = () => {
+    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
+    const [games, setGames] = useState([])
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchProfileAndGames = async () => {
+          const result = await userService.profile();
+          setUser({ ...result });
+          if (result.username) {
+            const res = await gameService.get_games_by_username(result.username);
             if (res) {
-                setGames(res)
+              setGames(res);
+              console.log(res);
             }
-        }
-        fetchGames();
-    },[])
+          }
+        };
+      
+        let isMounted = true; // New state variable
+      
+        fetchProfileAndGames();
+      
+        return () => {
+          isMounted = false; // Cleanup function to handle component unmounting
+        };
+      }, []);
+
     return (
         <>
         <div className={styles.container}>
-        <h1 className={styles.h1}>Match history</h1>
+        <h1 className={styles.h1}>{user.username}'s match history</h1>
         <table className={styles.table}>
         <thead>
             <tr>

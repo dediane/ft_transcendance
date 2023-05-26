@@ -20,6 +20,11 @@ export class GameController {
     return this.gameService.findAll();
   }
 
+  @Get(':username')
+  findAllfromUser(@Param('username') username: string) {
+    return this.gameService.findAllfromUser(username);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.gameService.findOne(+id);
@@ -54,21 +59,3 @@ export class GameController {
   }
 }
 
-
-
-/*
-import { Socket, Server } from "socket.io";
-import { Controller } from "@nestjs/common";
-import { WebSocketGateway } from "@nestjs/websockets";
-
-@SocketController()
-@Controller()
-export class GameController{
-  @OnConnect()
-  public onConnection(
-    @ConnectedSocket() socket : Socket,
-    @SocketIO() io: Server
-  ){
-    console.log("New Socket connected: ", socket.id);
-  }
-}*/

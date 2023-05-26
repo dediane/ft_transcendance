@@ -6,4 +6,9 @@ export default {
     get_games () { 
         return axiosInstance.get("/game", {}).then((res: { data: any }) => res.data)
     },
+
+    get_games_by_username (username :string) { 
+        return axiosInstance.get("/game/" + username, {  }).then((res: { data: any }) => res.data)
+    },
 }
+
