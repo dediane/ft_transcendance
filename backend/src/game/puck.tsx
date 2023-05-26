@@ -117,7 +117,7 @@ export  class Puck {
                 this.x = p.x + (p.w / 2) + this.r;
                 if (this.e == true)
                 {
-                    this.speed += 0.25;
+                    this.speed += 0.5;
                     this.xspeed = (this.puck_speed * Math.cos(angle)) * this.speed;
                     this.yspeed = (this.puck_speed * Math.sin(angle)) * this.speed;
                     console.log("left we increase speed ", this.speed)

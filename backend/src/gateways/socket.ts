@@ -881,8 +881,8 @@ for (const user of this.users) {
     async handleJoinGameServerExtra(socket: Socket, gamedata : any) {
       // this have to be change for the responssive
       // and set the width and height to 500 / 500
-      this.heightE = gamedata.height;
-      this.widthE = gamedata.width;
+      this.heightE = 1000;
+      this.widthE = 1000;
       this.puckE = new Puck(this.widthE, this.heightE, true);
       if (!this.paddle_leftE)
       {
@@ -1102,8 +1102,8 @@ for (const user of this.users) {
         @SubscribeMessage('start game chat')
         async handleJoinGameServerFromChat( socket: Socket, gamedata : any) {
 
-          this.widthC = 500;
-          this.heightC = 500;
+          this.widthC = 1000;
+          this.heightC = 1000;
           this.puckC = new Puck(this.widthC, this.heightC, false);
           if (!this.paddle_leftC)
           {

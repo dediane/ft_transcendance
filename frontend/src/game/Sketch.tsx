@@ -24,11 +24,6 @@ import React from 'react';
     const canvasw = 1000;
     const canvash = 1000;
     
-    
-    /*
-    let width = p5WrapperDiv?.clientWidth || window.innerWidth;
-    let height = p5WrapperDiv?.clientHeight || window.innerHeight;
-    */
     let cwidth = p5WrapperDiv?.clientWidth || window.innerWidth;
     let cheight = p5WrapperDiv?.clientHeight || window.innerHeight;
     // Calculate the aspect ratio of the canvas and window

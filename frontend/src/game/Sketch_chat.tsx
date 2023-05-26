@@ -21,14 +21,9 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
     const username = AuthService.getUsername();
 
     // fixed canvas in backend
-    const canvasw = 500;
-    const canvash = 500;
+    const canvasw = 1000;
+    const canvash = 1000;
     
-    
-    /*
-    let width = p5WrapperDiv?.clientWidth || window.innerWidth;
-    let height = p5WrapperDiv?.clientHeight || window.innerHeight;
-    */
     let cwidth = p5WrapperDiv?.clientWidth || window.innerWidth;
     let cheight = p5WrapperDiv?.clientHeight || window.innerHeight;
     // Calculate the aspect ratio of the canvas and window
@@ -46,10 +41,7 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
       width = cwidth;
       height = width / canvasratio;
     }
-   /*
-    width = 500;
-    height = 500;
-   */
+
     console.log("clienbtHeight", width)
     console.log("clienbtHeight", height)
     let puck = new Puck(p5, width, height);
@@ -253,8 +245,8 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
     
 
     p5.resizeCanvas(width, height);
-    //paddle_left.update_resize(width, height, true);
-    //paddle_right.update_resize(width, height, false);
-    //puck.update_resize(width, height);
+    paddle_left.update_resize(width, height, true);
+    paddle_right.update_resize(width, height, false);
+    puck.update_resize(width, height);
   }
 }
