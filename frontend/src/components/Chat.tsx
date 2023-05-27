@@ -124,10 +124,7 @@ function Chat
   const isMember = (channelName: string) => {
     const channels = props.userChannels[props.yourId];
     const channel = channels?.find((channel: { name: string; }) => channel.name === channelName);
-    console.log("<<=<<<<<<<<<<<<<channel", channel)
     const isMember = channel?.members?.some((member: { username: any; }) => member.username === props.yourId);
-    console.log("<<=<<<<<<<<<<<<<ismember", isMember, props.yourId)
-    
     return isMember || false;
   };
 
@@ -169,7 +166,6 @@ function Chat
   const ismuted= isUsermuted(props.currentChat.chatName);
 
   const isUserOwner = (channelName: string): boolean => {
-    console.log("?????CHAT PROPS OWNER", channelName, "is", props.owner[channelName])
     return (props.owner[channelName] == props.yourId)
   };
   
@@ -235,17 +231,12 @@ const kickMember  = (member: any) => {
   };
 
 const banMember = (member: any) => {
-  console.log(`Banning ${member}`);
-
   props.banMember(member);
-
   closeRemoveMemberModal();
 };
 
 const muteMember = (member: any) => {
-  console.log(`Muting ${member}`);
   props.muteMember(member);
-
   closeRemoveMemberModal();
 };
 
@@ -282,8 +273,6 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
     function renderRooms(room: { accessType: string; name: string; }){
       if (room.accessType == 'private')
         return;
-        console.log("ACCESSTYPE", room.accessType)
-      console.log("IN ROOM", room)
       const currentChat = {
           chatName: room.name,
           isChannel: true,
@@ -305,8 +294,6 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
   function renderPrivate(room: { accessType: string; dm: any; name: string; members: any[]; }){
     if (room.accessType == 'private' && !(room.members.find((member: { username: any; }) => member.username === props.yourId)))
       return;
-    console.log("IN ROOM", room)
-
     if (room.accessType != 'private')
       return;
     if (room.dm)
@@ -339,7 +326,6 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
 }
 
 function renderDMS(room: { accessType: string; dm: boolean; name: string; members: any[]; }){
-  console.log("IN ROOM", room)
 
   if (room.accessType != 'private')
     return;
@@ -354,7 +340,6 @@ function renderDMS(room: { accessType: string; dm: boolean; name: string; member
 
   let othername = "";
   if (room.dm) {
-    console.log("???!!!OTHERMEMBER", room)
     const otherMember = room.members.find((member: { username: any; }) => member.username !== props.yourId);
     othername = otherMember.username;
   }
@@ -388,8 +373,6 @@ const handleJoinChannel = () => {
       } else {
         // Passwords don't match
     <span style={{color: 'red'}}>Try again.</span>
-
-        console.log('Incorrect password');
       }
     })
     .catch(error => {
@@ -399,8 +382,6 @@ const handleJoinChannel = () => {
 };
   
 function renderUser(user: { username: string; }){
-      console.log("render user");
-console.log("ACCESSTYPE????", props.accessType)
       
       if (user.username === props.yourId){
           return (
@@ -416,9 +397,6 @@ console.log("ACCESSTYPE????", props.accessType)
           receiverId: user.username,
       };
       return(
-          // <div onClick={() => {
-          //     props.toggleChat(currentChat);
-          // }} key={user.username}>
             <div>
               {user.username}
           </div>
@@ -461,7 +439,7 @@ if (!isMember(props.currentChat.chatName))
 else if (isBanned) {
   body = (
 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500, fontSize: '14px' }}>
-  <span style={{ marginRight: '10px' }}>Can't access this channel, you were BANNED</span>
+  <span style={{ marginRight: '10px' }}>Can&apos;t access this channel, you were BANNED</span>
 </div>
 
   )
@@ -528,9 +506,6 @@ else {
       if (props.userchans)
       {
         const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
-    
-        console.log("CHAN POPULATED", channel);
-    
         if (channel) {
             return channel.dm;
         }
@@ -540,80 +515,55 @@ else {
 
 
   const FilteredAdmins = (chatName: string) => {
-    console.log("USERCHAN POPULATED FOR ADMIN", props.userchans, "FOR", chatName);
-  
     if (props.userchans) {
       const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
-  
-      console.log("CHAN POPULATED FOR ADMIN", channel);
-  
       if (channel) {
         const channelAdmins = channel.admins;
-        console.log("Channel admins:", channelAdmins);
-  
-        // Filter channel members based on conditions
         const filteredAdmins = channelAdmins.filter(
           (member: { username: any; }) => member.username !== channel.owner.username && member.username !== props.yourId
         );
-        console.log("FILTERED ADMINS:", filteredAdmins);
-  
         return filteredAdmins;
       }
     }
-    return null; // Or handle the case when no channel or members are found
+    return null;
   };
   const filteredAdmins = FilteredAdmins(props.currentChat.chatName);
 
 
 
     const UserList = (chatName: string) => {
-      console.log("USERLIST POPULATED", props.userchans, "FOR", chatName);
     
       if (props.userchans) {
         const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
     
-        console.log("CHAN POPULATED", channel);
     
         if (channel) {
-          // const channelMembers = channel.members;
-          console.log(".......?????PROPS MEMBERS????", props.members)
           const channelMembers = props?.members;
-          console.log("Channel Members:", channelMembers);
           const filteredMembers = channelMembers.filter(
             (member: any) => member !== channel.owner?.username && member !== props.yourId
           );
-          console.log("FILTERED MEMBERS:", filteredMembers);
-    
           return filteredMembers;
         }
       }
     
-      return null; // Or handle the case when no channel or members are found
+      return null; 
     };
     
       const filteredMembersUsernames = UserList(props.currentChat.chatName);
 
     const UserListPublic = (chatName: string) => {
-      console.log("USERLIST POPULATED", props.userchans, "FOR", chatName);
-    
       if (props.userchans) {
         const channel = props.userchans.find((chan: { name: string; }) => chan.name === chatName);
-    
-        console.log("CHAN POPULATED", channel);
-    
         if (channel) {
           const channelusers = props?.users;
-          console.log("Channel users:::::", channelusers);
           const filteredusers = channelusers.filter(
             (user: { username: any; }) => user.username !== channel.owner?.username && user.username !== props.yourId
           );
-          console.log("FILTERED users:::::", filteredusers);
-    
           return filteredusers;
         }
       }
     
-      return null; // Or handle the case when no channel or users are found
+      return null; 
     };
     
     const filteredUsers = UserListPublic(props.currentChat.chatName);
@@ -632,31 +582,12 @@ else {
       otherUser = props.members[0];
       const payload = {sender :props.yourId, otherUser: otherUser };
     props.inviteToPlay(props.yourId, otherUser)
-    console.log("PLAY PONNNNG with 2 usernames. User to find with userservice.findonebyname()", props.members[0], props.members[1])
     setTimeout(() => {
       window.location.href = `/waiting`;
     }, 5 * 1000);
   }
 
   function acceptInvite(): void {
-
-    // console.log("<3 JUST CLICKED ON ACCEPT INVITE. BOTH USERS ARE THEREFORE IN THE ROOM. <3")
-    // console.log("if you want to find their username:", props.members[0], props.members[1])
-
-    // props.InviteReceivedMap((prevMap) => ({
-    //   ...prevMap,
-    //   [props.currentChat.chatName]: false,
-    // }));
-    // const payload = {
-    //   user1 : props.members[0],
-    //   user2 : props.members[1],
-    // }
-    // console.log("REDIRECTION PONG")
-    // setInviteAcceptedMap((prevMap) => ({
-    //   ...prevMap,
-    //   [props.currentChat.chatName]: true,
-    // }));
-    // console.log("setInviteAcceptedMap ACCEPTING set to : ", InviteAcceptedMap[props.currentChat.chatName] );
     window.location.href = `/waiting`;
   }
 
@@ -941,7 +872,6 @@ user!== props.currentUser.username && (
 {body}
 
         </BodyContainer>
-        {/* {isMember(props.currentChat.chatName) && (!isBanned) && (!(props.accessType == "protected" && (props.passwordError))) &&(props.currentChat.chatName) &&  */}
         {isMember(props.currentChat.chatName) && (!isBanned) && props.currentChat.chatName &&
         <TextBox
          className={showModal2 ? "show-modal" : ""}
