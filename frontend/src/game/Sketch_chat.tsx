@@ -119,7 +119,7 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
             // to show
           });
 
-          socket?.on("user left", () => {          
+          socket?.on("user left chat", () => {  
             left = true;
           });       
           // keyReleased and keyPressed for the gamers
