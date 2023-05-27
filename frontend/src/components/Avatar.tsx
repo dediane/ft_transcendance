@@ -67,7 +67,9 @@ export const AvatarUploader = ({ handleUpload }: any) => {
       {avatar && (
         <div>
           <p>Selected Avatar:</p>
+          <picture>
           <img src={URL.createObjectURL(avatar)} alt="Selected Avatar" className={styles.selectedImage} />
+          </picture>
         </div>
       )}
       <button onClick={handleSubmit} className={styles.button}>Upload</button>

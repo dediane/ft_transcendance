@@ -29,7 +29,7 @@ export const PublicProfil = () => {
             console.log(result)
         }
         fetch_profile()
-    }, [])
+    }, [router])
 
     return (
         <>
@@ -37,7 +37,7 @@ export const PublicProfil = () => {
             <div className="col-span-3">
                 <div className="">
                     <h3 className={styles.h1}>{user.username}&apos;s profil</h3>
-                    {user.avatar ? <img src={user.avatar} className={styles.profilepicture} /> : <img src="/default.png" className={styles.profilepicture}/>}
+                    {user.avatar ? <img src={user.avatar} alt="user avatar" className={styles.profilepicture}/> : <img src="/default.png" alt="user avatar" className={styles.profilepicture}/>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
                     <Asset title={'username'} value={user.username} />
