@@ -2,7 +2,8 @@ import axiosService from "./axios-service"
 import axios from "axios"
 import authenticationService from "./authentication-service"
 const axiosInstance = axiosService.getInstance()
-export default {
+
+const userService = {
   login (email :string, password :string) { 
 	  return axiosInstance.post("/auth/login", { email, password }).then((res: { data: any }) => res.data)
   },
@@ -68,16 +69,4 @@ export default {
   }
 }
 
-  //Create42 route GET /auth/42 
-  //here ->
-
-
-
-//   ({setRegister} : {setRegister :any})
-//   confirm_email (token) {
-//     return axiosInstance.post("/user/confirm", { token }).then(res => res.data)
-//   },
-
-//   modify_password ( login, key, password ) {
-//     return axiosInstance.post("/password", { login , key, password }).then(res => res.data)
-//   }
+export default userService;
