@@ -93,7 +93,6 @@ export const Pass = styled.div`
 
 export const ModalContainer = styled.div`
   height: 100%;
-  border-right: 1px solid black;
   overflow-y: scroll;
 `;
 

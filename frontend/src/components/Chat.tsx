@@ -105,7 +105,6 @@ function Chat
     if (props.blockedUsers && props.blockedUsers[props.yourId]) {
       return props.blockedUsers[props.yourId].includes(username);
      }
-    // return blockedUsers.some((user: string) => user === username);
   };
   const blockUser2 = (username: any) => {
     props.blockUser(username);
@@ -469,8 +468,6 @@ else {
 
   if (!props.passwordError)
   {
-    // props.addMember(props.yourId);
-
     body = (
       <Messages>
           {props.messages?.map(renderMessages)}
