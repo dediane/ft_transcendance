@@ -10,19 +10,19 @@ export const Navbar = () => {
     <div className="hidden w-full md:block md:w-auto" id="navbar-default">
       <ul className="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0">
         <li>
-          <a href="/login" className={styles.link}>Home</a>
+          <Link href="/login" className={styles.link}>Home</Link>
         </li>
         <li>
-          <a href="home_game" className={styles.link}>
-            Play</a>
+          <Link href="home_game" className={styles.link}>
+            Play</Link>
         </li>
         <li>
-          <a href="/history" className={styles.link}>
-            History</a>
+          <Link href="/history" className={styles.link}>
+            History</Link>
         </li>
         <li>
-          <a href="/login" className={styles.link}>
-            Login</a>
+          <Link href="/login" className={styles.link}>
+            Login</Link>
         </li>
       </ul>
     </div>

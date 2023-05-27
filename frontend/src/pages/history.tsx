@@ -41,8 +41,8 @@ export const Games = () => {
         {games.map((current:any) => {
             const { player1, player2, score1, score2 } = current;
             return (
-        <tbody>
-            <tr key={current.id}>
+        <tbody key={current.id}>
+            <tr>
                 <td className={styles.bold2}>👑 <br></br>{score1 < score2 ? player2.username : player1.username}</td>
                 <td className={styles.bold}>
                     <div className={styles.avatarContainer}>
