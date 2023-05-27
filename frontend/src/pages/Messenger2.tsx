@@ -1,17 +1,14 @@
-import { useEffect, useState, useRef, SetStateAction } from "react";
+import { useEffect, useState, useRef, SetStateAction, ChangeEvent } from "react";
 import Chat from "../components/Chat";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import immer from "immer";
 import AuthService from "../services/authentication-service";
-import Auth from "./auth";
-import axios from 'axios';
 
-import Modal from "react-modal";
 function Messenger2() {
   const [connected, setConnected] = useState(false);
   const [channels, setChannels] = useState({});
   const [inviteReceived, setInviteReceived] = useState(false);
-  const [inviteReceivedMap, setInviteReceivedMap] = useState({});
+  const [inviteReceivedMap, setInviteReceivedMap] = useState<{ [key: string]: any }>({});
 
   const [passwordError , setPasswordError] = useState(true);
   const [currentChat, setCurrentChat] = useState({
@@ -20,31 +17,31 @@ function Messenger2() {
     receiverId: "",
   });
   const [connectedRooms, setConnectedRooms] = useState(["public"]);
-
   const [invitedMembers, setinvitedMembers] = useState([]);
- const [userChannels, setUserChannels] = useState([])
-  const [admins, setAdmins] = useState([]);
-  const [owner, setOwner] = useState([]);
-  const [bannedmembers, setBannedmembers] = useState([]);
+ const [userChannels, setUserChannels] = useState<{ [key: string]: any }>({});
+  const [admins, setAdmins] = useState<{ [key: string]: any }>({});
+  const [owner, setOwner] =  useState<{ [key: string]: any }>({});
+  const [bannedmembers, setBannedmembers] = useState<{ [key: string]: any }>({});
   const [allUsers, setAllUsers] = useState([]);
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState();
-  const socketRef = useRef();
+  const socketRef = useRef<Socket | null>(null);
+
   const [newMember, setNewMember] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
   const [userchans, setUserChans] = useState([])
 
-  function handleMessageChange(e) {
+  function handleMessageChange(e: ChangeEvent<HTMLInputElement>) {
     setMessage(e.target.value);
   }
 
-  const [messages, setMessages] = useState({});
-  const [accessType, setAccessType] = useState({});
+  const [messages, setMessages] = useState<{ [key: string]: any }>({});
+  const [accessType, setAccessType] = useState<{ [key: string]: any }>({});
 
-  const [members, setMembers] = useState([]);
-  const [mutedMembers, setmutedMembers] = useState([]);
-  const [blockedUsers, setBlockedUsers] = useState([]);
+  const [members, setMembers] = useState<{ [key: string]: any }>({});
+  const [mutedMembers, setmutedMembers] = useState<{ [key: string]: any }>({});
+  const [blockedUsers, setBlockedUsers] = useState<{ [key: string]: any }>({});
 
   function createNewChannel(data: any) {
     const datachan = {
@@ -53,9 +50,7 @@ function Messenger2() {
       accessType: data.accessType,
       password: data.password,
     };
-    console.log("TESESTTTTT CREATE CHAN ", data.chatName,  data.accessType,  data.password)
     socketRef?.current?.emit("create chan", datachan);
-  
     setRooms((prevRooms) => {
       if (!prevRooms.includes(data.chatName)) {
         return [...prevRooms, data.chatName];
@@ -66,10 +61,7 @@ function Messenger2() {
       ...prevMessages,
       [data.chatName]: [],
     }));
-
-  
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
-    
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
   }
 
   function createDm(username2: string) {
@@ -79,14 +71,14 @@ function Messenger2() {
     };
     if (datachan.username1 === datachan.username2)
       return;
-    console.log(`Messenger2: creating DM with ${username2} and {${datachan.username2}}`)
     socketRef?.current?.emit("create DM", datachan);
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
   }
 
   function inviteToPlay(sender :string, otherUser: string)
+  // function inviteToPlay(dataa: any)
   {
-    console.log("***********INVITE TO PLAY PLAYYYYYY*******", otherUser)
+    // const {sender, otherUser} = dataa;
     const data = {
       sender: sender,
       receiver: otherUser,
@@ -101,9 +93,8 @@ function Messenger2() {
       chatName: currentChat.chatName,
       isChannel: currentChat.isChannel,
     };
-    socketRef.current.emit("send message", payload);
+    socketRef?.current?.emit("send message", payload);
     socketRef?.current?.emit("sendInvitation", data);
-    // socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
   }
 
   
@@ -125,7 +116,7 @@ function Messenger2() {
       chatName : "",
     }));
 
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
   }
 
 
@@ -136,7 +127,7 @@ function Messenger2() {
       channelName: currentChat.chatName,
     };
     socketRef?.current?.emit("remove password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
 
@@ -149,7 +140,7 @@ function Messenger2() {
       newPassword : newpass,
     };
     socketRef?.current?.emit("change password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
 
@@ -161,16 +152,13 @@ function Messenger2() {
       username : username,
     };
     socketRef?.current?.emit("add member", payload);  //member to remove a envoyer a la database pour modif
-    
-    //check avant que le user existe vraiment 
     const updatedMembers = [...members[currentChat.chatName], username];
-    console.log("updatedMEMBERS???", updatedMembers)
     setMembers((prevMembers) => ({
       ...prevMembers,
       [currentChat.chatName]: updatedMembers,
     }));
     setNewMember("");
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
 
@@ -182,7 +170,6 @@ function Messenger2() {
       username : userNameToAddasAdmin,
     };
     const updatedadmins = [...admins[currentChat.chatName], userNameToAddasAdmin];
-    console.log("updatedadmins???", updatedadmins)
     setAdmins((prevadmins) => ({
       ...prevadmins,
       [currentChat.chatName]: updatedadmins,
@@ -201,7 +188,7 @@ function Messenger2() {
       username : userNameToRemoveasAdmin,
     };
     const updatedadmins = admins[currentChat.chatName]?.filter(
-      (admin) => admin !== userNameToRemoveasAdmin
+      (admin: string) => admin !== userNameToRemoveasAdmin
     );
     setAdmins((prevadmins) => ({
       ...prevadmins,
@@ -209,15 +196,13 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("remove admin", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
 
 
   function removeMember(userNameToRemoveasMember: string)
   {
-    console.log("to remove in messenger2", userNameToRemoveasMember)
-    console.log("currentchatName", currentChat.chatName)
     const payload = {
       channelName: currentChat.chatName,
       AdminId: AuthService.getId(),
@@ -225,16 +210,14 @@ function Messenger2() {
     };
 
     const updatedMembers = members[currentChat.chatName]?.filter(
-      (member) => member !== userNameToRemoveasMember
+      (member: string) => member !== userNameToRemoveasMember
     );
     setMembers((prevMembers) => ({
       ...prevMembers,
       [currentChat.chatName]: updatedMembers,
     }));
     socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
-
-    //if removed member is self update currentchat
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
     if (AuthService.getUsername() === userNameToRemoveasMember)
     {
       setCurrentChat((prevState) => ({
@@ -248,29 +231,24 @@ function Messenger2() {
 
   function banMember(userNameToRemoveasMember: string)
   {
-    console.log("to remove in messenger2", userNameToRemoveasMember)
-    console.log("currentchatName", currentChat.chatName)
     const payload = {
       channelName: currentChat.chatName,
       AdminId: AuthService.getId(),
       username : userNameToRemoveasMember,
     };
     const updatedBannedMembers = [...bannedmembers[currentChat.chatName], userNameToRemoveasMember];
-    console.log("Bannedmembers???", updatedBannedMembers)
     setBannedmembers((prevbannedmembers) => ({
       ...prevbannedmembers,
       [currentChat.chatName]: updatedBannedMembers,
     }));
     socketRef?.current?.emit("ban member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
   
 
   function muteMember(userToMute: string)
   {
-    console.log("to mute in messenger2", userToMute)
-    console.log("currentchatName", currentChat.chatName)
     const payload = {
       channelName: currentChat.chatName,
       AdminId: AuthService.getId(),
@@ -278,14 +256,13 @@ function Messenger2() {
     };
   
     socketRef?.current?.emit("mute member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
 
 
   function blockUser(usertoBlock: string)
   {
-    console.log("user to block ::: ", usertoBlock)
     const userdataname  = AuthService.getUsername();
 
     const payload = {
@@ -298,7 +275,7 @@ function Messenger2() {
     }));
     
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
 
   }
@@ -307,7 +284,6 @@ function Messenger2() {
   
   function unblockUser(usertoUnblock: string)
   {
-    console.log("user to unblock ::: ", usertoUnblock)
     const userdataname  = AuthService.getUsername();
     const payload = {
       UserWhoCantAnymore: AuthService.getId(),
@@ -321,23 +297,19 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
-    socketRef.current.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
 
   }
   
-function joinRoom(room: string) { //Fonction est appelee cote database que si bon mot de passe ou bien si a ete invite ou bien si est deja un membre
-  
+function joinRoom(room: string) { 
   const newConnectedRooms = immer(connectedRooms, (draft) => {
       draft.push(room);
     });
-    socketRef.current.emit("join room", room, (messages: any) =>
+    socketRef?.current?.emit("join room", room, (messages: any) =>
       roomJoinCallback(messages, room)
-    ); //send to database all the rooms he is in ?? 
+    ); 
     setConnectedRooms(newConnectedRooms);
     const username = AuthService.getUsername();
-
-  // }
-
   }
 
   function sendMessage() {
@@ -349,7 +321,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
       chatName: currentChat.chatName,
       isChannel: currentChat.isChannel,
     };
-    socketRef.current.emit("send message", payload);
+    socketRef?.current?.emit("send message", payload);
     if (currentChat && currentChat.chatName) {
       const newMessages = immer(messages, (draft) => {
         draft[currentChat.chatName].push({
@@ -363,7 +335,6 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     
 
   function roomJoinCallback(incomingMessages: any, room: string) {
-    console.log("incoming::::", incomingMessages);
     const newMessages = immer(messages, (draft) => {
       if (!draft[currentChat.chatName]) {
         draft[currentChat.chatName] = [];
@@ -381,8 +352,7 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
 
 
 
-  function toggleChat(currentChat) {
-
+  function toggleChat(currentChat: any){
     
     if (!messages[currentChat.chatName]) {
       const newMessages = immer(messages, (draft) => {
@@ -413,64 +383,49 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     }
 
  socketRef.current  = io("http://localhost:8000", {
-  // userdata : userdata,
   reconnection: true, 
-  // pingInterval: 1, // Interval to send ping packets to the client (in milliseconds)
-  // pingTimeout: 5,
-  // query: { token },
   query: { token },
 });
-    socketRef.current.on("connect", () => {
-      console.log("connected to server");
+    socketRef?.current?.on("connect", () => {
       setConnected(true);
-    socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.name});
 
     });
 
-    socketRef.current.on("disconnect", () => {
-      console.log("~~~~~~~~~~~~reconnecting to server~~~~~~~~~~~~");
+    socketRef?.current?.on("disconnect", () => {
       setConnected(false);
-    // socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
     });
 
-    socketRef.current.on("all user's chans", (channels) => {
-      console.log("!!!!all user's chans messenger2!!channels is populated???", channels);
+    socketRef?.current?.on("all user's chans", (channels: SetStateAction<never[]>) => {
       setUserChans(channels);
     });
 
-    socketRef.current.emit("join server", userdata);
-    socketRef.current.emit("all users", userdata);
+    socketRef?.current?.emit("join server", userdata);
+    socketRef?.current?.emit("all users", userdata);
 
-    socketRef.current.on("is userinput correct", (isUserInputCorrectPass: boolean) => {
-      console.log("is user input correct?? setting passerror");
+    socketRef?.current?.on("is userinput correct", (isUserInputCorrectPass: boolean) => {
       setPasswordError(!isUserInputCorrectPass);
     });
-    
 
-    socketRef.current.on("member adding", ({memberadded, username}) => {
-      console.log("is user input correct?? setting passerror", memberadded, username);
-
+    socketRef?.current?.on("member adding", (data : any) => {
+      const { memberadded, username } = data;
     });
   
-    socketRef.current.on("connected users", (users: SetStateAction<never[]>) => {
-      console.log("all users", users);
+    socketRef?.current?.on("connected users", (users: any) => {
       setAllUsers(users);
     });
 
-    socketRef.current.on("all users", ({ currentuser, allusers }) => {
-      console.log("---------ALL USERS SOCKET ON----", currentuser.username);
-           setCurrentUser(currentuser);
-           setUsers(allusers);
-       });
+    socketRef?.current?.on("all users", (data : any) => {
+      const { currentuser, allusers } = data;
+          setCurrentUser(currentuser);
+          setUsers(allusers);
+    });
+  
 
-    socketRef.current.on("all chans", (chans: SetStateAction<never[]>) => {
-      console.log("all chans MESSENGER2", chans);
+    socketRef?.current?.on("all chans", (chans: any) => {
       setRooms(chans);
-      
-    socketRef.current.on('receiveInvitation', (data: any) => {
-
+    socketRef?.current?.on('receiveInvitation', (data: any) => {
       const { sender, receiver, chatName } = data;
-      console.log("RECEIVEINVITATION MESSENGER2", sender)
       const username = sender.username;
       setInviteReceivedMap((prevMap) => ({
         ...prevMap,
@@ -480,12 +435,12 @@ function joinRoom(room: string) { //Fonction est appelee cote database que si bo
     });
       
 
-    socketRef.current.on("join room", ({ room, accessType, messages, members, admins, bannedmembers, mutedMembers, owner, blockedUsers, channels }) => {
-      setMessages((prevMessages) => ({
+    socketRef?.current?.on("join room", (data : any) => {
+      const { room , accessType, messages, members, admins, bannedmembers, mutedMembers, owner, blockedUsers, channels } = data;
+     setMessages((prevMessages) => ({
         ...prevMessages,
         [room]: messages,
       }));
-console.log(room, "MEMBERS IN MESSENGER2", members)
       setMembers((prevMembers) => ({
         ...prevMembers,
         [room]: members,
@@ -499,14 +454,10 @@ console.log(room, "MEMBERS IN MESSENGER2", members)
         ...prevbannedmembers,
         [room]: bannedmembers,
       }));
-
-
       setmutedMembers((prevmutedMembers) => ({
         ...prevmutedMembers,
         [room]: mutedMembers,
       }));
-
-      console.log("JOIN ROOM OWNER", owner);
       setOwner((prevOwner) => ({
         ...prevOwner,
         [room]: owner,
@@ -516,15 +467,10 @@ console.log(room, "MEMBERS IN MESSENGER2", members)
         ...prevBlockedUsers,
         [userdata.name]: blockedUsers,
       }));
-      console.log("!!!???USERCHANNELS MESSENGER 2!!!!!!!", channels)
       setUserChannels((prevChannels) => ({
         ...prevChannels,
         [userdata.name]: channels,
       }));
-
-      console.log("AFTER!!!???USERCHANNELS MESSENGER 2!!!!!!!", userChannels[userdata.name]);
-console.log("||||||||accessType", accessType)
-
         setAccessType((prevAccessType) => ({
           ...prevAccessType,
           [room]: accessType,
@@ -533,17 +479,17 @@ console.log("||||||||accessType", accessType)
     });
     
 
-    socketRef?.current.on("new chan", (channelName :string) => {
-      console.log("received new chan", channelName);
+    socketRef?.current?.on("new chan", (channelName :string) => {
       setMessages((prevMessages) => ({
         ...prevMessages,
         [channelName]: [],
       }));
-    socketRef.current.emit("join server", {id: userdata.id, name: userdata.name});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.name});
 
     });
-
-    socketRef.current.on("new message", ({ content, sender, chatName }) => {
+    
+    socketRef?.current?.on("new message", (data : any) => {
+      const { content, sender, chatName } = data;
       setMessages((messages) => {
         const newMessages = immer(messages, (draft) => {
             if (draft[chatName]) {
@@ -558,7 +504,7 @@ console.log("||||||||accessType", accessType)
 
 
     return () => {
-    socketRef.current.disconnect();
+    socketRef?.current?.disconnect();
     };
   }, []);
 

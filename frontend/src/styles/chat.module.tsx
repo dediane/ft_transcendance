@@ -1,8 +1,5 @@
 import styled from 'styled-components';
 
-// export default style() {
-
-// }
 export const Container = styled.div`
     height: 100vh;
     width: 100%;
@@ -60,7 +57,13 @@ export const ChannelInfo = styled.div`
     justify-content: space-between;
 `;
 
-export const Row = styled.div`
+type RowProps = {
+  active: boolean;
+  onClick: () => void;
+  key: string;
+};
+
+export const Row = styled.div<RowProps>`
   display: flex;
   align-items: center;
   padding: 10px;
