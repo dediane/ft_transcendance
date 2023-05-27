@@ -1,77 +1,32 @@
 import React, { useState, useEffect } from "react";
-import friendService from "@/services/friend-service";
 import userService from "@/services/user-service";
 import styles from "@/styles/Profile.module.css";
 import _, { remove } from "lodash";
+import Link from "next/link";
 
 export const Friends = () => {
-  //FRIEND
-  const [friend, setFriend] = useState([]);
-  useEffect(() => {
-    const fetch_friends = async () => {
-      const result = await userService.find_friend();
-      setFriend(result.friends);
-    };
-    fetch_friends();
-  }, []);
-
-  //SETFRIEND REFRESH
-  const refresh = async (id: number) => {
-    await remove_friend(id);
-    setFriend(friend.filter((obj: any) => obj.id !== id));
-  };
-  return (
-    <div className="">
-      <h2 className="text-pink-600 text-lg">My friends</h2>
-      {friend.map((current: any, key: any) => {
-        const { username, id } = current;
-        return (
-          <div key={key} className="">
-            <div className={styles.listelement}>
-              {username}
-              {/* <button onClick={() => add_friend(id)} className={styles.button}>
-                            add friends
-                        </button> */}
-              <button
-                onClick={() => refresh(id)}
-                className={styles.littlebutton}
-              >
-                remove
-              </button>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-export const Searchbar = () => {
   const [inputValue, setInputValue] = useState("");
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<any>([]);
+  const [friends, setFriends] = useState<any>([]);
 
-  //FRIEND
-  const [friend, setFriend] = useState([]);
   useEffect(() => {
-    const find = async () => {
-      const re = await userService.find_friend();
-      setFriend(re.friends);
+    const fetchFriends = async () => {
+      const result = await userService.find_friend();
+      setFriends(result.friends);
     };
-    find();
+    fetchFriends();
   }, []);
 
-  //SEARCH
   const handleInputChange = _.debounce(async (value) => {
     const result = await userService.search(value);
     const updatedUserList = result.map((user: any) => {
-      const tmp = friend.find((curr: any) => curr.id === user.id);
+      const tmp = friends.find((curr: any) => curr.id === user.id);
       if (tmp) {
         user.isFriend = true;
       }
       return user;
     });
     setUsers(updatedUserList);
-    // setUsers(result)
   }, 500);
 
   const handleInput = (event: any) => {
@@ -79,66 +34,102 @@ export const Searchbar = () => {
     setInputValue(value);
     handleInputChange(value);
   };
-  return (
-    <div className="my-4">
-      <input
-        value={inputValue}
-        onChange={handleInput}
-        type="text"
-        placeholder="search your friends"
-        className={styles.inputbox}
-      ></input>
-      <Searchresult users={users} setUsers={setUsers} />
-    </div>
-  );
-};
 
-const add_friend = async (id: number) => {
-  await userService.add_friend(id);
-};
-
-const remove_friend = async (id: number) => {
-  await userService.remove_friend(id);
-};
-
-const Searchresult = ({ users, setUsers }: { users: any; setUsers: any }) => {
-  const refresh_users = async (action: string, id: number) => {
-    action == "add" ? await add_friend(id) : await remove_friend(id);
-
-    const index = users.map((user: any) => {
-      if (user.id === id) user.isFriend = !user.isFriend;
+  const addFriend = async (id: number) => {
+    const friend = await userService.add_friend(id);
+    const updatedFriends = [...friends, friend];
+    setFriends(updatedFriends);
+  
+    // Update the users state
+    const updatedUsers = users.map((user : {id :any}) => {
+      if (user.id === id) {
+        return { ...user, isFriend: true };
+      }
       return user;
     });
-    setUsers(index);
+    setUsers(updatedUsers);
   };
+
+  const removeFriend = async (id: number) => {
+    await userService.remove_friend(id);
+    const updatedFriends = friends.filter((obj: any) => obj.id !== id);
+    setFriends(updatedFriends);
+  
+    // Update the users state
+    const updatedUsers = users.map((user : {id :any}) => {
+      if (user.id === id) {
+        return { ...user, isFriend: false };
+      }
+      return user;
+    });
+    setUsers(updatedUsers);
+  };
+
   return (
     <div>
-      {users.map((current: any, key: any) => {
-        const { username, id, isFriend } = current;
+      {/* Friends List */}
+      <h2 className={styles.h1}>My friends</h2>
+      {friends.length ? friends.map((current: any, key: any) => {
+        const { username, id } = current;
+        // console.log("FRIEND CURRENT", current)
         return (
           <div key={key} className="">
             <div className={styles.listelement}>
-              {username}
-              {!isFriend && (
-                <button
-                  onClick={() => refresh_users("add", id)}
-                  className={styles.littlebuttongreen}
-                >
-                  add friends
-                </button>
-              )}
-              {isFriend && (
-                <button
-                  onClick={() => refresh_users("remove", id)}
-                  className={styles.littlebutton}
-                >
-                  remove
-                </button>
-              )}
+              <Link href={`/public?username=${username}`} className="hover:underline hover:font-medium hover:text-violet-600">
+                  {username}
+              </Link>
+              <button
+                onClick={() => removeFriend(id)}
+                className={styles.littlebutton}
+              >
+                remove
+              </button>
             </div>
           </div>
         );
-      })}
+      }) : <div>You don't have friends yet...</div>}
+
+      {/* Search Bar */}
+      <div className="my-4">
+        <input
+          value={inputValue}
+          onChange={handleInput}
+          type="text"
+          placeholder="search your friends"
+          className={styles.inputbox}
+        ></input>
+        {/* Search Results */}
+        <div>
+          {users.map((current: any, key: any) => {
+            const { username, id, isFriend } = current;
+            return (
+              <div key={key} className="">
+                <div className={styles.listelement}>
+                  <Link href={`/public?username=${username}`} className="hover:underline hover:font-medium hover:text-violet-600">
+                  {username}
+                  </Link>
+                  {!isFriend && (
+                    <button
+                      onClick={() => addFriend(id)}
+                      className={styles.littlebuttongreen}
+                    >
+                      add friends
+                    </button>
+                  )}
+                  {isFriend && (
+                    <button
+                      onClick={() => removeFriend(id)}
+                      className={styles.littlebutton}
+                    >
+                      remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

@@ -43,6 +43,40 @@ export class UserService {
   
     return users;
   }
+
+  async getAvatar(username: string): Promise<string | undefined> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.avatar', 'avatar')
+      .where('user.username = :username', { username })
+      .getOne();
+    
+    return user?.avatar;
+  }
+
+  async findAndUpdateUserByUsername(username: string, newusername: string): Promise<boolean> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username: newusername })
+      .getOne();
+
+    if (user) {
+      return false;
+    }
+    const myuser = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username })
+      .getOne();
+
+    await this.userRepository.update( myuser.id, {username: newusername});
+    return true;
+  }
+
+  // async updateUsername(username: string): Promise<string | undefined> {
+  //   .createQueryBuilder('user')
+  //   .select('user.username = :username', { username})
+    
+  // }
   
   async blockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
     // Find the user who is blocking
@@ -77,8 +111,8 @@ export class UserService {
     .select('user')
     .where('user.username = :username', { username})
     .getOne()
-    const {wins, losses, id} = user;
-    return {wins, losses, username, id};
+    const {wins, losses, id, avatar} = user;
+    return {wins, losses, username, id, avatar};
   }
 
   async search(params: string) {
@@ -105,6 +139,7 @@ export class UserService {
     .select('user')
     .where('user.id = :id', {id})
     .getOne();
+    delete user.password
     return user;
   }
   async removeFriendRequest(sender_id: any, receiver_id: any): Promise<void> {
@@ -173,25 +208,19 @@ async update(id: number, updateUserDto: UpdateUserDto) {
 
 } 
 
-
-  async addFriend(user_id: any, friend_id: any) : Promise<FriendRequest> {
-    const sender = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user')
-      .where('user.id = :id', { id: user_id })
-      .getOne();
-
-    const receiver = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user')
-      .where('user.id = :id', { id: friend_id })
-      .getOne();
-    
-    const friendRequest = new FriendRequest();
-    friendRequest.sender = sender;
-    friendRequest.receiver = receiver;
-    return this.friendRequestRepository.save(friendRequest);
-  }
+    async addFriend(user_id: number, friend_id: number) : Promise<User | undefined> {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['friends'],
+    });
+    const friend = await this.findOnebyId(friend_id);
+    if(!user.friends) {
+      user.friends = []
+    }
+    user.friends.push(friend)
+    const result = await this.userRepository.save(user);
+    return friend;
+ }
 
   async acceptFriendRequest(request_id: number) : Promise<User> {
     const request = await this.friendRequestRepository.findOne({ where: { id: request_id }, relations: ['sender', 'receiver'] });

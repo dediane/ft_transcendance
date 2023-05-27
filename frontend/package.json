@@ -38,6 +38,7 @@
     "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
     "react-dom-confetti": "^0.2.0",
+    "react-icons": "^4.8.0",
     "react-modal": "^3.16.1",
     "react-p5-wrapper": "^4.1.0",
     "reactjs-popup": "^2.0.5",

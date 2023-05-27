@@ -24,10 +24,22 @@ export class GameService {
     .createQueryBuilder('game')
     .leftJoinAndSelect('game.player1', 'player1')
     .leftJoinAndSelect('game.player2', 'player2')
-    .select(['game.id', 'player1.username', 'player2.username', 'game.score1', 'game.score2'])
+    .select(['game.id', 'player1.username', 'player1.avatar', 'player2.username', 'player2.avatar', 'game.score1', 'game.score2'])
     .getMany();
     return games;
     //return `This action returns all game`;
+  }
+
+  async findAllfromUser(username: string) { 
+    const games = await this.GameRepository
+    .createQueryBuilder('game')
+    .leftJoinAndSelect('game.player1', 'player1')
+    .leftJoinAndSelect('game.player2', 'player2')
+    .where('player1.username = :username', { username })
+    .orWhere('player2.username = :username', { username })
+    .select(['game.id', 'player1.username', 'player1.avatar', 'player2.username', 'player2.avatar', 'game.score1', 'game.score2'])
+    .getMany();
+    return games;
   }
 
   async findOne(id: number) {

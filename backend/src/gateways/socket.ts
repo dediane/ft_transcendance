@@ -756,6 +756,7 @@ for (const user of this.users) {
     updateBall() {
       //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
+        console.log("we have game start " + this.isGameStart + "; left score is " + this.puck.left_score + "; and right score id " + this.puck.right_score)
         this.addscore(this.room_id);
         // socket emit
         return;
@@ -812,6 +813,10 @@ for (const user of this.users) {
     player2E: User;
     speedE = 1;
     timeE = 25;
+    plreadyE = 0;
+
+    // helper
+    ///////////////////////: Extra Game /////////////////////
     // join game extra from home_game
     @SubscribeMessage("join_game_extra")
     public async joinExtraGame( 

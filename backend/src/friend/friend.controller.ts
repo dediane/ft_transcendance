@@ -13,12 +13,10 @@ export class FriendController {
         const friend_id = req.body.friend_id
         console.log(user_id, friend_id)
         try {
-            const res = await this.userService.addFriend(user_id, friend_id)
-            if(res.id)
-                return {status: true, message: "Friendship requested", id: res.id}
+            return await this.userService.addFriend(user_id, friend_id)
         } catch(err) {
             console.log(err)
-            return {status: false, message: "Friendship already requested"}
+            return {status: false, message: "Friend already added"}
         }
     }
 
