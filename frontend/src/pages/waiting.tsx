@@ -1,11 +1,11 @@
 import Game from '@/components/Game'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useCallback, useContext } from 'react'
 import io, {Socket} from "socket.io-client"
 import styled from '@emotion/styled';
 import AuthService from "../services/authentication-service"
-import ConnectService from '@/components/Connect';
-import ContextGame from "@/game/GameContext";
-
+import {ContextGame} from "@/game/GameContext";
+//import ConnectService from '@/components/Connect';
+import ConnectService from "../services/Connect"
 const WelcomeText = styled.h1`
   margin: 0;
   color: #8e44ad;
@@ -17,13 +17,13 @@ const WelcomeText = styled.h1`
 
 export default function Wait() {
     
-    const {socket} :any = React.useContext(ContextGame);
-    const join = async () => {
+    const {socket} :any = useContext(ContextGame);
+    const join = useCallback(async () => {
         const joinned = await ConnectService.Connect(socket);
-    }
+      }, [socket]);
     useEffect(() => {
         join();
-    }, [socket]);
+    }, [join]);
     
     if (!socket)
         return null;
