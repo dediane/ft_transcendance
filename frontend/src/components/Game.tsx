@@ -2,12 +2,12 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { P5CanvasInstance, P5WrapperProps, SketchProps } from 'react-p5-wrapper'
 import sketch from "@/game/Sketch";
-import {ContextGame} from '../game/GameContext'
+import { ContextGame } from '../game/GameContext'
 
-const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper')
-    .then(mod => mod.ReactP5Wrapper as P5CanvasInstance), {
-    ssr: false
-}) as unknown as React.NamedExoticComponent<P5WrapperProps>
+const ReactP5Wrapper = dynamic(
+  () => import('react-p5-wrapper').then(mod => mod.ReactP5Wrapper),
+  { ssr: false }
+) as React.NamedExoticComponent<P5WrapperProps>;
 
 export interface MySketchProps extends SketchProps {
   socket: React.MutableRefObject<undefined>;

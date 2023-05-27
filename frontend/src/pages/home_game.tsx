@@ -34,7 +34,16 @@ const MainContainer = styled.div`
 
 
 function HomeGame() {
-      
+
+  useEffect(() => {
+
+    const token =  AuthService.getToken();
+
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
+
     return (
     <HomeGameContainer>
       {/* <h1 style={{ color: 'Purple', fontWeight: 'bold', fontSize: "2rem"}}> Welcome to Pong games</h1> */}

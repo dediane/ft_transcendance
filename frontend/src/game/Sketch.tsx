@@ -83,6 +83,8 @@ import React from 'react';
     
     p5.updateWithProps = props => {
       let socket = props.socket.current;
+      //const socketRef = useRef<Socket | null>(null);
+
       
       if (props.socket) {
         if (socket)
