@@ -3,7 +3,8 @@ import PopupModal from "./PopUpModal"
 import MemberList from './MemberList';
 import Message from '@/components/Message';
 import bcrypt from 'bcryptjs';
-import { Container, SideBar,ChatPanel, TextBox, BodyContainer, ChannelInfo, Row, Messages, Pass, ModalContainer, Button3, ModalContainer2, CloseButton} from '@/styles/chat.module';
+import { Container, SideBar,ChatPanel, TextBox, BodyContainer, ChannelInfo, Row, Messages, Pass, ModalContainer, Button3, Button4, Button5, ModalContainer2, CloseButton} from '@/styles/chat.module';
+import styles from '@/styles/Chat.module.css';
 
 function Chat
 (props
@@ -104,7 +105,7 @@ function Chat
     if (props.blockedUsers && props.blockedUsers[props.yourId]) {
       return props.blockedUsers[props.yourId].includes(username);
      }
-    return blockedUsers.some((user: string) => user === username);
+    // return blockedUsers.some((user: string) => user === username);
   };
   const blockUser2 = (username: any) => {
     props.blockUser(username);
@@ -704,13 +705,13 @@ else {
           </span>
             <>
               {isUserBlocked(user.username) ? (
-                <Button3 onClick={() => unblockUser2(user.username)}>
+                <Button5 onClick={() => unblockUser2(user.username)}>
                   Unblock
-                </Button3>
+                </Button5>
               ) : (
-                <Button3 onClick={() => blockUser2(user.username)}>
+                <Button4 onClick={() => blockUser2(user.username)}>
                   Block
-                </Button3>
+                </Button4>
               )}
                <Button3 onClick={() => seeProfile(user.username)}>
                     Profile

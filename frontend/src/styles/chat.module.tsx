@@ -7,6 +7,7 @@ export const Container = styled.div`
 `;
 
 export const SideBar = styled.div`
+    padding: 30px;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
     height: 100%;
     width: 25%;
@@ -100,14 +101,44 @@ export const Button3 = styled.button`
   display:flex;
 	border-radius: 0.7rem;
 	background-image: linear-gradient(to right, #ff4b96, #ff83a8);
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+  margin: 10px;
 	font-size: 0.875rem;
 	font-weight: 500;
 	color: #fff;
 `
+
+export const Button4 = styled.button`
+  display:flex;
+	border-radius: 0.7rem;
+	background-image: linear-gradient(to right, #f43333, #f43333);
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+  margin: 10px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #fff;
+`
+
+export const Button5 = styled.button`
+  display:flex;
+	border-radius: 0.7rem;
+	background-image: linear-gradient(to right, #6EEB83, #6EEB83);
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+  margin: 10px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #fff;
+`
+
 export const ModalContainer2 = styled.div`
   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   height: 100%;
