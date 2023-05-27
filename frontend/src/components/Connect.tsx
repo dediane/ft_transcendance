@@ -28,4 +28,5 @@ class ConnectService {
     }
 }
 
-export default new ConnectService();
+const connectServiceInstance = new ConnectService();
+export default connectServiceInstance;

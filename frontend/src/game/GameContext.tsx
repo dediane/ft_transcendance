@@ -13,7 +13,7 @@ export interface IGameContextProps { // type des variable set
 }
 type DefaultEventsMap = /*unresolved*/ any;
 
-function create() : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null>  {
+function Create() : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null>  {
   const socketRef = useRef<Socket | null>(null);
     useEffect(() => {
         
@@ -38,7 +38,7 @@ const ContextProviderGame = ({children} : {children : React.ReactNode}) => {
   // const socket = create();
   //let socket :  React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> 
   let socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null 
-  socket = create();
+  socket = Create();
   return (
     <ContextGame.Provider value={{InRoom, setInRoom, socket}}>
       {children}
