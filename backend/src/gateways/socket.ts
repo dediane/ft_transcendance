@@ -62,30 +62,24 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private sockC = new Map<number, Socket>();// userid, socket
 
   async handleConnection(socket: Socket) {
-    console.log('Socket connected:', socket.id);
     const users = await this.messageService.findAll();
   }
 
  async handleDisconnect(socket: Socket) {
-  console.log('Socket disconnected:', socket.id);
   if (this.isGameStart)
   {
-    console.log("In Classic game")
-    //const user = this.getByValue(this.sock, socket);
     const user = this.getUserIdFromSocket(socket);
     if (user)
     {
       this.isGameStart = false;
       if (user == this.paddle_left.id)
       {
-        console.log("user to leave is ", this.paddle_left.name);
         this.puck.left_score = 0;
         this.puck.right_score = this.fscore
         this.user_left = true;
       }
       else if (user == this.paddle_right.id)
       {
-        console.log("user to leave is ", this.paddle_right.name);
         this.puck.right_score = 0;
         this.puck.left_score = this.fscore
         this.user_left = true;
@@ -94,21 +88,18 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   if (this.isGameStartE)
   {
-    console.log("In Extra game")
     const user = this.getByValue(this.sockE, socket);
     if (user)
     {
       this.isGameStartE = false;
       if (user == this.paddle_leftE.id)
       {
-        console.log("user to leave is ", this.paddle_leftE.name);
         this.puckE.left_score = 0;
         this.puckE.right_score = this.fscoreE
         this.user_leftE = true;
       }
       else if (user == this.paddle_rightE.id)
       {
-        console.log("user to leave is ", this.paddle_rightE.name);
         this.puckE.right_score = 0;
         this.puckE.left_score = this.fscoreE
         this.user_leftE = true;
@@ -117,22 +108,18 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   if (this.isGameStartC)
   {
-    console.log("In Chat game")
-    //const user = this.getByValue(this.sock, socket);
     const user = this.getUserIdFromSocket(socket);
     if (user)
     {
       this.isGameStartC = false;
       if (user == this.paddle_leftC.id)
       {
-        console.log("user to leave is ", this.paddle_leftC.name);
         this.puckC.left_score = 0;
         this.puckC.right_score = this.fscoreC
         this.user_leftC = true;
       }
       else if (user == this.paddle_rightC.id)
       {
-        console.log("user to leave is ", this.paddle_rightC.name);
         this.puckC.right_score = 0;
         this.puckC.left_score = this.fscore
         this.user_leftC = true;
@@ -142,10 +129,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   const userIndex = this.users.findIndex((u) => u.sockets.includes(socket.id));
   if (userIndex >= 0) {
     this.users[userIndex].sockets = this.users[userIndex].sockets.filter((s) => s !== socket.id);
-    console.log(`${this.users[userIndex].username}' just closed a tab: with socketid ${socket.id} `);
     if (this.users[userIndex].sockets.length === 0) {
       const disconnectedUser = this.users.splice(userIndex, 1)[0];
-      console.log(`${disconnectedUser.username} (${disconnectedUser.id}) has disconnected`);
     }
   }
   this.server.emit('connected users', this.users);
@@ -155,7 +140,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 async handleGetUsers(socket: Socket, userdata: {id: number, name: string}) {
   const currentuser = await this.userService.findOnebyId(userdata.id);
   const allusers = await this.userService.findAll();
-console.log("SOCKET ALL USERS", currentuser.username)
   const payload = {
     currentuser,
     allusers,
@@ -166,11 +150,9 @@ console.log("SOCKET ALL USERS", currentuser.username)
 
 @SubscribeMessage('join server')
 async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
-  console.log('join server');
   const userIndex = this.users.findIndex((u) => u.id === userdata.id);
   if (userIndex >= 0) {
     this.users[userIndex].sockets.push(socket.id);
-    console.log(this.users[userIndex], 'just opened a new tab');
   } else {
     const user = {
       username: userdata.name,
@@ -178,18 +160,14 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       sockets: [socket.id],
     };
     this.users.push(user);
-    console.log(user, 'just joined server');
   }
-  console.log("userdata id and name", userdata.id, userdata.name)
   const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
 
   if (channels) {
   const channelNames = channels.map(channel => channel.name);
   if (channelNames.length === 0) {
-    console.log("no chans");
     this.server.to(socket.id).emit('join room', { channels: channels });
   }
-  console.log("CHANNELLNAMES ???", channelNames);
    this.server.to(socket.id).emit('all chans',channelNames);
    this.server.emit('connected users', this.users);
 
@@ -204,25 +182,15 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       const mutedMembers = channel.mutedMembers?.map(user => user.username);
       const admins = channel.admins?.map(user => user.username);
       const bannedmembers = channel.bannedUsers?.map(user => user.username);
-      console.log("????????owner SOCKET", channel.owner.username)
       const owner = channel.owner.username;
 
       socket.join(channelName);
       if (!this.messages[channelName]) {
-        this.messages[channelName] = []; // add new room if it doesn't exist
+        this.messages[channelName] = []; 
       }
-      // console.log(
-      //   socket.id,
-      //   'just joined rooOOOOm',
-      //   channelName, 'access type:',
-      //   accessType,
-      //   channelMessages,
-      // );
+    
       this.messages[channelName].push(...channelMessages);
-      // console.log("members and admins AAAAAAARE", admins, members)
-      // console.log("THIS MESSAGES AFTER!!!!!! for ", channelName, this.messages[channelName]);
        this.server.to(socket.id).emit('join room', { room: channelName, accessType: accessType, messages: channelMessages, members: members, admins: admins, bannedmembers: bannedmembers, mutedMembers:mutedMembers, owner: owner, blockedUsers: blockedusernames, channels: channels }); // send all messages for all rooms
-      console.log("ALL USERS CHANS SOCKET")
        this.server.to(socket.id).emit("all user's chans", channels);
     }
   }
@@ -232,16 +200,14 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   @SubscribeMessage('create chan')
   async handleCreateNewChan(socket: Socket, datachan: any) {
     const { creator, roomName, accessType, password } = datachan;
-    if (roomName == null) { // check if roomName is null or undefined
-      socket.emit('error', 'Room name cannot be null or undefined.'); // emit an error message to the socket
+    if (roomName == null) { 
+      socket.emit('error', 'Room name cannot be null or undefined.');
       return;
     }
-    console.log(`attempting (${roomName}) room (${accessType}) creation. password is (${password}) and creator is (${datachan.creator})`)
     const usr = await this.userService.findOnebyId(datachan.creator);
     const existingChannel = await this.channelService.findOneByName(roomName);
     
     if (!existingChannel) {
-      console.log(`room (${roomName})  doesn't exist so let's create it`)
       const channelDto: CreateChannelDto = {
         name: roomName,
         owner: usr,
@@ -249,13 +215,11 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
         password: password,
         members: [usr],
         admins: [usr],
-        // invitedUsers: [usr],
       };
 
     const newChannel = await this.channelService.createChannel(channelDto);
     const channels = await this.channelService.findAll()
      this.server.emit('new chan', channels ); // broadcast to all connected sockets
-    //  this.server.to(socket.id).emit('new chan', { channelName: roomName}); // broadcast to all connected sockets
     }
   }
 
@@ -264,10 +228,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
   async handleCreateDM(socket: Socket, datachan: any) {
     const { username1, username2 } = datachan;
  
-    console.log(`SOCKET CREATE DM with (${username1}) and (${username2})`)
-    
     const newChannel = await this.channelService.createDm(username1, username2);
-    //  this.server.emit('new chan', this.channelService.findAll());
 
      const channels = await this.channelService.findAll()
      this.server.emit('new chan', channels );
@@ -277,18 +238,12 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 @SubscribeMessage('remove chan')
 async handleRemoveChannel(socket: Socket, channelName: string) {
 
-  console.log('removing channel', channelName)
   const existingChannel = await this.channelService.findOneByName(channelName);
   if (existingChannel) {
-  console.log('existing channel', existingChannel.name, existingChannel.id)
     await this.channelService.remove(existingChannel.id);
-    // this.server.emit('new chan', this.channelService.findAll());
     const channels = await this.channelService.findAll()
     this.server.emit('new chan', channels );
   } 
-  // else {
-  //   socket.emit('error', `Channel ${channelName} does not exist.`);
-  // }
 }
 
 @SubscribeMessage('change password')
@@ -297,7 +252,6 @@ async handleChatPassword(socket: Socket, data: any) {
   const updateChannelDto: UpdateChannelDto = {password: newPassword, name: channelName };
 
  await this.channelService.changeChannelPassword(userId, updateChannelDto);
-//  this.server.emit('new chan', this.channelService.findAll());
  const channels = await this.channelService.findAll()
  this.server.emit('new chan', channels );
 
@@ -309,30 +263,18 @@ async handleRemoveChatPassword(socket: Socket, data: any) {
 const { userId, channelName } = data;
 
 await this.channelService.removeChannelPassword(userId, channelName);
-// this.server.emit('new chan', this.channelService.findAll());
 const channels = await this.channelService.findAll()
 this.server.emit('new chan', channels );
 
 }
 
-
-// @SubscribeMessage('check password')
-// async handlecheckChatPassword(socket: Socket, data: any) {
-//   const { userId, channelName, userInput } = data;
-//   const bool = await this.channelService.isChannelPasswordCorrect(channelName, userInput);
-//   console.log("channel pass is correct or not : ", bool);
-//   this.server.to(socket.id).emit('is userinput correct', bool);
-// }
-
 @SubscribeMessage('add member')
 async handleAddMember(socket: Socket, payload: any) {
   const { channelName, AdminId, username } = payload;
 
-    console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   const bool = await this.channelService.addMember(channelName, AdminId, username);
   this.server.emit("member adding", {memberadded: bool, username: username})
-  // this.server.emit('new chan', this.channelService.findAll());
   const channels = await this.channelService.findAll()
   this.server.emit('new chan', channels );
 }
@@ -341,10 +283,8 @@ async handleAddMember(socket: Socket, payload: any) {
 @SubscribeMessage('add admin')
 async handleAddAdmin(socket: Socket, payload: any) {
   const { channelName, AdminId, username } = payload;
-    console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.addAdmin(channelName, AdminId, username);
-//  this.server.emit('new chan', this.channelService.findAll());
  const channels = await this.channelService.findAll()
  this.server.emit('new chan', channels );
 }
@@ -353,10 +293,8 @@ async handleAddAdmin(socket: Socket, payload: any) {
 async handleRemovAdmin(socket: Socket, payload: any) {
   const { channelName, AdminId, username } = payload;
 
-    console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeAdmin(channelName, AdminId, username);
-//  this.server.emit('new chan', this.channelService.findAll());
  const channels = await this.channelService.findAll()
  this.server.emit('new chan', channels );
 }
@@ -364,32 +302,25 @@ async handleRemovAdmin(socket: Socket, payload: any) {
 
 @SubscribeMessage('remove member')
 async handleRemoveMember(socket: Socket, payload: any) {
-  console.log("socket remove member")
   const { channelName, AdminId, username } = payload;
 
-    console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.removeMember(channelName, AdminId, username);
-  // this.server.emit('new chan', this.channelService.findAll());
   const channels = await this.channelService.findAll()
   this.server.emit('new chan', channels );
 }
 
 @SubscribeMessage('block user')
 async handleBlockUser(socket: Socket, payload: any) {
-  console.log("socket block user")
   const { UserWhoCantAnymore, usernameToBlock } = payload;
 
-    console.log(UserWhoCantAnymore, usernameToBlock)
   await this.userService.blockUser(UserWhoCantAnymore, usernameToBlock);
 }
 
 @SubscribeMessage('unblock user')
 async handleUnblockUser(socket: Socket, payload: any) {
-  console.log("socket unblock user")
   const { UserWhoCantAnymore, usernameToBlock } = payload;
 
-    console.log(UserWhoCantAnymore, usernameToBlock)
   await this.userService.unblockUser(UserWhoCantAnymore, usernameToBlock);
 }
 
@@ -397,23 +328,17 @@ async handleUnblockUser(socket: Socket, payload: any) {
 
 @SubscribeMessage('ban member')
 async handleBanMember(socket: Socket, payload: any) {
-  console.log("socket remove member")
   const { channelName, AdminId, username } = payload;
 
-    console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.banMember(channelName, AdminId, username);
-  // this.server.emit('new chan', this.channelService.findAll());
   const channels = await this.channelService.findAll()
   this.server.emit('new chan', channels );
 }
 
 @SubscribeMessage('mute member')
 async handleMuteMember(socket: Socket, payload: any) {
-  console.log("socket mute member")
   const { channelName, AdminId, username } = payload;
-
-    console.log(channelName, AdminId, username)
   const chan = await this.channelService.findOneByName(channelName);
   await this.channelService.muteMember(channelName, AdminId, username);
 }
@@ -422,7 +347,7 @@ async handleMuteMember(socket: Socket, payload: any) {
   async handleJoinRoom(socket: Socket, roomName: string) {
     socket.join(roomName);
     if (!this.messages[roomName]) {
-      this.messages[roomName] = []; // add new room if it doesn't exist
+      this.messages[roomName] = []; 
     }
     socket.emit('join room', this.messages[roomName]);
   }
@@ -436,27 +361,19 @@ async handleMuteMember(socket: Socket, payload: any) {
     const senderr = await this.userService.findOneByName(sender);
     const receiverr = await this.userService.findOneByName(receiver);
     const receiverUser = this.users.find(user => user.username === receiverr.username);
-    console.log("//////********receiverUser",  receiverUser)
 
     if (receiverUser) {
-    console.log("in receiver user", receiverUser)
       const receiverSockets = receiverUser.sockets;
       receiverSockets.forEach(receiverSocket => {
         this.server.to(receiverSocket).emit('receiveInvitation', { sender: senderr, receiver : receiver, chatName : chatName});
       });
     } 
-  // else {
-  //   // Handle the case when the receiver is not found or does not have any active sockets
-  //   // You can emit an error event or take appropriate action.
-  // }
   }
 
   @SubscribeMessage('send message')
   async handleMessage(socket: Socket, data: any) {
     if (data) {
       const { content, to, sender, senderid, chatName, isChannel } = data;
-    
-    console.log(socket.id, "just sent a message", data)
       const payload = {
         content,
         chatName,
@@ -541,11 +458,8 @@ for (const user of this.users) {
         if (!game)
           return ;
         this.room_id = game.id.toString();
-        console.log("game id is ", game.id)
       } // generate the data id
       const user = await this.userService.findOnebyId(userid);
-      console.log("user is ", user.username);
-      console.log("queue size is ", this.queue.size);
       if (this.queue.size == 0)
         this.queue.set(userid, user);
       else
@@ -630,20 +544,8 @@ for (const user of this.users) {
             }
           }
           await socket.join(this.room_id);
-          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_id)?.size)
-          console.log("sock size is ", this.sock.size)
-          console.log("isGameStart is " + this.isGameStart)
           if (this.server.sockets.adapter.rooms.get(this.room_id)?.size == 2 && this.isGameStart == false) 
             { // si on a deux user start game 
-              console.log("---------------------- LA POUR WOUAIS ---------------------------")
-              console.log("***********************##############****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************##############****************************")
-              console.log("user enter with isGameStart ", this.isGameStart);
               this.isGameStart = true;
               this.updateBall();
             }
@@ -673,21 +575,16 @@ for (const user of this.users) {
           {
             if (gamedata.key == 'w')
             {
-              console.log("back keyPressed up ", gamedata.name)
                 this.paddle_right.move(-20);
             }
             else if (gamedata.key == 's')
             {
-              console.log("back keyPressed down ", gamedata.name)
                 this.paddle_right.move(20);
           }
           }
         }
 
         async addscore(id_room: string) {
-          console.log("pass par addscore")
-          console.log("left score " + this.puck.left_score + " user " + this.paddle_left.name)
-          console.log("right score " + this.puck.right_score + " user " + this.paddle_right.name)
           this.isGameStart = false;
           this.sock.delete(this.paddle_left.id);
           this.sock.delete(this.paddle_right.id);
@@ -697,13 +594,11 @@ for (const user of this.users) {
           const ruser = await this.userService.findOnebyId2(this.paddle_right.id)
           if (this.puck.left_score == this.fscore)
           {
-            console.log("left win")     
             luser.wins += 1;
             ruser.losses += 1;
           }
           else if (this.puck.right_score == this.fscore)
           {
-            console.log("right win")
             luser.losses += 1;
             ruser.wins += 1;
           }
@@ -715,7 +610,6 @@ for (const user of this.users) {
           upgame.player2 = ruser;
           upgame.score1 = this.puck.left_score;
           upgame.score2 = this.puck.right_score;
-          console.log("***** game update : left score " +  this.puck.left_score + " right score " + this.puck.right_score)
           await this.gameService.update(Number(id_room), upgame);
           if (this.user_left)
           this.server.to(id_room).emit("user left");
@@ -756,11 +650,8 @@ for (const user of this.users) {
 
         // function helper to game position
     updateBall() {
-      //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {
-        console.log("we have game start " + this.isGameStart + "; left score is " + this.puck.left_score + "; and right score id " + this.puck.right_score)
         this.addscore(this.room_id);
-        // socket emit
         return;
       }
       else {
@@ -838,9 +729,6 @@ for (const user of this.users) {
         this.room_idE = game.id.toString();
       } // generate id game
       const user = await this.userService.findOnebyId(userid)
-      console.log("user is ", user.username)
-      console.log("gamid is ", this.room_idE)
-      console.log("queue size is ", this.queueE.size)
       if (this.queueE.size == 0)
         this.queueE.set(userid, user)
       else
@@ -924,15 +812,6 @@ for (const user of this.users) {
       await socket.join(this.room_idE);
       if (this.server.sockets.adapter.rooms.get(this.room_idE)?.size === 2 && this.isGameStartE == false) 
       { // si on a deux user start game 
-        console.log("---------------------- LA POUR WOUAIS ---------------------------")
-        console.log("***********************##############****************************")
-        console.log("***********************####1111######****************************")
-        console.log("***********************####1111######****************************")
-        console.log("***********************####1111######****************************")
-        console.log("***********************####1111######****************************")
-        console.log("***********************####1111######****************************")
-        console.log("***********************##############****************************")
-        console.log("user enter with isGameStart ", this.isGameStart);
         this.isGameStartE = true;
         this.updateBallExtra();
       }
@@ -940,7 +819,6 @@ for (const user of this.users) {
 
     updateBallExtra() {
       if (!this.isGameStartE || this.puckE.left_score == this.fscoreE || this.puckE.right_score == this.fscoreE) {
-        console.log("game extra start is ", this.isGameStartE)
         this.addscoreE(this.room_idE);
         // socket emit
         return;
@@ -1047,7 +925,6 @@ for (const user of this.users) {
         socket: Socket,
         data : any) 
     {
-      console.log("chat game join server back with socket " + socket.id + " game.data id " + data.id + data.name)
       const {userid, username} = data;
       if (!this.room_idC || this.room_idC == "")
       {
@@ -1059,11 +936,8 @@ for (const user of this.users) {
         if (!game)
           return ;
         this.room_idC = game.id.toString();
-        console.log("game id is ", game.id)
       } // generate the data id
       const user = await this.userService.findOnebyId(userid);
-      console.log("user is ", user.username);
-      console.log("queue size is ", this.queueC.size);
       if (this.queueC.size == 0)
       {
         this.queueC.set(userid, user);
@@ -1080,7 +954,6 @@ for (const user of this.users) {
       }
       if (this.queueC.size == 2)
       {
-        console.log("ILs set les deux users size queue 2")
         const it = this.queueC.entries();
         const usr1 = it.next().value[1];
         const usr2 = it.next().value[1];
@@ -1090,8 +963,8 @@ for (const user of this.users) {
       const connectedSockets = this.server.sockets.adapter.rooms.get(this.room_idC);
       const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
       if ( socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2))
-      { // already 2 people in the room 
-        console.log("ouais pour lui ils sont plain lol")
+      { 
+        // already 2 people in the room 
       } else {
         await socket.join(this.room_idC);
         this.server.emit("room_joined chat");
@@ -1143,20 +1016,8 @@ for (const user of this.users) {
             }
           }
           await socket.join(this.room_idC);
-          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_idC)?.size)
-          console.log("sock size is ", this.sockC.size)
-          console.log("isGameStart is " + this.isGameStartC)
           if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size == 2 && this.isGameStartC == false) 
             { // si on a deux user start game 
-              console.log("---------------------- LA POUR WOUAIS ---------------------------")
-              console.log("***********************##############****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************####1111######****************************")
-              console.log("***********************##############****************************")
-              console.log("user enter with isGameStart ", this.isGameStartC);
               this.isGameStartC = true;
               this.updateBallChat();
             }
@@ -1164,10 +1025,8 @@ for (const user of this.users) {
 
                   // function helper to game position
     updateBallChat() {
-      //console.log("do something, I am a loop, in 1000 miliseconds, ill be run again");
       if (!this.isGameStartC || this.puckC.left_score == this.fscoreC || this.puckC.right_score == this.fscoreC) {
         this.addscoreC(this.room_idC);
-        // socket emit
         return;
       }
       else {
@@ -1214,21 +1073,16 @@ for (const user of this.users) {
           {
             if (gamedata.key == 'w')
             {
-              console.log("back keyPressed up ", gamedata.name)
                 this.paddle_rightC.move(-20);
             }
             else if (gamedata.key == 's')
             {
-              console.log("back keyPressed down ", gamedata.name)
                 this.paddle_rightC.move(20);
           }
           }
         }
 
         async addscoreC(id_room: string) {
-          console.log("pass par addscore")
-          console.log("left score " + this.puckC.left_score + " user " + this.paddle_leftC.name)
-          console.log("right score " + this.puckC.right_score + " user " + this.paddle_rightC.name)
           this.isGameStartC = false;
           this.sockC.delete(this.paddle_leftC.id);
           this.sockC.delete(this.paddle_rightC.id);
@@ -1238,13 +1092,11 @@ for (const user of this.users) {
           const ruser = await this.userService.findOnebyId2(this.paddle_rightC.id)
           if (this.puckC.left_score == this.fscoreC)
           {
-            console.log("left win")     
             luser.wins += 1;
             ruser.losses += 1;
           }
           else if (this.puckC.right_score == this.fscoreC)
           {
-            console.log("right win")
             luser.losses += 1;
             ruser.wins += 1;
           }
@@ -1256,7 +1108,6 @@ for (const user of this.users) {
           upgame.player2 = ruser;
           upgame.score1 = this.puckC.left_score;
           upgame.score2 = this.puckC.right_score;
-          console.log("***** game update : left score " +  this.puckC.left_score + " right score " + this.puckC.right_score)
           await this.gameService.update(Number(id_room), upgame);
           if (this.user_leftC)
           this.server.to(id_room).emit("user left chat");
