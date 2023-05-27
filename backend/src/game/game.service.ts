@@ -69,4 +69,14 @@ export class GameService {
   {
     return 'This action begin a game';
   }
+
+  async deleteall()
+  {
+    const games = await this.findAll();
+    for (const game of games) {
+      {
+        this.remove(game.id);
+      }
+    }
+  }
 }

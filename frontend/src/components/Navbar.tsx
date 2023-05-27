@@ -21,8 +21,8 @@ export const Navbar = () => {
             History</a>
         </li>
         <li>
-          <a href="/login" className={styles.link}>
-            Login</a>
+          <a href="/Messenger2" className={styles.link}>
+            Chat</a>
         </li>
       </ul>
     </div>
