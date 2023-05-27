@@ -4,7 +4,7 @@ import io, {Socket} from "socket.io-client"
 import styled from '@emotion/styled';
 import AuthService from "../services/authentication-service"
 import ConnectService from '@/components/Connect';
-import {ContextGame} from "@/game/GameContext";
+import ContextGame from "@/game/GameContext";
 
 const WelcomeText = styled.h1`
   margin: 0;
@@ -15,17 +15,18 @@ const WelcomeText = styled.h1`
   justify-content: center;
 `;
 
-export default function wait() {
+export default function Wait() {
     
-    const {socket} = React.useContext(ContextGame);
-    if (!socket)
-        return ;
+    const {socket} :any = React.useContext(ContextGame);
     const join = async () => {
         const joinned = await ConnectService.Connect(socket);
     }
     useEffect(() => {
         join();
-      });
+    }, [socket]);
+    
+    if (!socket)
+        return null;
 
     return (
         <div>

@@ -101,7 +101,7 @@ const PopupModal: React.FC<Props> = ({
         }
       }}>
     {/* <Container> */}
-      <PopBox value={value} onChange={onChange} placeholder={placeholder} />
+      <PopBox value={value} onChange={onChange} placeholder={placeholder}/>
       <ButtonContainer>
        <Button onClick={onSave}>Save</Button>
       <CancelButton onClick={onCancel}>Cancel</CancelButton>
