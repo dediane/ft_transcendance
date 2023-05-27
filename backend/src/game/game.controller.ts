@@ -42,8 +42,6 @@ export class GameController {
 
   @SubscribeMessage("join_game")
   public async joinGame(io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any){
-    console.log("IN GAME CONTROLER")
-    console.log("New User joinning the room: ", message);
 
     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
     const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id)

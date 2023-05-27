@@ -19,9 +19,7 @@ export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHe
   // in CSS for p5 Wrapper set with and height
   // like this it's can be responssive
 
-  //console.log("la width param %d, la height param %d", w, h);
   let p5WrapperDiv = document.getElementById("canvas_size")
-  console.log("> Begin function canvas")
  // fixed canvas in backend
     const canvasw = 1000;
     const canvash = 1000;
@@ -109,7 +107,6 @@ p5.updateWithProps = props => {
       });
       
       socket?.on("end game", () => {
-        console.log("redirection my bro")
         window.location.href = "/home_game";
       });
 
@@ -126,7 +123,6 @@ p5.updateWithProps = props => {
         padr_h = payload.prh;
         padr_n = payload.prn;
 
-        //console.log("on lance la ball avec data ", puckx, pucky)
         
         // need data for showwing the ball we need
         // puck.x, puck.y, puck.r
@@ -134,8 +130,6 @@ p5.updateWithProps = props => {
       });
 
       socket?.on("user left extra", () => {
-          
-        console.log("we receive lefttttt")
         left = true;
       }); 
 
@@ -146,9 +140,9 @@ p5.updateWithProps = props => {
 
       p5.keyPressed = () => {
         if (p5.key == 'w')
-          socket?.emit("KeyPressed extra", {name: userdata.name, key: 'w'});
+          socket?.emit("KeyPressed extra", {id: userdata.id, key: 'w'});
         else if (p5.key == 's') {
-          socket?.emit("KeyPressed extra", {name: userdata.name, key: 's'});
+          socket?.emit("KeyPressed extra", {id: userdata.id, key: 's'});
         }
       }
     }
@@ -220,17 +214,14 @@ p5.updateWithProps = props => {
   }
 
   function windowResized() {
-    console.log("window resized P5 function called w: %d, h: %d", width, height);
     var element = document.getElementById("canvas_size");
     if (element == null)
     {
-      console.log("use the window canvas T-T")
       cwidth = window.innerWidth;
       cheight = window.innerHeight;
     }
     else
     {
-      console.log("pass par notre div define hihi")
       cwidth = element.clientWidth;
       cheight = element.clientHeight;
     }

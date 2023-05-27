@@ -564,7 +564,7 @@ for (const user of this.users) {
 
         @SubscribeMessage('KeyPressed')
         async KeyPressedr(socket: Socket, gamedata : any) { 
-          if (gamedata.name == this.paddle_left.name)
+          if (gamedata.id == this.paddle_left.id)
           {
             if (gamedata.key == 'w')
             {
@@ -575,7 +575,7 @@ for (const user of this.users) {
               this.paddle_left.move(20);
             }
           }
-          else if (gamedata.name == this.paddle_right.name)
+          else if (gamedata.id == this.paddle_right.id)
           {
             if (gamedata.key == 'w')
             {
@@ -849,7 +849,7 @@ for (const user of this.users) {
 
     @SubscribeMessage('KeyPressed extra')
     async KeyPressed(socket: Socket, gamedata : any) { 
-      if (gamedata.name == this.paddle_leftE.name)
+      if (gamedata.id == this.paddle_leftE.id)
       {
         if (gamedata.key == 'w')
         {
@@ -860,7 +860,7 @@ for (const user of this.users) {
           this.paddle_leftE.move(20 * this.speedE);
         }
       }
-      else if (gamedata.name == this.paddle_rightE.name)
+      else if (gamedata.id == this.paddle_rightE.id)
       {
         if (gamedata.key == 'w')
         {
@@ -1062,7 +1062,7 @@ for (const user of this.users) {
 
         @SubscribeMessage('KeyPressed chat')
         async KeyPressedC(socket: Socket, gamedata : any) { 
-          if (gamedata.name == this.paddle_leftC.name)
+          if (gamedata.id == this.paddle_leftC.id)
           {
             if (gamedata.key == 'w')
             {
@@ -1073,7 +1073,7 @@ for (const user of this.users) {
               this.paddle_leftC.move(20);
             }
           }
-          else if (gamedata.name == this.paddle_rightC.name)
+          else if (gamedata.id == this.paddle_rightC.id)
           {
             if (gamedata.key == 'w')
             {

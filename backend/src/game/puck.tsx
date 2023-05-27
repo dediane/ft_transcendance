@@ -74,7 +74,6 @@ export  class Puck {
     // move the puck
 
     edges() {
-        //console.log("edge puck back")
         if (this.y < 0 || this.y > this.height) {
             let offset = this.yspeed < 0 ? 0 - this.y : this.height - (this.y + this.r)
             this.yspeed *= -1 ;
@@ -107,7 +106,6 @@ export  class Puck {
 
     checkPaddleLeft(p: Paddle) : number
     {
-        //console.log("speed function == ", speed);
         if (this.y < p.y + p.h / 2 && this.y > p.y - p.h / 2 && this.x - this.r < p.x + p.w / 2) {
             if (this.x > p.x)
             {
@@ -120,10 +118,8 @@ export  class Puck {
                     this.speed += 0.5;
                     this.xspeed = (this.puck_speed * Math.cos(angle)) * this.speed;
                     this.yspeed = (this.puck_speed * Math.sin(angle)) * this.speed;
-                    console.log("left we increase speed ", this.speed)
                 }
                 else {
-                    console.log("left NOOO increase ", this.speed)
                     this.xspeed = this.puck_speed * Math.cos(angle);
                     this.yspeed = this.puck_speed * Math.sin(angle);
                 }
@@ -158,10 +154,8 @@ export  class Puck {
                     this.speed += 0.25;
                     this.xspeed = this.puck_speed * this.speed * -1;
                     this.yspeed = this.puck_speed * this.speed * -1;
-                    console.log("right we increase speed ", this.speed)
                 }
                 else {
-                    console.log("right NOOO increase speed ", this.speed)
                     this.xspeed = this.puck_speed * -1;
                     this.yspeed = this.puck_speed * -1;
                 }
