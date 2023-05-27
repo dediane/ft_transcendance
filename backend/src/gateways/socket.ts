@@ -20,6 +20,9 @@ import { CreateGameDto } from 'src/game/dto/create-game.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { subscribeOn } from 'rxjs';
+import { AuthGuard } from '@nestjs/passport';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 type GameProps = {
   id: number;
@@ -336,6 +339,7 @@ async handleBanMember(socket: Socket, payload: any) {
   this.server.emit('new chan', channels );
 }
 
+@UseGuards (JwtAuthGuard)
 @SubscribeMessage('mute member')
 async handleMuteMember(socket: Socket, payload: any) {
   const { channelName, AdminId, username } = payload;
