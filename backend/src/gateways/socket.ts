@@ -579,7 +579,7 @@ for (const user of this.users) {
         await socket.join(this.room_id);
         this.server.emit("room_joined");
         // send that a person join the room
-        if (this.server.sockets.adapter.rooms.get(this.room_id).size === 2) 
+        if (this.server.sockets.adapter.rooms.get(this.room_id)?.size === 2) 
         { // we have 2 people so start game
           this.queue.delete(this.player1.id);
           this.queue.delete(this.player2.id);
@@ -629,10 +629,10 @@ for (const user of this.users) {
             }
           }
           await socket.join(this.room_id);
-          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_id).size)
+          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_id)?.size)
           console.log("sock size is ", this.sock.size)
           console.log("isGameStart is " + this.isGameStart)
-          if (this.server.sockets.adapter.rooms.get(this.room_id).size == 2 && this.isGameStart == false) 
+          if (this.server.sockets.adapter.rooms.get(this.room_id)?.size == 2 && this.isGameStart == false) 
             { // si on a deux user start game 
               console.log("---------------------- LA POUR WOUAIS ---------------------------")
               console.log("***********************##############****************************")
@@ -873,7 +873,7 @@ for (const user of this.users) {
         await socket.join(this.room_idE);
         this.server.emit("room_joined");
         
-        if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2) 
+        if (this.server.sockets.adapter.rooms.get(this.room_idE)?.size === 2) 
         { // we have 2 people to play
           this.queueE.delete(this.player1E.id);
           this.queueE.delete(this.player2E.id);
@@ -920,7 +920,7 @@ for (const user of this.users) {
         }
       }
       await socket.join(this.room_idE);
-      if (this.server.sockets.adapter.rooms.get(this.room_idE).size === 2 && this.isGameStartE == false) 
+      if (this.server.sockets.adapter.rooms.get(this.room_idE)?.size === 2 && this.isGameStartE == false) 
       { // si on a deux user start game 
         console.log("---------------------- LA POUR WOUAIS ---------------------------")
         console.log("***********************##############****************************")
@@ -1094,7 +1094,7 @@ for (const user of this.users) {
         await socket.join(this.room_idC);
         this.server.emit("room_joined chat");
         // send that a person join the room
-        if (this.server.sockets.adapter.rooms.get(this.room_idC).size === 2) 
+        if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size === 2) 
         { // we have 2 people so start game
           this.queue.delete(this.player1C.id);
           this.queue.delete(this.player2C.id);
@@ -1141,10 +1141,10 @@ for (const user of this.users) {
             }
           }
           await socket.join(this.room_idC);
-          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_idC).size)
+          console.log("&&&&&&&& socket room size is ", this.server.sockets.adapter.rooms.get(this.room_idC)?.size)
           console.log("sock size is ", this.sockC.size)
           console.log("isGameStart is " + this.isGameStartC)
-          if (this.server.sockets.adapter.rooms.get(this.room_idC).size == 2 && this.isGameStartC == false) 
+          if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size == 2 && this.isGameStartC == false) 
             { // si on a deux user start game 
               console.log("---------------------- LA POUR WOUAIS ---------------------------")
               console.log("***********************##############****************************")
