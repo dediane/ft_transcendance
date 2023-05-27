@@ -79,4 +79,12 @@ export class GameService {
       }
     }
   }
+  async deleteempty()
+  {
+    const games = await this.findAll();
+    for (const game of games) {
+      if (game.player1 == null)
+        this.remove(game.id)
+    }
+  }
 }

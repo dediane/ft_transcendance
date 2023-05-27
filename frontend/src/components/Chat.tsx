@@ -1,17 +1,21 @@
-import React, { useState, useEffect} from 'react';
-import styled from "styled-components"
+import React, { useState, useEffect, ChangeEvent} from 'react';
 import PopupModal from "./PopUpModal"
 import MemberList from './MemberList';
 import Message from '@/components/Message';
 import bcrypt from 'bcryptjs';
 import { Container, SideBar,ChatPanel, TextBox, BodyContainer, ChannelInfo, Row, Messages, Pass, ModalContainer, Button3, ModalContainer2, CloseButton} from '@/styles/chat.module';
-import {ContextGame} from '../game/GameContext'
 
-function Chat(props)
-// props: { createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: any[]; addMember: (arg0: string) => void; currentUser: { blockedUsers: any; adminUsers: any; username: any; }; blockedUsers: { [x: string]: string | string[]; }; yourId: string | number; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }; userChannels: { [x: string]: any[]; }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: string; }) => void; accessType: string; messages: any[]; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; allUsers: any[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined; }) 
-{
-  const [InviteAcceptedMap, setInviteAcceptedMap] = useState({});
-
+function Chat
+(props
+  :  {
+    inviteReceivedMap(arg0: (prevMap: any) => string): unknown;
+    inviteToPlay(yourId: string, otherUser: any): unknown; rooms: any; createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: { username: string; }[]; addMember: (arg0: string) => void; 
+  currentUser: { blockedUsers: any; adminUsers: any; username: string };
+ blockedUsers: { [x: string]: string | string[]; }; yourId: string; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType?: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | null | undefined; }) => void; accessType: string; messages: any[]; checkChatPassword: (arg0: string) => void; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; userChannels: { [x: string]: any[]; }; allUsers: { username: string }[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: (e: ChangeEvent<HTMLInputElement>) => void; }
+  ) 
+  {
+  // const [InviteAcceptedMap, setInviteAcceptedMap] = useState([]);
+  const [InviteAcceptedMap, setInviteAcceptedMap] =   useState<{ [key: string]: any }>({});
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [usersToAdd, setUsersToAdd] = useState('');
@@ -84,15 +88,12 @@ function Chat(props)
 
   const closeAddUserModal = () => {
     setShowAddUserPopup(false);
-    // setPassword('');
   };
 
   const addUser = () => {
-    if (props.users.some((user: { username: string; }) => user.username === member) && !filteredMembersUsernames.includes(member)) {
+    if (props.users.some((user: { username: string; }) => user.username === member) && !filteredMembersUsernames?.includes(member)) {
       props.addMember(member);
     }
-  
-    // Perform any additional actions with the new user
     closeAddUserModal();
   };
   
@@ -278,8 +279,7 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
         setShowModal2(false);
       }
 
-
-    function renderRooms(room: { accessType: string; name: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }){
+    function renderRooms(room: { accessType: string; name: string; }){
       if (room.accessType == 'private')
         return;
         console.log("ACCESSTYPE", room.accessType)
@@ -302,8 +302,7 @@ function handlePasswordToggle(event: { target: { checked: boolean | ((prevState:
       )
   }
 
-
-  function renderPrivate(room: { accessType: string; members: any[]; dm: any; name: React.Key | null | undefined; }){
+  function renderPrivate(room: { accessType: string; dm: any; name: string; members: any[]; }){
     if (room.accessType == 'private' && !(room.members.find((member: { username: any; }) => member.username === props.yourId)))
       return;
     console.log("IN ROOM", room)
@@ -382,7 +381,7 @@ const handleJoinChannel = () => {
   bcrypt.compare(userPassword, channel.password)
     .then(isMatch => {
       if (isMatch) {
-        const isMember = channel?.members?.some(member => member.username === props.yourId);
+        const isMember = channel?.members?.some((member: { username: string; }) => member.username === props.yourId);
         if (!isMember) {
           props.addMember(props.yourId);
         }
@@ -398,8 +397,8 @@ const handleJoinChannel = () => {
       console.log('Error comparing passwords', error);
     });
 };
-    
-    function renderUser(user: { username: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }){
+  
+function renderUser(user: { username: string; }){
       console.log("render user");
 console.log("ACCESSTYPE????", props.accessType)
       
@@ -631,6 +630,7 @@ else {
       otherUser = props.members[1];
     else
       otherUser = props.members[0];
+      const payload = {sender :props.yourId, otherUser: otherUser };
     props.inviteToPlay(props.yourId, otherUser)
     console.log("PLAY PONNNNG with 2 usernames. User to find with userservice.findonebyname()", props.members[0], props.members[1])
     setTimeout(() => {
@@ -640,23 +640,23 @@ else {
 
   function acceptInvite(): void {
 
-    console.log("<3 JUST CLICKED ON ACCEPT INVITE. BOTH USERS ARE THEREFORE IN THE ROOM. <3")
-    console.log("if you want to find their username:", props.members[0], props.members[1])
+    // console.log("<3 JUST CLICKED ON ACCEPT INVITE. BOTH USERS ARE THEREFORE IN THE ROOM. <3")
+    // console.log("if you want to find their username:", props.members[0], props.members[1])
 
-    props.setInviteReceivedMap((prevMap) => ({
-      ...prevMap,
-      [props.currentChat.chatName]: false,
-    }));
-    const payload = {
-      user1 : props.members[0],
-      user2 : props.members[1],
-    }
-    console.log("REDIRECTION PONG")
-    setInviteAcceptedMap((prevMap) => ({
-      ...prevMap,
-      [props.currentChat.chatName]: true,
-    }));
-    console.log("setInviteAcceptedMap ACCEPTING set to : ", InviteAcceptedMap[props.currentChat.chatName] );
+    // props.InviteReceivedMap((prevMap) => ({
+    //   ...prevMap,
+    //   [props.currentChat.chatName]: false,
+    // }));
+    // const payload = {
+    //   user1 : props.members[0],
+    //   user2 : props.members[1],
+    // }
+    // console.log("REDIRECTION PONG")
+    // setInviteAcceptedMap((prevMap) => ({
+    //   ...prevMap,
+    //   [props.currentChat.chatName]: true,
+    // }));
+    // console.log("setInviteAcceptedMap ACCEPTING set to : ", InviteAcceptedMap[props.currentChat.chatName] );
     window.location.href = `/waiting`;
   }
 
@@ -764,7 +764,7 @@ else {
         <div>
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Users</h3>
 <ul>
-  {props.users?.map((user: { username: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined; }, i: React.Key | null | undefined) => (
+  {props.users?.map((user: { username: string} , i: number) => (
     user.username !== props.currentUser.username && (
       <li key={i}>
         <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>
@@ -815,8 +815,6 @@ else {
 
 {(isDM &&
   <ChannelInfo>
-
-
       <div style={{ marginLeft: 'auto' }}>
         {props.inviteReceivedMap[props.currentChat.chatName] ? (
           <Button3 onClick={acceptInvite}>Accept Pong Invite</Button3>
@@ -892,7 +890,7 @@ else {
 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members except owner and yourself</h3>
 
   <ul>
-  {filteredMembersUsernames?.map((user: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | null | undefined, i: React.Key | null | undefined) => (
+  {filteredMembersUsernames?.map((user: string, i : number) => (
 user!== props.currentUser.username && (
 <li key={i}>
   <label>

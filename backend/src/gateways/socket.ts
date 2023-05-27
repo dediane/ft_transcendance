@@ -52,6 +52,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   };
   private games = new Map<number, GameProps>(); // gameid, gameprops
   private queue = new Map<number, User>();  // userid, user
+  private queueC = new Map<number, User>();  // userid, user
   private queueE = new Map<number, User>(); // userid, user
   private sockn = new Map<number, Socket[]>()
   private socknE = new Map<number, Socket[]>()
@@ -749,6 +750,7 @@ for (const user of this.users) {
           this.paddle_leftC = undefined;
           this.paddle_rightC = undefined;
           this.user_leftC = false;
+          this.gameService.deleteempty();
           this.server.to(id_room).emit("end game");
         }
 
@@ -1061,25 +1063,25 @@ for (const user of this.users) {
       } // generate the data id
       const user = await this.userService.findOnebyId(userid);
       console.log("user is ", user.username);
-      console.log("queue size is ", this.queue.size);
-      if (this.queue.size == 0)
+      console.log("queue size is ", this.queueC.size);
+      if (this.queueC.size == 0)
       {
-        this.queue.set(userid, user);
+        this.queueC.set(userid, user);
       }
       else
       {
-        const usr = this.queue.get(userid);
+        const usr = this.queueC.get(userid);
         if (usr)
         {
           return ;
         }
         else
-          this.queue.set(userid, user) // add a new user not same as the first
+          this.queueC.set(userid, user) // add a new user not same as the first
       }
-      if (this.queue.size == 2)
+      if (this.queueC.size == 2)
       {
         console.log("ILs set les deux users size queue 2")
-        const it = this.queue.entries();
+        const it = this.queueC.entries();
         const usr1 = it.next().value[1];
         const usr2 = it.next().value[1];
         this.player1C = usr1;
@@ -1096,8 +1098,8 @@ for (const user of this.users) {
         // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size === 2) 
         { // we have 2 people so start game
-          this.queue.delete(this.player1C.id);
-          this.queue.delete(this.player2C.id);
+          this.queueC.delete(this.player1C.id);
+          this.queueC.delete(this.player2C.id);
           this.server.to(this.room_idC).emit("start_game chat", {});
         }
       }

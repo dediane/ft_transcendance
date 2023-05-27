@@ -3,8 +3,17 @@ import gameService from "@/services/game-service"
 import styles from "@/styles/History.module.css"
 import Link from "next/link"
 import UserHistory from "./userHistory"
+import AuthService from "../services/authentication-service"
 
 export default function History () {
+    useEffect(() => {
+
+        const token =  AuthService.getToken();
+    
+        if (!token) {
+          window.location.href = "/login";
+        }
+      }, []);
     return (
         <>
         <Games />
