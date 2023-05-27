@@ -30,4 +30,6 @@ class AxiosService {
     }
 }
 
-export default new AxiosService();
+const axiosServiceInstance = new AxiosService();
+
+export default axiosServiceInstance;

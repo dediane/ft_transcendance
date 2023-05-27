@@ -93,7 +93,7 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
     if(authenticationService.isAuthentificated()) {
       router.push("/profile");
     }
-  }, [])
+  }, [router])
   return (
   <div>
     <h1 className={styles.title2}>Log in</h1>
@@ -219,7 +219,7 @@ export const Modal2fa = () => {
         <h1 className={styles.title2}>2FA</h1>
         <p>Scan the QR code with your 2FA app</p> 
         {console.log(qrcode)}
-        <img src={qrcode} className={styles.qrcode}/>
+        <picture><img src={qrcode} alt="qrcode" className={styles.qrcode}/></picture>
         <input 
         onChange={(e) => setInputValues({...inputValues, twoFactorAuthenticationCode: e.target.value})}
         type="text" 

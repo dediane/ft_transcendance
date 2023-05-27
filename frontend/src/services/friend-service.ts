@@ -2,7 +2,7 @@ import axiosService from "./axios-service"
 import axios from "axios"
 
 const axiosInstance = axiosService.getInstance()
-export default {
+const friendService = {
     send_friend_request (id: number) { 
         return axiosInstance.post("/friend/sendrequest", { id }).then((res: { data: any }) => res.data)
     },
@@ -16,3 +16,5 @@ export default {
         return axiosInstance.post("/friend/remove", {friend_id}).then((res: {data :any}) => res.data)
     },
 }
+
+export default friendService;
