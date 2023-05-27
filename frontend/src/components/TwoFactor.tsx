@@ -32,7 +32,9 @@ export const Activate2fa = ({qrcode}: any, {is2fa} :any) => {
         <>
         <p>Scan the QR code with your 2FA app</p> 
         {console.log(qrcode)}
-        <img src={qrcode} className={styles.qrcode}/>
+        <picture>
+        <img src={qrcode} alt="qr code to activate 2fa" className={styles.qrcode}/>
+        </picture>
         <input 
         onChange={(e) => setInputValues({...inputValues, twoFactorAuthenticationCode: e.target.value})}
         type="text" 

@@ -29,15 +29,15 @@ export const PublicProfil = () => {
             console.log(result)
         }
         fetch_profile()
-    }, [])
+    }, [router])
 
     return (
         <>
         <div className={styles.card}>
             <div className="col-span-3">
                 <div className="">
-                    <h3 className={styles.h1}>{user.username}'s profil</h3>
-                    {user.avatar ? <img src={user.avatar} className={styles.profilepicture} /> : <img src="/default.png" className={styles.profilepicture}/>}
+                    <h3 className={styles.h1}>{user.username}&apos;s profil</h3>
+                    {user.avatar ? <img src={user.avatar} alt="user avatar" className={styles.profilepicture}/> : <img src="/default.png" alt="user avatar" className={styles.profilepicture}/>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
                     <Asset title={'username'} value={user.username} />
@@ -46,7 +46,7 @@ export const PublicProfil = () => {
             </div>
         </div>
         <div className={styles.card}>
-            <h4 className={styles.h1}>{user.username}'s Stats</h4>
+            <h4 className={styles.h1}>{user.username}&apos;s Stats</h4>
                 <div className={styles.stats}>
                      <div className={styles.row}>
                         <Asset4 title={'Games'} value={user.wins + user.losses} />

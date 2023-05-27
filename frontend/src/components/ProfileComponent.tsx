@@ -55,7 +55,7 @@ export const Profil = () => {
         if(!authenticationService.getToken()) 
             router.push('/login')
         fetch_profile()
-    }, [isDynamic])
+    }, [isDynamic, router])
 
     const logout = () => {
         authenticationService.deleteToken()
@@ -125,9 +125,14 @@ export const Profil = () => {
             <div className={styles.mainbox}>
                 <h3 className={styles.h1}>My profile</h3>
                 <div>
-                {!user.avatar && <img src="/default.png" className={styles.profilepicture}>
-                </img>}
-                {user.avatar && <img src={`${user.avatar}`} className={styles.profilepicture}/> }
+                {!user.avatar && 
+                <picture>
+                    <img src="/default.png" alt="user avatar" className={styles.profilepicture}/>
+                </picture>}
+                {user.avatar && 
+                <picture>
+                    <img src={`${user.avatar}`} alt="user avatar" className={styles.profilepicture}/>
+                </picture> }
                 {isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>}
                 {isAvatar && <AvatarUploader handleUpload={handleAvatarUpload}/>}
                 </div>

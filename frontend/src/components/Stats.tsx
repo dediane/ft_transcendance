@@ -116,7 +116,7 @@ export const Stats = () => {
         if(!authenticationService.getToken()) 
             router.push('/login')
         fetch_profile()
-    }, [])
+    }, [router])
     return (
         <>
          <div>

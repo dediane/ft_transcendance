@@ -87,7 +87,7 @@ export const Friends = () => {
             </div>
           </div>
         );
-      }) : <div>You don't have friends yet...</div>}
+      }) : <div>You don&apos;t have friends yet...</div>}
 
       {/* Search Bar */}
       <div className="my-4">

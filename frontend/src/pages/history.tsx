@@ -41,12 +41,13 @@ export const Games = () => {
         {games.map((current:any) => {
             const { player1, player2, score1, score2 } = current;
             return (
-        <tbody>
-            <tr key={current.id}>
+        <tbody key={current.id}>
+            <tr>
                 <td className={styles.bold2}>👑 <br></br>{score1 < score2 ? player2.username : player1.username}</td>
                 <td className={styles.bold}>
                     <div className={styles.avatarContainer}>
-                        {player1.avatar ? <img src={`${player1.avatar}`} className={styles.profilepicture}/> : <img src="/default.png" className={styles.profilepicture}></img>}
+                        {player1.avatar && <picture><img src={`${player1.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
+                        {!player1.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
                         <Link href={`/public?username=${player1.username}`}>
                             {player1.username}
                         </Link>
@@ -54,7 +55,8 @@ export const Games = () => {
                 </td>
                 <td className={styles.bold}>
                     <div className={styles.avatarContainer}>
-                        {player2.avatar ? <img src={`${player2.avatar}`} className={styles.profilepicture}/> : <img src="/default.png" className={styles.profilepicture}></img>}
+                        {player2.avatar && <picture><img src={`${player2.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
+                         {!player2.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
                         <Link href={`/public?username=${player2.username}`}>
                             {player2.username}
                         </Link>
