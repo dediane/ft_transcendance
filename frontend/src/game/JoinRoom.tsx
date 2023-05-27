@@ -63,14 +63,10 @@ export function JoinRoom(props: IJoinRoomProps)
   }
   
   const joinRoom = async (e: React.FormEvent) => {
-    // const socket = socketService.socket;
-    // e.preventDefault();
-    // console.log("socket ", socketService.socket?.id)
     if (!socket)
       return ;
     setJoining(true);
     
-    console.log("setting ", roomName);
     const joined = await gameService
     .joinGameRoom(socket, roomName, props.mode).catch((err) => {
       alert(err);

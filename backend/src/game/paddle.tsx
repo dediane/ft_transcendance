@@ -36,11 +36,6 @@ export default class Paddle {
         this.ychange = 0;
         this.id = id;
         this.name = name;
-        if (left == false)
-            console.log("paddle constructor type --> right")
-        else
-            console.log("paddle constructor type --> left")
-        console.log("our player is ", this.id, this.name);
     };
 
     // fonction
@@ -54,7 +49,6 @@ export default class Paddle {
         // constrain the paddle to quit the canvas window //
     }
     cleanup(){
-        console.log("clean up user ", this.name)
         this.x= 0;
         this.y= 0;
         this.xspeed= 0;

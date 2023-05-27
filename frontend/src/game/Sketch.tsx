@@ -16,7 +16,6 @@ import React from 'react';
     // in CSS for p5 Wrapper set with and height
     // like this it's can be responssive
     
-    //console.log("la width param %d, la height param %d", w, h);
     let p5WrapperDiv = document.getElementById("canvas_size")
     const username = AuthService.getUsername();
 
@@ -42,8 +41,6 @@ import React from 'react';
       height = width / canvasratio;
     }
 
-    console.log("clienbtHeight", width)
-    console.log("clienbtHeight", height)
     let puck = new Puck(p5, width, height);
     let paddle_left = new Paddle(p5, width, height, true, false);
     let paddle_right = new Paddle(p5, width, height, false, false);
@@ -89,7 +86,6 @@ import React from 'react';
       if (props.socket) {
         if (socket)
         {
-          console.log("socket id ", socket.id)
           socket?.emit("start game", payload);
           
           socket?.on("puck update", (payload : any) => {
@@ -99,7 +95,6 @@ import React from 'react';
             left_score = payload.lscore;
             right_score = payload.rscore;
             //puck.show(puckx, pucky);
-            //console.log("on lance la ball avec data ", puckx, pucky)
             
             // need data for showwing the ball we need
             // puck.x, puck.y, puck.r
@@ -107,12 +102,10 @@ import React from 'react';
           });
           
           socket?.on("end game", () => {
-            console.log("redirection my bro")
             window.location.href = "/home_game";
           });
 
           socket?.on("paddle update", (payload : any) => {
-            console.log("update paddle");
             padl_x = payload.plx; 
             padl_y = payload.ply;
             padl_w = payload.plw;
@@ -124,31 +117,25 @@ import React from 'react';
             padr_w = payload.prw;
             padr_h = payload.prh;
             padr_n = payload.prn;
-
-            //console.log("on lance la ball avec data ", puckx, pucky)
             
-            // need data for showwing the ball we need
-            // puck.x, puck.y, puck.r
+            // need data for showwing the paddle we need
             // to show
           });
 
           socket?.on("user left", () => {
           
-            console.log("we receive lefttttt")
             left = true;
           });       
           // keyReleased and keyPressed for the gamers
           p5.keyReleased = () => {
-            console.log("player key relased ")
             socket?.emit("KeyReleased");
           }
 
           p5.keyPressed = () => {
-            console.log("keyPressed by ", userdata.name);
             if (p5.key == 'w')
-              socket?.emit("KeyPressed", {name: userdata.name, key: 'w'});
+              socket?.emit("KeyPressed", {id: userdata.id, key: 'w'});
             else if (p5.key == 's') {
-              socket?.emit("KeyPressed", {name: userdata.name, key: 's'});
+              socket?.emit("KeyPressed", {id: userdata.id, key: 's'});
             }
           }
         }
@@ -217,17 +204,14 @@ import React from 'react';
   }
   
   function windowResized() {
-    console.log("window resized P5 function called w: %d, h: %d", width, height);
     var element = document.getElementById("canvas_size");
     if (element == null)
     {
-      console.log("use the window canvas T-T")
       cwidth = window.innerWidth;
       cheight = window.innerHeight;
     }
     else
     {
-      console.log("pass par notre div define hihi")
       cwidth = element.clientWidth;
       cheight = element.clientHeight;
     }

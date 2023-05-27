@@ -16,7 +16,6 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
     // in CSS for p5 Wrapper set with and height
     // like this it's can be responssive
     
-    //console.log("la width param %d, la height param %d", w, h);
     let p5WrapperDiv = document.getElementById("canvas_size")
     const username = AuthService.getUsername();
 
@@ -42,8 +41,6 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
       height = width / canvasratio;
     }
 
-    console.log("clienbtHeight", width)
-    console.log("clienbtHeight", height)
     let puck = new Puck(p5, width, height);
     let paddle_left = new Paddle(p5, width, height, true, false);
     let paddle_right = new Paddle(p5, width, height, false, false);
@@ -87,7 +84,6 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
       if (props.socket) {
         if (socket)
         {
-          console.log("socket id ", socket.id)
           socket?.emit("start game chat", payload);
           
           socket?.on("puck update chat", (payload : any) => {
@@ -96,8 +92,6 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
             pucky = payload.y;
             left_score = payload.lscoreC;
             right_score = payload.rscoreC;
-            //puck.show(puckx, pucky);
-            //console.log("on lance la ball avec data ", puckx, pucky)
             
             // need data for showwing the ball we need
             // puck.x, puck.y, puck.r
@@ -105,12 +99,10 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
           });
           
           socket?.on("end game", () => {
-            console.log("redirection my bro")
             window.location.href = "/Messenger2";
           });
 
           socket?.on("paddle update chat", (payload : any) => {
-            console.log("update paddle");
             padl_x = payload.plx; 
             padl_y = payload.ply;
             padl_w = payload.plw;
@@ -123,10 +115,7 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
             padr_h = payload.prh;
             padr_n = payload.prn;
 
-            //console.log("on lance la ball avec data ", puckx, pucky)
-            
-            // need data for showwing the ball we need
-            // puck.x, puck.y, puck.r
+            // need data for showwing the paddle we need
             // to show
           });
 
@@ -135,16 +124,14 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
           });       
           // keyReleased and keyPressed for the gamers
           p5.keyReleased = () => {
-            console.log("player key relased ")
             socket?.emit("KeyReleased chat");
           }
 
           p5.keyPressed = () => {
-            console.log("keyPressed by ", userdata.name);
             if (p5.key == 'w')
-              socket?.emit("KeyPressed chat", {name: userdata.name, key: 'w'});
+              socket?.emit("KeyPressed chat", {id: userdata.id, key: 'w'});
             else if (p5.key == 's') {
-              socket?.emit("KeyPressed chat", {name: userdata.name, key: 's'});
+              socket?.emit("KeyPressed chat", {id: userdata.id, key: 's'});
             }
           }
         }
@@ -213,17 +200,14 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
   }
   
   function windowResized() {
-    console.log("window resized P5 function called w: %d, h: %d", width, height);
     var element = document.getElementById("canvas_size");
     if (element == null)
     {
-      console.log("use the window canvas T-T")
       cwidth = window.innerWidth;
       cheight = window.innerHeight;
     }
     else
     {
-      console.log("pass par notre div define hihi")
       cwidth = element.clientWidth;
       cheight = element.clientHeight;
     }

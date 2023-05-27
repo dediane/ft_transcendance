@@ -36,11 +36,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   afterInit() {} // for OnGatewayInit
 
   async handleConnection(socket: Socket) {
-    console.log('Socket connected from game gateways:', socket.id);
   }
 
  async handleDisconnect(socket: Socket) {
-  console.log('Socket disconnected game gateway:', socket.id);
   this.server.emit('disconnect users game gateway');
 }
 }
