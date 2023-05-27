@@ -94,8 +94,8 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
             
             puckx = payload.x; 
             pucky = payload.y;
-            left_score = payload.lscore;
-            right_score = payload.rscore;
+            left_score = payload.lscoreC;
+            right_score = payload.rscoreC;
             //puck.show(puckx, pucky);
             //console.log("on lance la ball avec data ", puckx, pucky)
             
@@ -106,7 +106,7 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
           
           socket?.on("end game", () => {
             console.log("redirection my bro")
-            window.location.href = "/home_game";
+            window.location.href = "/Messenger2";
           });
 
           socket?.on("paddle update chat", (payload : any) => {
@@ -130,9 +130,7 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
             // to show
           });
 
-          socket?.on("user left", () => {
-          
-            console.log("we receive lefttttt")
+          socket?.on("user left", () => {          
             left = true;
           });       
           // keyReleased and keyPressed for the gamers
