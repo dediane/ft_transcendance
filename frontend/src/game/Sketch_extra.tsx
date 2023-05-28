@@ -52,9 +52,6 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>) {
   let speed: number = 1;
 
 
-// here socket
-const token =  AuthService.getToken();
-//let start = false;
 let puckx: number;
 let pucky: number
 
@@ -71,24 +68,15 @@ let padl_h: number;
 let padl_n: string;
 let left = false;
 
-if (!token) {
-  // Redirect to the login page
-  window.location.href = "/login";
-}
 
-
-const userdata = {
-  id: AuthService.getId(),
-  name: AuthService.getUsername(),
-};
 
 let socket = Socket;
-const payload = {width: width, height: height, id: userdata.id, name: userdata.name}
 
 p5.updateWithProps = props => {
   let socket = props.socket.current;
   
   if (props.socket) {
+    const payload = {width: width, height: height, id: props.id, name: props.name}
     if (socket)
     {
       socket.emit("start game extra", payload);
@@ -140,9 +128,9 @@ p5.updateWithProps = props => {
 
       p5.keyPressed = () => {
         if (p5.key == 'w')
-          socket?.emit("KeyPressed extra", {id: userdata.id, key: 'w'});
+          socket?.emit("KeyPressed extra", {id: props.id, key: 'w'});
         else if (p5.key == 's') {
-          socket?.emit("KeyPressed extra", {id: userdata.id, key: 's'});
+          socket?.emit("KeyPressed extra", {id: props.id, key: 's'});
         }
       }
     }

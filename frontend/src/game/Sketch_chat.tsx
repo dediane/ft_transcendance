@@ -47,7 +47,6 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
     let left_score: number = 0;
     let right_score: number = 0;
     
-    const token =  AuthService.getToken();
     let left = false;
     let puckx: number;
     let pucky: number
@@ -64,24 +63,16 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
     let padl_h: number;
     let padl_n: string;
 
-    if (!token) {
-      // Redirect to the login page
-      window.location.href = "/login";
-    }
     
     
-    const userdata = {
-      id: AuthService.getId(),
-      name: AuthService.getUsername(),
-    };
     
     let socket = Socket;
-    const payload = {width: width, height: height, id: userdata.id, name: userdata.name}
     
     p5.updateWithProps = props => {
       let socket = props.socket.current;
       
       if (props.socket) {
+        const payload = {width: width, height: height, id: props.id, name: props.name}
         if (socket)
         {
           socket?.emit("start game chat", payload);
@@ -129,9 +120,9 @@ export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
 
           p5.keyPressed = () => {
             if (p5.key == 'w')
-              socket?.emit("KeyPressed chat", {id: userdata.id, key: 'w'});
+              socket?.emit("KeyPressed chat", {id: props.id, key: 'w'});
             else if (p5.key == 's') {
-              socket?.emit("KeyPressed chat", {id: userdata.id, key: 's'});
+              socket?.emit("KeyPressed chat", {id: props.id, key: 's'});
             }
           }
         }

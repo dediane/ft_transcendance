@@ -1,8 +1,10 @@
 import Game from '@/components/Game'
-import React, { useEffect, useRef, useCallback, useContext } from 'react'
+import React, { useEffect, useState, useCallback, useContext } from 'react'
 import io, {Socket} from "socket.io-client"
 import styled from '@emotion/styled';
-import AuthService from "../services/authentication-service"
+import { useRouter} from "next/router";
+import authenticationService from "@/services/authentication-service";
+import userService from '@/services/user-service';
 import {ContextGame} from "@/game/GameContext";
 //import ConnectService from '@/components/Connect';
 import ConnectService from "../services/Connect"
@@ -17,13 +19,27 @@ const WelcomeText = styled.h1`
 
 export default function Wait() {
     
-    const {socket} :any = useContext(ContextGame);
-    const join = useCallback(async () => {
-        const joinned = await ConnectService.Connect(socket);
-      }, [socket]);
+    const {socket} = useContext(ContextGame);
+    const [userdata, setUserData] = useState({username: "", id: ""});
+    const router = useRouter();
+    
+    // useEffect(() => {
+        
+    // }, [join, router])
+    
     useEffect(() => {
+    const join = useCallback(async () => {
+        const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
+}, [socket]);
+    const fetch_profile = async () => {
+        const result = await userService.profile()
+        setUserData({...result})
+    }
+        if(!authenticationService.getToken()) 
+        router.push('/login')
+        fetch_profile();
         join();
-    }, [join]);
+    }, [router, join]);
     
     if (!socket)
         return null;

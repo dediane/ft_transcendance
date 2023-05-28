@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { P5CanvasInstance, P5WrapperProps, SketchProps } from 'react-p5-wrapper'
 import sketch from "@/game/Sketch";
 import   { ContextGame } from '../game/GameContext'
 import { useContext } from "react";
 import { Socket } from "socket.io-client";
-
+import authenticationService from "@/services/authentication-service";
+import userService from '@/services/user-service';
+import { useRouter } from "next/router";
 
 type DefaultEventsMap = /*unresolved*/ any;
 const ReactP5Wrapper = dynamic(
@@ -16,14 +18,28 @@ const ReactP5Wrapper = dynamic(
 export interface MySketchProps extends SketchProps {
   //socket: React.MutableRefObject<undefined>;
   socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null>
+  id: number
+  username: string
 }
 
 export default function Game() {
   const {socket} = useContext(ContextGame);
+  const [userdata, setUserData] = useState({username: "", id: ""});
+  const router = useRouter();
 
+  useEffect(() => {
+    const fetch_profile = async () => {
+      const result = await userService.profile()
+      setUserData({...result})
+    }
+    if(!authenticationService.getToken()) 
+          router.push('/login')
+    fetch_profile();
+  }, [router]);
+// id={userdata.id} username={userdata.username} 
   return (
     <div id="canvas_size">
-      <ReactP5Wrapper sketch={sketch} socket={socket} />
+      <ReactP5Wrapper sketch={sketch} socket={socket} id={userdata.id} username={userdata.username} />
     </div>
   )
 }

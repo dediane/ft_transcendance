@@ -11,7 +11,7 @@ import React from 'react';
 import userService from '@/services/user-service';
 import { useRouter } from "next/router";
 
-  export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
+  export default function sketch(p5: P5CanvasInstance<MySketchProps>) {
 
     // in CSS for p5 Wrapper set with and height
     // like this it's can be responssive
@@ -63,29 +63,18 @@ import { useRouter } from "next/router";
     let padl_h: number;
     let padl_n: string; 
 
-    const [userdata, setUserData] = useState({username: "", id: ""});
-    const router = useRouter();
 
-    useEffect(() => {
-      const fetch_profile = async () => {
-        const result = await userService.profile()
-        setUserData({...result})
-      }
-      if(!authenticationService.getToken()) 
-            router.push('/login')
-      fetch_profile();
-    }, [router]);
     // const userdata = {
     //   id: AuthService.getId(),
     //   name: AuthService.getUsername(),
     // };
     
-    const payload = {width: width, height: height, id: userdata.id, name: userdata.username}
     
     p5.updateWithProps = props => {
       let socket = props.socket.current;
       //const socketRef = useRef<Socket | null>(null);
-
+      
+      const payload = {width: width, height: height, id: props.id, name: props.username}
       
       if (props.socket) {
         if (socket)
@@ -137,9 +126,9 @@ import { useRouter } from "next/router";
 
           p5.keyPressed = () => {
             if (p5.key == 'w')
-              socket?.emit("KeyPressed", {id: userdata.id, key: 'w'});
+              socket?.emit("KeyPressed", {id: props.id, key: 'w'});
             else if (p5.key == 's') {
-              socket?.emit("KeyPressed", {id: userdata.id, key: 's'});
+              socket?.emit("KeyPressed", {id: props.id, key: 's'});
             }
           }
         }

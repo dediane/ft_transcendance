@@ -1,24 +1,30 @@
 import React from "react";
 import { Socket } from "socket.io-client";
-import AuthService from "../services/authentication-service"
+import { useState, useEffect } from "react";
+import { useRouter} from "next/router";
+import authenticationService from "@/services/authentication-service";
+import userService from '@/services/user-service';
 
 type DefaultEventsMap = /*unresolved*/ any;
 class ConnectService {
 
-    public async Connect(socket : Socket<DefaultEventsMap, DefaultEventsMap> | null) {        
+    public async Connect(socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null, id: number, username: string) {        
         if (!socket)
             return ;
-        const payload = {userid: await AuthService.getId(), username: await AuthService.getUsername()}
-        socket.emit("join_game chat", payload);
+        const payload = {userid: id, username: username}
+        console.log("payload ", payload)
+        socket.current?.emit("join_game chat", payload);
         
-        socket.on("start_game chat", () => {
+        socket.current?.on("start_game chat", () => {
+            console.log("everyone joined")
             window.location.href = "/pong_chat"; // ici a coder cette page
         });
 
-        socket.on("room_joined chat", () => 
+        socket.current?.on("room_joined chat", () => 
         {
+            console.log("i joined")
         });
-        socket.on("room_join_error chat",() => {
+        socket.current?.on("room_join_error chat",() => {
             alert("Error you canno't join")
         });
     }
