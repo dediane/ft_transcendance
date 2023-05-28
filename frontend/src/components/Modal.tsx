@@ -4,12 +4,12 @@ import ReactDOM from "react-dom";
 import styles from "../styles/Modal.module.css"
 import { Authentication } from "@/pages/login";
 
-export default function Modal({show, onClose, view}){
+export default function Modal({show, onClose, view}: {show : any, onClose : any, view : any}){
     const [isBrowser, setisBrowser] = useState(false);
 
     useEffect(() => {setisBrowser(true);},[]);
 
-    const handleClose = (e) => {
+    const handleClose = (e : any) => {
         e.preventDefault();
         onClose();
     }
@@ -31,7 +31,7 @@ export default function Modal({show, onClose, view}){
     if (isBrowser){
         return ReactDOM.createPortal(
             modalContent, 
-            document.getElementById('modal-root')
+            document.getElementById('modal-root') as Element
         )
     } else {
         return null;

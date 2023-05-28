@@ -25,14 +25,19 @@ function Messenger2() {
   const [allUsers, setAllUsers] = useState([]);
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState({
+    blockedUsers: null, // Replace with the appropriate initial value
+    adminUsers: null, // Replace with the appropriate initial value
+    username: "", // Replace with the appropriate initial value
+  });
+  //const [currentUser, setCurrentUser] = useState();
   const socketRef = useRef<Socket | null>(null);
 
   const [newMember, setNewMember] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
   const [userchans, setUserChans] = useState([])
 
-  function handleMessageChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleMessageChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setMessage(e.target.value);
   }
 
@@ -350,6 +355,16 @@ function joinRoom(room: string) {
     setMessages(newMessages);
   }
 
+  interface ChatProps {
+    // Define the props here, including the joinRoom prop
+    message: string;
+    passwordError: boolean;
+    handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+    sendMessage: () => void;
+    changeChatPassword: (newpass: string) => void;
+    // ...other props...
+    joinRoom: (room: string) => void; // Define the joinRoom prop here
+  }
 
 
   function toggleChat(currentChat: any){

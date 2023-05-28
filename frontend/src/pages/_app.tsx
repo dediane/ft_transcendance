@@ -6,7 +6,7 @@ import { BackgroundAnimation } from '@/components/BackgroundAnimation';
 import HomeGame from './home_game';
 import Pong from './pong';
 import { Context } from 'react';
-import {ContextGame, ContextProviderGame} from '../game/GameContext'
+import { ContextProviderGame } from '../game/GameContext'
 
 
 

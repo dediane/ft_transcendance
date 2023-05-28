@@ -22,18 +22,18 @@ const MemberName = styled.span`
   letter-spacing: 2px;
 `;
 
-function MemberList({ isAdmin, accessType, members, kickFunction, banFunction, muteFunction }) {
+function MemberList({ isAdmin , accessType, members, kickFunction, banFunction, muteFunction }: { isAdmin: boolean; accessType: string; members: any[]; kickFunction: Function; banFunction: Function; muteFunction: Function }) {
   if (!members) return null;
 
-  const handleKickClick = (memberName) => {
+  const handleKickClick = (memberName : any) => {
     kickFunction(memberName);
   };
 
-  const handleBanClick = (memberName) => {
+  const handleBanClick = (memberName : any) => {
     banFunction(memberName);
   };
 
-  const handleMuteClick = (memberName) => {
+  const handleMuteClick = (memberName : any) => {
     muteFunction(memberName);
   };
 

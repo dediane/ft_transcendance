@@ -9,8 +9,6 @@ import AuthService from '../services/authentication-service'
 import { MySketchProps } from '@/components/Game';
 import React from 'react';
 
-
-
   export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
 
     // in CSS for p5 Wrapper set with and height
@@ -40,23 +38,23 @@ import React from 'react';
       width = cwidth;
       height = width / canvasratio;
     }
-
-    let puck = new Puck(p5, width, height);
-    let paddle_left = new Paddle(p5, width, height, true, false);
-    let paddle_right = new Paddle(p5, width, height, false, false);
-    let left_score: number = 0;
-    let right_score: number = 0;
     
-    const token =  AuthService.getToken();
-    let left = false;
-    let puckx: number;
-    let pucky: number
-
-    let padr_x: number;
-    let padr_y: number;
-    let padr_w: number;
-    let padr_h: number;
-    let padr_n: string;
+      let puck = new Puck(p5, width, height)
+      let paddle_left = new Paddle(p5, width, height, true, false);
+      let paddle_right = new Paddle(p5, width, height, false, false);
+      let left_score: number = 0;
+      let right_score: number = 0;
+      
+      const token =  AuthService.getToken();
+      let left = false;
+      let puckx: number;
+      let pucky: number
+      
+      let padr_x: number;
+      let padr_y: number;
+      let padr_w: number;
+      let padr_h: number;
+      let padr_n: string;
     
     let padl_x: number;
     let padl_y: number;
@@ -75,7 +73,6 @@ import React from 'react';
       name: AuthService.getUsername(),
     };
     
-    let socket = Socket;
     const payload = {width: width, height: height, id: userdata.id, name: userdata.name}
     
     p5.updateWithProps = props => {
@@ -86,9 +83,9 @@ import React from 'react';
       if (props.socket) {
         if (socket)
         {
-          socket?.emit("start game", payload);
+          socket.emit("start game", payload);
           
-          socket?.on("puck update", (payload : any) => {
+          socket.on("puck update", (payload : any) => {
             
             puckx = payload.x; 
             pucky = payload.y;
@@ -101,11 +98,11 @@ import React from 'react';
             // to show
           });
           
-          socket?.on("end game", () => {
+          socket.on("end game", () => {
             window.location.href = "/home_game";
           });
 
-          socket?.on("paddle update", (payload : any) => {
+          socket.on("paddle update", (payload : any) => {
             padl_x = payload.plx; 
             padl_y = payload.ply;
             padl_w = payload.plw;

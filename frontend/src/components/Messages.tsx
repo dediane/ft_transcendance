@@ -15,8 +15,8 @@ function Messages({ messages }: { messages: Message[] }): JSX.Element {
         const messageClass = message.isMyMessage ? styles['my-message'] : styles['friend-message'];
         return (
             <div key={index} className={`${styles.message} ${messageClass}`}>
-            <div className={styles.messageTop}>Username  
-                <p className={styles.messageText}>{message}</p>
+            <div className={styles.messageTop}>Username<div/>  
+                <p className={styles.messageText}>{message.text}</p>
             </div>
             <div className={styles.messageBottom}>17:57</div>
             </div>

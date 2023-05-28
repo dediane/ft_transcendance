@@ -759,7 +759,7 @@ else {
     
     <div>
     {isAdmin &&
-      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames} kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
+      <MemberList isAdmin={isAdmin} accessType={props.accessType} members={filteredMembersUsernames || []} /*members={filteredMembersUsernames}*/ kickFunction={kickMember} banFunction={banMember} muteFunction={muteMember} />
     }
 </div>
     <div>

@@ -1,9 +1,10 @@
 import { P5CanvasInstance } from 'react-p5-wrapper';
+import { MySketchProps } from '@/components/Game';
 
 
 export default class Paddle {
     // var in my class
-    p: P5CanvasInstance;
+    p: P5CanvasInstance<MySketchProps>;
     x: number;
     y: number;
     xspeed: number;
@@ -16,7 +17,7 @@ export default class Paddle {
     name: string;
 
     // constructor
-    constructor(pfive: P5CanvasInstance, width: number, height: number, left: boolean, e: boolean) {
+    constructor(pfive: P5CanvasInstance<MySketchProps>, width: number, height: number, left: boolean, e: boolean) {
         this.p = pfive;
         this.w = 20;
         if (e == true)

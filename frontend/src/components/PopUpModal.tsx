@@ -1,4 +1,4 @@
-import React from "react";
+import React , { ChangeEventHandler } from "react";
 import Modal from "react-modal";
 // import TextBox from "./TextBox";
 import styled from "styled-components"
@@ -60,7 +60,8 @@ type Props = {
   onSave: () => void;
   onCancel: () => void;
   value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+ // onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+ onChange: ChangeEventHandler<HTMLTextAreaElement>;
   placeholder: string;
   modalId: string;
   buttonText: string;

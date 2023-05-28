@@ -1,19 +1,22 @@
-import React, { useCallback } from "react";
+import React, { useCallback , useContext} from "react";
 import dynamic from "next/dynamic";
-import { P5CanvasInstance, P5WrapperProps } from 'react-p5-wrapper'
+import { P5CanvasInstance, P5WrapperProps, SketchProps } from 'react-p5-wrapper'
 import sketch from "@/game/Sketch_extra";
 import {ContextGame} from '../game/GameContext'
+import { Socket } from "socket.io-client";
 
-//import styles from "../styles/ReactP5Wrapper.module.css"
-import styles from "../styles/Game.module.css"
+type DefaultEventsMap = /*unresolved*/ any;
+const ReactP5Wrapper = dynamic(
+  () => import('react-p5-wrapper').then(mod => mod.ReactP5Wrapper),
+  { ssr: false }
+) as React.NamedExoticComponent<P5WrapperProps>;
 
-const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper')
-    .then(mod => mod.ReactP5Wrapper as P5CanvasInstance), {
-    ssr: false
-}) as unknown as React.NamedExoticComponent<P5WrapperProps>
-
+export interface MySketchProps extends SketchProps {
+  //socket: React.MutableRefObject<undefined>;
+  socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null>
+}
 export default function Game() {
-  const {socket} = React.useContext(ContextGame);
+  const {socket} = useContext(ContextGame);
   return (
     <div id="canvas_size">
       <ReactP5Wrapper sketch={sketch} socket={socket} />

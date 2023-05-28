@@ -1,11 +1,12 @@
 import { P5CanvasInstance } from 'react-p5-wrapper';
 import Paddle from './paddle';
 import { useEffect } from 'react';
+import { MySketchProps } from '@/components/Game';
 
 
 export default class Puck {
     // variable in my class
-    p: P5CanvasInstance;
+    p: P5CanvasInstance<MySketchProps>;
     x: number;
     y: number;
     xspeed: number;
@@ -17,7 +18,7 @@ export default class Puck {
     puck_speed: number;
     
     // constructor
-    constructor(pfive: P5CanvasInstance, width: number, height: number) {
+    constructor(pfive: P5CanvasInstance<MySketchProps>, width: number, height: number) {
         this.p = pfive;
         this.width = width;     //init in back 
         this.height = height;   //init in back

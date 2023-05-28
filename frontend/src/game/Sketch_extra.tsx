@@ -9,7 +9,7 @@ import  AuthService from "../services/authentication-service"
 import { Socket } from 'socket.io-client';
 import { MySketchProps } from '@/components/Game';
 
-export default function sketch(p5: P5CanvasInstance, innerWidth: number, innerHeight: number) {
+export default function sketch(p5: P5CanvasInstance<MySketchProps>) {
 
 
 
@@ -91,9 +91,9 @@ p5.updateWithProps = props => {
   if (props.socket) {
     if (socket)
     {
-      socket?.emit("start game extra", payload);
+      socket.emit("start game extra", payload);
       
-      socket?.on("puck update", (payload : any) => {
+      socket.on("puck update", (payload : any) => {
         
         puckx = payload.x; 
         pucky = payload.y;
@@ -106,11 +106,11 @@ p5.updateWithProps = props => {
         // to show
       });
       
-      socket?.on("end game", () => {
+      socket.on("end game", () => {
         window.location.href = "/home_game";
       });
 
-      socket?.on("paddle update", (payload : any) => {
+      socket.on("paddle update", (payload : any) => {
         padl_x = payload.plx; 
         padl_y = payload.ply;
         padl_w = payload.plw;
@@ -129,7 +129,7 @@ p5.updateWithProps = props => {
         // to show
       });
 
-      socket?.on("user left extra", () => {
+      socket.on("user left extra", () => {
         left = true;
       }); 
 

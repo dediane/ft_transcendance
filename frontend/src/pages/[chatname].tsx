@@ -6,7 +6,7 @@ const Messages = styled.div`
     flex-direction: column;
     align-items: flex-start;
 `;
-function ChatRoom(props) {
+function ChatRoom(props :any) {
   // your ChatRoom component logic here
   return (
     <div>

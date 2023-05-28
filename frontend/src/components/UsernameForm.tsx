@@ -1,6 +1,6 @@
 import React from "react";
 
-function Form(props){
+function Form(props : any){
     return (
         <form>
             <input

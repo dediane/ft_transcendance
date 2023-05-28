@@ -1,7 +1,7 @@
 const { log } = console;
 
 
-export default function teamAdd(req, res) {
+export default function teamAdd(req: any, res: any) {
 
     if (req.method === "POST")
     {

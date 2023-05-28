@@ -21,7 +21,7 @@ const CheckboxLabel = styled.label`
   margin-left: 5px;
 `;
 
-const MemberListModal = ({ members, handleAdminAdding, handleAdminRemoving }) => {
+const MemberListModal = ({ members, handleAdminAdding, handleAdminRemoving } : { members : any, handleAdminAdding : any, handleAdminRemoving : any}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [addingAdmin, setAddingAdmin] = useState(false);
@@ -30,7 +30,7 @@ const MemberListModal = ({ members, handleAdminAdding, handleAdminRemoving }) =>
     setModalOpen(!modalOpen);
   };
 
-  const handleMemberToggle = (member) => {
+  const handleMemberToggle = (member : never) => {
     if (selectedMembers.includes(member)) {
       setSelectedMembers(selectedMembers.filter((m) => m !== member));
     } else {
@@ -38,7 +38,7 @@ const MemberListModal = ({ members, handleAdminAdding, handleAdminRemoving }) =>
     }
   };
 
-  const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = (event : any) => {
     setAddingAdmin(event.target.checked);
   };
 
@@ -67,7 +67,7 @@ const MemberListModal = ({ members, handleAdminAdding, handleAdminRemoving }) =>
         <ModalWrapper>
           <ModalContent>
             <ul>
-              {members.map((member) => (
+              {members.map((member : never) => (
                 <li key={member}>
                   <CheckboxContainer>
                     <input

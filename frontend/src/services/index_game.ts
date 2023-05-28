@@ -4,7 +4,7 @@ import AuthService from "../services/authentication-service"
 
 class GameService {
 
-    public async joinGameRoom(socket : React.MutableRefObject<undefined>, roomId: string, mode: string ): Promise<boolean>
+    public async joinGameRoom(socket : MutableRefObject<Socket<any, any> | null>, roomId: string, mode: string ): Promise<boolean>
     {
         const payload = {message: roomId, userid: AuthService.getId(), username: AuthService.getUsername()}
         return new Promise((rs, rj) => {

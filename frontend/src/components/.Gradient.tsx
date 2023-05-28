@@ -29,9 +29,45 @@ class MiniGl {
             antialias: true
         }), _miniGl.meshes = [];
         const context = _miniGl.gl;
-        width && height && this.setSize(width, height), _miniGl.lastDebugMsg, _miniGl.debug = debug && debug_output ? function (e: string | any[]) {
-            const t = new Date;
-            t - _miniGl.lastDebugMsg > 1e3 && console.log("---"), console.log(t.toLocaleTimeString() + Array(Math.max(0, 32 - e.length)).join(" ") + e + ": ", ...Array.from(arguments).slice(1)), _miniGl.lastDebugMsg = t
+        // width && height && this.setSize(width, height), _miniGl.lastDebugMsg, _miniGl.debug = debug && debug_output ? function (e: string | any[]) {
+        //     const t = new Date;
+        //     t - _miniGl.lastDebugMsg > 1e3 && console.log("---"), console.log(t.toLocaleTimeString() + Array(Math.max(0, 32 - e.length)).join(" ") + e + ": ", ...Array.from(arguments).slice(1)), _miniGl.lastDebugMsg = t
+        
+        if (width && height) {
+            this.setSize(width, height);
+          }
+          _miniGl.lastDebugMsg = null; // Initialize lastDebugMsg with null or undefined
+          //_miniGl.lastDebugMsg = new Date(); // Initialize lastDebugMsg with a valid value
+        
+        //   _miniGl.debug = debug && debug_output
+        //     ? function (e: string | any[]) {
+        //         const t = new Date();
+        //         if (t.getTime() - _miniGl.lastDebugMsg.getTime() > 1000) {
+        //           console.log("---");
+        //         }
+        //         console.log(
+        //           t.toLocaleTimeString() +
+        //             Array(Math.max(0, 32 - e.length)).join(" ") +
+        //             e +
+        //             ": ",
+        //           ...Array.from(arguments).slice(1)
+        //         );
+        //         _miniGl.lastDebugMsg = t;
+        _miniGl.debug = debug && debug_output
+        ? function (e: string | any[]) {
+            const t = new Date().getTime();
+            if (typeof _miniGl.lastDebugMsg === 'number' && t && (_miniGl.lastDebugMsg - t) > 1000){
+              console.log("---");
+            }
+            console.log(
+              new Date(t).toLocaleTimeString() +
+                Array(Math.max(0, 32 - e.length)).join(" ") +
+                e +
+                ": ",
+              ...Array.from(arguments).slice(1)
+            );
+            _miniGl.lastDebugMsg = t;
+        
         } : () => { }, Object.defineProperties(_miniGl, {
             Material: {
                 enumerable: false,
@@ -47,12 +83,24 @@ class MiniGl {
                         const material = this;
                         function getShaderByType(type: any, source: any) {
                             const shader = context.createShader(type);
-                            return context.shaderSource(shader, source), context.compileShader(shader), context.getShaderParameter(shader, context.COMPILE_STATUS) || console.error(context.getShaderInfoLog(shader)), _miniGl.debug("Material.compileShaderSource", {
-                                source: source
-                            }), shader
+                            return context.shaderSource(shader, source), context.compileShader(shader), context.getShaderParameter(shader, context.COMPILE_STATUS) || console.error(context.getShaderInfoLog(shader)), _miniGl.debug("Material.compileShaderSource")
+                            , shader
+                            // const shader = context.createShader(type);
+                            // context.shaderSource(shader, source);
+                            // context.compileShader(shader);
+                            // const compileStatus = context.getShaderParameter(shader, context.COMPILE_STATUS);
+                            // if (!compileStatus) {
+                            //   console.error(context.getShaderInfoLog(shader));
+                            // }
+                            // _miniGl.debug("Material.compileShaderSource" );
                         }
                         function getUniformVariableDeclarations(uniforms: { [s: string]: unknown; } | ArrayLike<unknown>, type: string) {
-                            return Object.entries(uniforms).map(([uniform, value]) => value.getDeclaration(uniform, type)).join("\n")
+                            return Object.entries(uniforms).map(([uniform, value]) => {
+                                if (typeof value === 'object' && value !== null && 'getDeclaration' in value) {
+                                    return (value as { getDeclaration: (uniform: string, type: string) => string }).getDeclaration(uniform, type);
+                              }
+                              return '';
+                            }).join("\n")
                         }
                         material.uniforms = uniforms, material.uniformInstances = [];
 

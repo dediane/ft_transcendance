@@ -48,10 +48,3 @@ const ContextProviderGame = ({children} : {children : React.ReactNode}) => {
 
 export { ContextGame, ContextProviderGame };
 
-// export const defaultState: IGameContextProps = {
-          
-
-//     isInRoom: false,
-//     setInRoom: () => {},
-//     socket: socketRef
-// }
