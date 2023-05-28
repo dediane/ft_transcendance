@@ -78,14 +78,14 @@ export default function Wait() {
 
     
     const {socket} :any = useContext(ContextGame);
-    const join = useCallback(async () => {
-        const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
-      }, [socket]);
     useEffect(() => {
-        if (userdata !== null) {
-            join();
-        }
-    }, [userdata, join]);
+        const join = async () => {
+          if (userdata !== null) {
+            await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
+          }
+        };
+        join();
+      }, [userdata, socket]);
     
     if (!socket)
         return null;
