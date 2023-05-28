@@ -621,9 +621,12 @@ for (const user of this.users) {
         }
         
         end_game(id_room: string) {
+          let payload : {status: boolean, username1: string, username2: string}
           this.room_id = "";
           if (this.paddle_left && this.paddle_right)
           {
+            payload = {status: false, username1 : this.paddle_left.name, username2: this.paddle_right.name}
+            this.server.emit("user_status", payload);
             this.paddle_left.cleanup();
             this.paddle_right.cleanup();
           }
@@ -633,6 +636,8 @@ for (const user of this.users) {
           this.room_idE = "";
           if (this.paddle_leftE && this.paddle_rightE)
           {
+            payload = {status: false, username1 : this.paddle_leftE.name, username2: this.paddle_rightE.name}
+            this.server.emit("user_status", payload);
             this.paddle_leftE.cleanup();
             this.paddle_rightE.cleanup();
           }
@@ -642,6 +647,8 @@ for (const user of this.users) {
           this.room_idC = "";
           if (this.paddle_leftC && this.paddle_rightC)
           {
+            payload = {status: false, username1 : this.paddle_leftC.name, username2: this.paddle_rightC.name}
+            this.server.emit("user_status", payload);
             this.paddle_leftC.cleanup();
             this.paddle_rightC.cleanup();
           }
@@ -659,7 +666,6 @@ for (const user of this.users) {
         return;
       }
       else {
-        this.server.emit("user_status", {status: "true"});
         if (this.puck) { // Check if this.puck is defined
           this.puck.update();
           this.puck.edges();
@@ -668,6 +674,8 @@ for (const user of this.users) {
           const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
           if (this.paddle_left && this.paddle_right)
           {
+            const payload = {status: true, username1 : this.paddle_left.name, username2: this.paddle_right.name}
+            this.server.emit("user_status", payload);
             this.paddle_left.update();
             this.paddle_right.update()
             const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right.name}
@@ -837,6 +845,8 @@ for (const user of this.users) {
           const payload = {x : this.puckE.x, y : this.puckE.y, lscore: this.puckE.left_score, rscore: this.puckE.right_score}
           if (this.paddle_leftE && this.paddle_rightE)
           {
+            const payload = {status: true, username1 : this.paddle_leftE.name, username2: this.paddle_rightE.name}
+            this.server.emit("user_status", payload);
             this.paddle_leftE.update();
             this.paddle_rightE.update();
             const payloadp = {prx: this.paddle_rightE.x, pry: this.paddle_rightE.y, prw: this.paddle_rightE.w, prh: this.paddle_rightE.h, pln: this.paddle_leftE.name, plx: this.paddle_leftE.x, ply: this.paddle_leftE.y, plw: this.paddle_leftE.w, plh: this.paddle_leftE.h, prn: this.paddle_rightE.name}
@@ -1043,6 +1053,8 @@ for (const user of this.users) {
           const payload = {x : this.puckC.x, y : this.puckC.y, lscoreC: this.puckC.left_score, rscoreC: this.puckC.right_score}
           if (this.paddle_leftC && this.paddle_rightC)
           {
+            const payload = {status: true, username1 : this.paddle_leftC.name, username2: this.paddle_rightC.name}
+            this.server.emit("user_status", payload);
             this.paddle_leftC.update();
             this.paddle_rightC.update()
             const payloadp = {prx: this.paddle_rightC.x, pry: this.paddle_rightC.y, prw: this.paddle_rightC.w, prh: this.paddle_rightC.h, pln: this.paddle_leftC.name, plx: this.paddle_leftC.x, ply: this.paddle_leftC.y, plw: this.paddle_leftC.w, plh: this.paddle_leftC.h, prn: this.paddle_rightC.name}

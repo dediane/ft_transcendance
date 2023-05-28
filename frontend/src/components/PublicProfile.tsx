@@ -67,10 +67,26 @@ export const PublicProfil = () => {
     useEffect(() => {
         const handleSocket = async () => {
         if (socket && socket.current) {
-            socket.current.on("user_status", (data: any) => {
-                console.log("ici dans handlesocket")
-                if (data.username === user.username) {
-                    setUserStatus(data.status)
+            socket.current.on("user_status", (data: {status: boolean, username1: string, username2: string}) => {
+                if (data.status == true)
+                {
+                    if (data.username1 === user.username) {
+                        setUserStatus("ingame")
+                    }
+                    else if (data.username2 === user.username)
+                    {
+                        setUserStatus("ingame")
+                    }
+                }
+                else if (data.status == false)
+                {
+                    if (data.username1 === user.username) {
+                        setUserStatus("offline")
+                    }
+                    else if (data.username2 === user.username)
+                    {
+                        setUserStatus("offline")
+                    }
                 }
             })
         }
@@ -88,9 +104,7 @@ export const PublicProfil = () => {
                     {!user.avatar && <picture><img src="/default.png" alt="user avatar" className={styles.profilepicture}/></picture>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
-                    <Online />
-                    <Offline />
-                    <InGame />
+                    {userStatus === "ingame" ? <InGame /> : userStatus === "online" ? <Online /> : <Offline />}
                     <Asset title={'username'} value={user.username} />
                     </div>
                 </div>
