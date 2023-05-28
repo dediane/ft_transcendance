@@ -3,8 +3,32 @@ import Chat from "../components/Chat";
 import io, { Socket } from "socket.io-client";
 import immer from "immer";
 import AuthService from "../services/authentication-service";
+import userService from '@/services/user-service';
+import { useRouter } from "next/router";
+import authenticationService from "../services/authentication-service";
 
 function Messenger2() {
+
+
+
+  const [userdata, setUserData] = useState({ username: "", id: "" });
+  const router = useRouter();
+
+  const fetchProfile = async () => {
+    const result = await userService.profile();
+    setUserData({ ...result });
+  };
+
+  useEffect(() => {
+    if (!authenticationService.getToken()) {
+      router.push('/login');
+    } else {
+      fetchProfile();
+    }
+  }, [router]);
+
+console.log(userdata)
+  
   const [connected, setConnected] = useState(false);
   const [channels, setChannels] = useState({});
   const [inviteReceived, setInviteReceived] = useState(false);
@@ -50,7 +74,7 @@ function Messenger2() {
 
   function createNewChannel(data: any) {
     const datachan = {
-      creator: AuthService.getId(),
+      creator: userdata.id,
       roomName: data.chatName,
       accessType: data.accessType,
       password: data.password,
@@ -66,18 +90,18 @@ function Messenger2() {
       ...prevMessages,
       [data.chatName]: [],
     }));
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
   }
 
   function createDm(username2: string) {
     const datachan = {
-      username1: AuthService.getUsername(),
+      username1: userdata.username,
       username2: username2,
     };
     if (datachan.username1 === datachan.username2)
       return;
     socketRef?.current?.emit("create DM", datachan);
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
   }
 
   function inviteToPlay(sender :string, otherUser: string)
@@ -94,7 +118,7 @@ function Messenger2() {
       content: `You just received an invitation to play pong from ${otherUser}. Do you accept?`,
       to: currentChat.isChannel ? currentChat.chatName : currentChat.receiverId,
       sender: "System",
-      senderid: AuthService.getId(),
+      senderid: userdata.id,
       chatName: currentChat.chatName,
       isChannel: currentChat.isChannel,
     };
@@ -121,18 +145,18 @@ function Messenger2() {
       chatName : "",
     }));
 
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
   }
 
 
   function removeChatPassword(channelName: string)
   {
     const payload = {
-      userId: AuthService.getId(),
+      userId: userdata.id,
       channelName: currentChat.chatName,
     };
     socketRef?.current?.emit("remove password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
 
@@ -140,12 +164,12 @@ function Messenger2() {
   function changeChatPassword(newpass: string)
   {
     const payload = {
-      userId: AuthService.getId(),
+      userId: userdata.id,
       channelName: currentChat.chatName,
       newPassword : newpass,
     };
     socketRef?.current?.emit("change password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
 
@@ -153,7 +177,7 @@ function Messenger2() {
   {
     const payload = {
       channelName: currentChat.chatName,
-      AdminId: AuthService.getId(),
+      AdminId: userdata.id,
       username : username,
     };
     socketRef?.current?.emit("add member", payload);  //member to remove a envoyer a la database pour modif
@@ -163,7 +187,7 @@ function Messenger2() {
       [currentChat.chatName]: updatedMembers,
     }));
     setNewMember("");
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
 
@@ -171,7 +195,7 @@ function Messenger2() {
   {
     const payload = {
       channelName: currentChat.chatName,
-      AdminId: AuthService.getId(),
+      AdminId: userdata.id,
       username : userNameToAddasAdmin,
     };
     const updatedadmins = [...admins[currentChat.chatName], userNameToAddasAdmin];
@@ -181,7 +205,7 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("add admin", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
 
@@ -189,7 +213,7 @@ function Messenger2() {
   {
     const payload = {
       channelName: currentChat.chatName,
-      AdminId: AuthService.getId(),
+      AdminId: userdata.id,
       username : userNameToRemoveasAdmin,
     };
     const updatedadmins = admins[currentChat.chatName]?.filter(
@@ -201,7 +225,7 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("remove admin", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
 
@@ -210,7 +234,7 @@ function Messenger2() {
   {
     const payload = {
       channelName: currentChat.chatName,
-      AdminId: AuthService.getId(),
+      AdminId: userdata.id,
       username : userNameToRemoveasMember,
     };
 
@@ -222,8 +246,8 @@ function Messenger2() {
       [currentChat.chatName]: updatedMembers,
     }));
     socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
-    if (AuthService.getUsername() === userNameToRemoveasMember)
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    if (userdata.username === userNameToRemoveasMember)
     {
       setCurrentChat((prevState) => ({
         ...prevState,
@@ -238,7 +262,7 @@ function Messenger2() {
   {
     const payload = {
       channelName: currentChat.chatName,
-      AdminId: AuthService.getId(),
+      AdminId: userdata.id,
       username : userNameToRemoveasMember,
     };
     const updatedBannedMembers = [...bannedmembers[currentChat.chatName], userNameToRemoveasMember];
@@ -247,7 +271,7 @@ function Messenger2() {
       [currentChat.chatName]: updatedBannedMembers,
     }));
     socketRef?.current?.emit("ban member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
   
@@ -256,22 +280,22 @@ function Messenger2() {
   {
     const payload = {
       channelName: currentChat.chatName,
-      AdminId: AuthService.getId(),
+      AdminId: userdata.id,
       username : userToMute,
     };
   
     socketRef?.current?.emit("mute member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
 
 
   function blockUser(usertoBlock: string)
   {
-    const userdataname  = AuthService.getUsername();
+    const userdataname  = userdata.username;
 
     const payload = {
-      UserWhoCantAnymore: AuthService.getId(),
+      UserWhoCantAnymore: userdata.id,
       usernameToBlock : usertoBlock,
     };
     setBlockedUsers((prevBlockedUsers) => ({
@@ -280,7 +304,7 @@ function Messenger2() {
     }));
     
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
 
   }
@@ -289,9 +313,9 @@ function Messenger2() {
   
   function unblockUser(usertoUnblock: string)
   {
-    const userdataname  = AuthService.getUsername();
+    const userdataname  = userdata.username;
     const payload = {
-      UserWhoCantAnymore: AuthService.getId(),
+      UserWhoCantAnymore: userdata.id,
       usernameToBlock : usertoUnblock,
     };
     const updatedBlockedUsers = [userdataname]?.filter(
@@ -302,7 +326,7 @@ function Messenger2() {
     }));
 
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: AuthService.getId(), name: AuthService.getUsername()});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
   }
   
@@ -314,15 +338,15 @@ function joinRoom(room: string) {
       roomJoinCallback(messages, room)
     ); 
     setConnectedRooms(newConnectedRooms);
-    const username = AuthService.getUsername();
+    const username = userdata.username;
   }
 
   function sendMessage() {
     const payload = {
       content: message,
       to: currentChat.isChannel ? currentChat.chatName : currentChat.receiverId,
-      sender: AuthService.getUsername(),
-      senderid: AuthService.getId(),
+      sender: userdata.username,
+      senderid: userdata.id,
       chatName: currentChat.chatName,
       isChannel: currentChat.isChannel,
     };
@@ -330,7 +354,7 @@ function joinRoom(room: string) {
     if (currentChat && currentChat.chatName) {
       const newMessages = immer(messages, (draft) => {
         draft[currentChat.chatName].push({
-          sender: AuthService.getUsername(),
+          sender: userdata.username,
           content: message,
         });
       });
@@ -347,7 +371,7 @@ function joinRoom(room: string) {
         draft[room] = incomingMessages;
 
       draft[currentChat.chatName].push({
-        sender: AuthService.getUsername(),
+        sender: userdata.username,
         content: message,
       });
     });
@@ -355,16 +379,16 @@ function joinRoom(room: string) {
     setMessages(newMessages);
   }
 
-  interface ChatProps {
-    // Define the props here, including the joinRoom prop
-    message: string;
-    passwordError: boolean;
-    handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-    sendMessage: () => void;
-    changeChatPassword: (newpass: string) => void;
-    // ...other props...
-    joinRoom: (room: string) => void; // Define the joinRoom prop here
-  }
+  // interface ChatProps {
+  //   // Define the props here, including the joinRoom prop
+  //   message: string;
+  //   passwordError: boolean;
+  //   handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  //   sendMessage: () => void;
+  //   changeChatPassword: (newpass: string) => void;
+  //   // ...other props...
+  //   joinRoom: (room: string) => void; // Define the joinRoom prop here
+  // }
 
 
   function toggleChat(currentChat: any){
@@ -380,7 +404,7 @@ function joinRoom(room: string) {
 
 
   useEffect(() => {
-
+    if (userdata !== null) {
     const token =  AuthService.getToken();
 
     if (!token) {
@@ -388,14 +412,14 @@ function joinRoom(room: string) {
     }
 
 
-    const userdata = {
-      id: AuthService.getId(),
-      name: AuthService.getUsername(),
-    };
-    if (userdata.name == "")
-    {
-      window.location.href = "/login";
-    }
+    // const userdata = {
+    //   id: userdata.id,
+    //   name: userdata.username,
+    // };
+    // if (userdata.username == "")
+    // {
+    //   window.location.href = "/login";
+    // }
 
  socketRef.current  = io("http://localhost:8000", {
   reconnection: true, 
@@ -403,7 +427,7 @@ function joinRoom(room: string) {
 });
     socketRef?.current?.on("connect", () => {
       setConnected(true);
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.name});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
     });
 
@@ -480,11 +504,11 @@ function joinRoom(room: string) {
 
       setBlockedUsers((prevBlockedUsers) => ({
         ...prevBlockedUsers,
-        [userdata.name]: blockedUsers,
+        [userdata.username]: blockedUsers,
       }));
       setUserChannels((prevChannels) => ({
         ...prevChannels,
-        [userdata.name]: channels,
+        [userdata.username]: channels,
       }));
         setAccessType((prevAccessType) => ({
           ...prevAccessType,
@@ -499,7 +523,7 @@ function joinRoom(room: string) {
         ...prevMessages,
         [channelName]: [],
       }));
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.name});
+    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
 
     });
     
@@ -521,11 +545,12 @@ function joinRoom(room: string) {
     return () => {
     socketRef?.current?.disconnect();
     };
-  }, []);
+  }
+  }, [userdata]);
 
   let body;
   if (connected) {
-    
+    console.log("connected", userdata.username)
     body = (
       <Chat
         message={message}
@@ -534,7 +559,7 @@ function joinRoom(room: string) {
         sendMessage={sendMessage}
         changeChatPassword={changeChatPassword}
         removeChatPassword={removeChatPassword}
-        yourId={socketRef.current ? AuthService.getUsername() : ""}
+        yourId={socketRef.current ? userdata.username : ""}
         allUsers={allUsers}
         bannedmembers={bannedmembers}
         blockedUsers={blockedUsers}

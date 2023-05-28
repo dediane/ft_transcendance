@@ -163,6 +163,8 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
       sockets: [socket.id],
     };
     this.users.push(user);
+  console.log("new user", user)
+
   }
   const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
 
