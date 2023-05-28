@@ -23,6 +23,7 @@ import { subscribeOn } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
 
 type GameProps = {
   id: number;

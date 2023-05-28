@@ -90,7 +90,7 @@ console.log(userdata)
       ...prevMessages,
       [data.chatName]: [],
     }));
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
   }
 
   function createDm(username2: string) {
@@ -101,7 +101,7 @@ console.log(userdata)
     if (datachan.username1 === datachan.username2)
       return;
     socketRef?.current?.emit("create DM", datachan);
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
   }
 
   function inviteToPlay(sender :string, otherUser: string)
@@ -145,7 +145,7 @@ console.log(userdata)
       chatName : "",
     }));
 
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
   }
 
 
@@ -156,7 +156,7 @@ console.log(userdata)
       channelName: currentChat.chatName,
     };
     socketRef?.current?.emit("remove password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
 
@@ -169,7 +169,7 @@ console.log(userdata)
       newPassword : newpass,
     };
     socketRef?.current?.emit("change password", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
 
@@ -187,7 +187,7 @@ console.log(userdata)
       [currentChat.chatName]: updatedMembers,
     }));
     setNewMember("");
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
 
@@ -205,7 +205,7 @@ console.log(userdata)
     }));
 
     socketRef?.current?.emit("add admin", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
 
@@ -225,7 +225,7 @@ console.log(userdata)
     }));
 
     socketRef?.current?.emit("remove admin", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
 
@@ -246,7 +246,7 @@ console.log(userdata)
       [currentChat.chatName]: updatedMembers,
     }));
     socketRef?.current?.emit("remove member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
     if (userdata.username === userNameToRemoveasMember)
     {
       setCurrentChat((prevState) => ({
@@ -271,7 +271,7 @@ console.log(userdata)
       [currentChat.chatName]: updatedBannedMembers,
     }));
     socketRef?.current?.emit("ban member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
   
@@ -285,7 +285,7 @@ console.log(userdata)
     };
   
     socketRef?.current?.emit("mute member", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
 
@@ -304,7 +304,7 @@ console.log(userdata)
     }));
     
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
 
   }
@@ -326,7 +326,7 @@ console.log(userdata)
     }));
 
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
   }
   
@@ -427,7 +427,7 @@ function joinRoom(room: string) {
 });
     socketRef?.current?.on("connect", () => {
       setConnected(true);
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
     });
 
@@ -523,7 +523,7 @@ function joinRoom(room: string) {
         ...prevMessages,
         [channelName]: [],
       }));
-    socketRef?.current?.emit("join server", {id: userdata.id, name: userdata.username});
+    socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
     });
     
