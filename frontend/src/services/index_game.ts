@@ -1,13 +1,17 @@
 import { Socket } from "socket.io-client";
-import { useRef } from "react";
-import AuthService from "../services/authentication-service"
+import { useEffect, useRef, useState } from "react";
+import authenticationService from "../services/authentication-service"
+import { useRouter } from "next/router";
+import userService from "./user-service";
 
 type DefaultEventsMap = /*unresolved*/ any;
 class GameService {
 
-    public async joinGameRoom(socket : Socket<DefaultEventsMap, DefaultEventsMap> | null, roomId: string, mode: string ): Promise<boolean>
+    public async joinGameRoom(socket : Socket<DefaultEventsMap, DefaultEventsMap> | null, roomId: string, mode: string, id : number, username: string): Promise<boolean>
     {
-        const payload = {message: roomId, userid: AuthService.getId(), username: AuthService.getUsername()}
+
+        const payload = {message: roomId, userid: id, username: username}
+        console.log(payload);
         return new Promise((rs, rj) => {
             if (mode == "Classic")
             {

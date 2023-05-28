@@ -7,6 +7,7 @@ import { Activate2fa } from "@/components/TwoFactor";
 import { AvatarUploader } from "@/components/Avatar";
 import { Button } from "@chakra-ui/react";
 import { FaEdit } from "react-icons/fa";
+import { io } from "socket.io-client";
 
 const Asset = ({title , value} : {title: string, value :any}) => {
     return(
@@ -44,6 +45,8 @@ export const Profil = () => {
     const [isAvatar, setIsAvatar] = useState(false);
     const [AvatarUrl, setAvatarUrl] = useState("");
     const [isDynamic, setIsDynanic] = useState(false);
+    const [isOnline, setIsOnline] = useState(false);
+    const [isGaming, setIsGaming] = useState(false);
 
     useEffect(()=>{
         const fetch_profile = async() => {
@@ -56,6 +59,15 @@ export const Profil = () => {
             router.push('/login')
         fetch_profile()
     }, [isDynamic, router])
+
+    useEffect(() => {
+        const socket = io('http://localhost:8000'); // Replace with your server URL or access the existing socket instance
+        socket.on('connect', () => {
+            setIsOnline(true);
+        }
+        );
+    }, [isOnline])
+
 
     const logout = () => {
         authenticationService.deleteToken()

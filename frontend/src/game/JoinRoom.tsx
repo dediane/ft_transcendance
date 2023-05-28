@@ -1,13 +1,15 @@
 import React, { useContext } from "react";
 import styled from "@emotion/styled";
-import { useState } from "react";
 import { useConst } from "@chakra-ui/react";
 import socketService from "../services/index_socket_game"
 import gameService from "../services/index_game"
 import AuthService from "../services/authentication-service"
 import {ContextGame} from '../game/GameContext'
 import { Socket } from "socket.io-client";
-
+import { useEffect, useRef, useState } from "react";
+import authenticationService from "../services/authentication-service"
+import { useRouter } from "next/router";
+import userService from "../services/user-service";
 
 const JoinRoomContainer = styled.div`
   width: 100%;
@@ -55,6 +57,19 @@ export function JoinRoom(props: IJoinRoomProps)
 {
   const [roomName, setRoomName] = useState("GameRoom");
   const [isJoining, setJoining] = useState(false);
+  const [userdata, setUserData] = useState({username: "", id: ""});
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetch_profile = async () => {
+      const result = await userService.profile()
+      setUserData({...result})
+    }
+    if(!authenticationService.getToken()) 
+          router.push('/login')
+    fetch_profile();
+  }, [router]);
+
 
   const {socket} = useContext(ContextGame);
 
@@ -69,7 +84,7 @@ export function JoinRoom(props: IJoinRoomProps)
     setJoining(true);
     
     const joined = await gameService
-    .joinGameRoom(socket.current, roomName, props.mode).catch((err) => {
+    .joinGameRoom(socket.current, roomName, props.mode, Number(userdata.id), userdata.username).catch((err) => {
       alert(err);
     });
     setJoining(false);

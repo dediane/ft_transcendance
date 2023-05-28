@@ -5,9 +5,11 @@ import Confetti from 'react-confetti'
 import { useState, useEffect } from "react";
 import { Socket, io } from 'socket.io-client';
 import { useRef } from 'react';
-import AuthService from '../services/authentication-service'
+import authenticationService from "@/services/authentication-service";
 import { MySketchProps } from '@/components/Game';
 import React from 'react';
+import userService from '@/services/user-service';
+import { useRouter } from "next/router";
 
   export default function sketch(p5: P5CanvasInstance<MySketchProps>)  {
 
@@ -15,8 +17,7 @@ import React from 'react';
     // like this it's can be responssive
     
     let p5WrapperDiv = document.getElementById("canvas_size")
-    const username = AuthService.getUsername();
-
+   
     // fixed canvas in backend
     const canvasw = 1000;
     const canvash = 1000;
@@ -45,7 +46,7 @@ import React from 'react';
       let left_score: number = 0;
       let right_score: number = 0;
       
-      const token =  AuthService.getToken();
+      //const token =  AuthService.getToken();
       let left = false;
       let puckx: number;
       let pucky: number
@@ -60,20 +61,26 @@ import React from 'react';
     let padl_y: number;
     let padl_w: number;
     let padl_h: number;
-    let padl_n: string;
+    let padl_n: string; 
 
-    if (!token) {
-      // Redirect to the login page
-      window.location.href = "/login";
-    }
+    const [userdata, setUserData] = useState({username: "", id: ""});
+    const router = useRouter();
+
+    useEffect(() => {
+      const fetch_profile = async () => {
+        const result = await userService.profile()
+        setUserData({...result})
+      }
+      if(!authenticationService.getToken()) 
+            router.push('/login')
+      fetch_profile();
+    }, [router]);
+    // const userdata = {
+    //   id: AuthService.getId(),
+    //   name: AuthService.getUsername(),
+    // };
     
-    
-    const userdata = {
-      id: AuthService.getId(),
-      name: AuthService.getUsername(),
-    };
-    
-    const payload = {width: width, height: height, id: userdata.id, name: userdata.name}
+    const payload = {width: width, height: height, id: userdata.id, name: userdata.username}
     
     p5.updateWithProps = props => {
       let socket = props.socket.current;

@@ -31,18 +31,21 @@ export class UserController {
     return this.userService.getAvatar(req.user.username);
   }
 
+  @UseGuards(Jwt2faAuthGuard)
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.userService.findAll();
   }
 
+  @UseGuards(Jwt2faAuthGuard)
   @UseGuards (JwtAuthGuard)
   @Get()
   findOne(@Param() params: string) {
     return this.userService.findOnebyEmail(params);
   }
 
+  @UseGuards(Jwt2faAuthGuard)
   @UseGuards (JwtAuthGuard)
   @Post('username')
   async findByUsername(@Body() req: any) {
@@ -51,6 +54,7 @@ export class UserController {
     return await this.userService.findByUsername(req.username);
   }
 
+  @UseGuards(Jwt2faAuthGuard)
   @UseGuards (JwtAuthGuard)
   @Post('avatar')
   async uploadAvatar(@Body() body: any, @Request() req) {
