@@ -1,8 +1,11 @@
 import userService from "@/services/user-service";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "../styles/Profile.module.css"
 import { useRouter } from "next/router";
 import { Asset, Asset2, Asset3, Asset4, Asset5, Asset6 } from "./Stats";
+import { ContextGame } from "@/game/GameContext";
+import { Socket } from "socket.io-client";
+type DefaultEventsMap = /*unresolved*/ any;
 
 export default function Homepage() {
     return (
@@ -14,9 +17,39 @@ export default function Homepage() {
     )
 }
 
+export const Online = () => {
+    return(
+    <div className={styles.inline}>
+        <div className={styles.pastille}/>
+        <p className={styles.status}>Online</p>
+    </div>
+    )
+}
+
+export const Offline = () => {
+    return(
+    <div className={styles.inline}>
+        <div className={styles.pastille2}/>
+        <p className={styles.status}>Offline</p>
+    </div>
+    )
+}
+
+export const InGame = () => {
+    return(
+    <div className={styles.inline}>
+        <div className={styles.pastille3}/>
+        <p className={styles.status}>Playing Pong</p>
+    </div>
+    )
+}
+
 export const PublicProfil = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
+    const[userStatus, setUserStatus] = useState("offline") // ["online", "offline", "ingame"
     const router = useRouter();
+    //socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> 
+    const {socket} = useContext(ContextGame);
 
     // public?username={username}
     useEffect(()=>{
@@ -31,6 +64,20 @@ export const PublicProfil = () => {
         fetch_profile()
     }, [router])
 
+    useEffect(() => {
+        const handleSocket = async () => {
+        if (socket && socket.current) {
+            socket.current.on("user_status", (data: any) => {
+                console.log("ici dans handlesocket")
+                if (data.username === user.username) {
+                    setUserStatus(data.status)
+                }
+            })
+        }
+    }
+    handleSocket()
+    }, [socket, user])
+
     return (
         <>
         <div className={styles.card}>
@@ -41,6 +88,9 @@ export const PublicProfil = () => {
                     {!user.avatar && <picture><img src="/default.png" alt="user avatar" className={styles.profilepicture}/></picture>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
+                    <Online />
+                    <Offline />
+                    <InGame />
                     <Asset title={'username'} value={user.username} />
                     </div>
                 </div>

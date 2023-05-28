@@ -1,15 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Socket, Server } from 'socket.io';
 import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
+import { AuthGuard } from '@nestjs/passport';
+import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-
+@UseGuards(Jwt2faAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('game')
 export class GameController {
   constructor(private readonly gameService: GameService) {}
-
+  
   @Post()
   create(@Body() createGameDto: CreateGameDto) {
     return this.gameService.create(createGameDto);

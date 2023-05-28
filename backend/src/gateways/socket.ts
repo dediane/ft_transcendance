@@ -659,6 +659,7 @@ for (const user of this.users) {
         return;
       }
       else {
+        this.server.emit("user_status", {status: "true"});
         if (this.puck) { // Check if this.puck is defined
           this.puck.update();
           this.puck.edges();
