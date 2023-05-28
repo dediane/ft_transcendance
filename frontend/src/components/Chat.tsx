@@ -9,10 +9,15 @@ import styles from '@/styles/Chat.module.css';
 function Chat
 (props
   :  {
-    inviteReceivedMap: { [key: string]: any };
+    // inviteReceivedMap: { [key: string]: any };
     inviteToPlay(yourId: string, otherUser: any): unknown; rooms: any; createDm: (arg0: string) => void; changeChatPassword: (arg0: string) => void; users: { username: string; }[]; addMember: (arg0: string) => void; 
-  currentUser: { blockedUsers: any; adminUsers: any; username: string };
- blockedUsers: { [x: string]: string | string[]; }; yourId: string; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType?: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | null | undefined; }) => void; accessType: string; messages: any[]; checkChatPassword: (arg0: string) => void; passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; userChannels: { [x: string]: any[]; }; allUsers: { username: string }[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void; }
+  joinRoom: (room: string) => void;
+  connectedRooms: string[];
+  inviteReceived: boolean;
+  inviteReceivedMap: { [key: string]: any };
+  setInviteReceivedMap: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+  currentUser: { blockedUsers: any; adminUsers: any; username: string }; 
+ blockedUsers: { [x: string]: string | string[]; }; yourId: string; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType?: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | null | undefined; }) => void; accessType: string; messages: any[]; /*checkChatPassword: (arg0: string) => void; */passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; userChannels: { [x: string]: any[]; }; allUsers: { username: string }[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void; }
   ) 
   {
   // const [InviteAcceptedMap, setInviteAcceptedMap] = useState([]);
@@ -54,6 +59,7 @@ function Chat
     // do something with the new user
     closeDmModal();
   };
+
 
 
   function handleDmChange(event: { target: { value: React.SetStateAction<string>; }; }) {
