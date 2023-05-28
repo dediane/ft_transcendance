@@ -6,6 +6,7 @@ import socketService from "../services/index_socket_game"
 import gameService from "../services/index_game"
 import AuthService from "../services/authentication-service"
 import {ContextGame} from '../game/GameContext'
+import { Socket } from "socket.io-client";
 
 
 const JoinRoomContainer = styled.div`
@@ -45,7 +46,7 @@ const JoinRoomContainer = styled.div`
     color: #8e44ad;
   }
 `;
-
+type DefaultEventsMap = /*unresolved*/ any;
 interface IJoinRoomProps {
   mode : string;
 }
@@ -55,7 +56,7 @@ export function JoinRoom(props: IJoinRoomProps)
   const [roomName, setRoomName] = useState("GameRoom");
   const [isJoining, setJoining] = useState(false);
 
-  const {socket} = React.useContext(ContextGame);
+  const {socket} = useContext(ContextGame);
 
   const handleRoomName = (e: React.ChangeEvent<any>) => {
     const value = e.target.value;
@@ -68,7 +69,7 @@ export function JoinRoom(props: IJoinRoomProps)
     setJoining(true);
     
     const joined = await gameService
-    .joinGameRoom(socket, roomName, props.mode).catch((err) => {
+    .joinGameRoom(socket.current, roomName, props.mode).catch((err) => {
       alert(err);
     });
     setJoining(false);
