@@ -11,7 +11,7 @@ function Messenger2() {
 
 
 
-  const [userdata, setUserData] = useState({ username: "", id: "" });
+  const [userdata, setUserData] = useState({id: "",  username: ""});
   const router = useRouter();
 
   const fetchProfile = async () => {
