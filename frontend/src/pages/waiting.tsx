@@ -17,29 +17,75 @@ const WelcomeText = styled.h1`
   justify-content: center;
 `;
 
-export default function Wait() {
+// export default function Wait() {
     
-    const {socket} = useContext(ContextGame);
-    const [userdata, setUserData] = useState({username: "", id: ""});
-    const router = useRouter();
+//     const {socket} = useContext(ContextGame);
+//     const [userdata, setUserData] = useState({username: "", id: ""});
+//     const router = useRouter();
     
-    // useEffect(() => {
+//     // useEffect(() => {
         
-    // }, [join, router])
+//     // }, [join, router])
     
-    useEffect(() => {
+//     useEffect(() => {
+//     const join = useCallback(async () => {
+//         const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
+// }, [socket]);
+//     const fetch_profile = async () => {
+//         const result = await userService.profile()
+//         setUserData({...result})
+//     }
+//         if(!authenticationService.getToken()) 
+//         router.push('/login')
+//         fetch_profile();
+//         join();
+//     }, [router, join]);
+    
+//     if (!socket)
+//         return null;
+
+//     return (
+//         <div>
+//             <WelcomeText style={{fontWeight: 'bold', fontSize: "2rem"}}>
+//                 Wait your mate come to play </WelcomeText> 
+//         </div>
+//     )
+// }
+
+
+
+
+
+export default function Wait() {
+
+
+  const [userdata, setUserData] = useState({id: "",  username: ""});
+  const router = useRouter();
+
+  const fetchProfile = async () => {
+    const result = await userService.profile();
+    setUserData({ ...result });
+  };
+
+  useEffect(() => {
+    if (!authenticationService.getToken()) {
+      router.push('/login');
+    } else {
+      fetchProfile();
+    }
+  }, [router]);
+
+
+    
+    const {socket} :any = useContext(ContextGame);
     const join = useCallback(async () => {
         const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
-}, [socket]);
-    const fetch_profile = async () => {
-        const result = await userService.profile()
-        setUserData({...result})
-    }
-        if(!authenticationService.getToken()) 
-        router.push('/login')
-        fetch_profile();
-        join();
-    }, [router, join]);
+      }, [socket]);
+    useEffect(() => {
+        if (userdata !== null) {
+            join();
+        }
+    }, [userdata, join]);
     
     if (!socket)
         return null;
