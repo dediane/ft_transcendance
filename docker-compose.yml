@@ -11,10 +11,19 @@ services:
     ports:
       - 3000:3000
   postgres:
+    container_name: postgres
     image: postgres:13
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db_transcendance
-    ports:
-      - 5432:5432
+    volumes:
+      - /var/folders/postgres:/data/postgres
+    env_file:
+      - ./backend/.env
+
+networks:
+  postgres:
+    driver: bridge
