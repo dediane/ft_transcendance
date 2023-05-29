@@ -49,6 +49,7 @@ export class AuthService {
       async generateTwoFactorAuthenticationSecret(user: User): Promise<{secret: string, otpAuthUrl: any}> {
         const secret = authenticator.generateSecret();
         const otpAuthUrl = authenticator.keyuri(user.email, 'AUTH_APP_NAME', secret);
+        console.log("MYUSER=", user)
         await this.usersService.setTwoFactorAuthenticationSecret(secret, user.id);
         return {secret, otpAuthUrl}
       }

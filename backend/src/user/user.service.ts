@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -139,7 +139,9 @@ export class UserService {
     .select('user')
     .where('user.id = :id', {id})
     .getOne();
-    delete user.password
+    if (user.password) {
+      delete user.password
+    }
     return user;
   }
   async removeFriendRequest(sender_id: any, receiver_id: any): Promise<void> {
@@ -417,5 +419,5 @@ async update(id: number, updateUserDto: UpdateUserDto) {
   async save(user: User): Promise<User> {
     return this.userRepository.save(user);
   }
-  
+
 }

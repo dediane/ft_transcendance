@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import authenticationService from '@/services/authentication-service'
 import Confetti from 'react-dom-confetti';                                                                  
 
-const ConnectOTP = () => {
+export const ConnectOTP = () => {
   const router = useRouter()
   const otpLoad = (code: string) => {
     if(code.length === 6) {

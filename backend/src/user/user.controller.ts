@@ -7,6 +7,7 @@ import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { get } from 'http';
+import { FortyTwoAuthGuard } from 'src/auth/guards/fortytwo_auth.guard';
 
 @Controller('user')
 export class UserController {

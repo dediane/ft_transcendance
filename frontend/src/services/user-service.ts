@@ -24,6 +24,10 @@ const userService = {
     return axiosInstance.post("auth/2fa/generate").then((res: { data: any }) => res.data)
   },
 
+  is2fa() {
+    return axiosInstance.get("auth/2fa/is-enabled").then((res: { data: any }) => res.data)
+},
+
   authenticate2fa(twoFactorAuthenticationCode :string) {
     return axiosInstance.post("auth/2fa/authenticate", { twoFactorAuthenticationCode }).then((res: { data: any }) => res.data)
   },
