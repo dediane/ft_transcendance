@@ -57,7 +57,12 @@ export const Profil = () => {
         }
         if(!authenticationService.getToken()) 
             router.push('/login')
+        try {
         fetch_profile()
+        } catch (error) {
+            console.log(error)
+            logout();
+        }
     }, [isDynamic, router])
 
     useEffect(() => {
