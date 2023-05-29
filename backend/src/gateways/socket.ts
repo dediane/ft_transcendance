@@ -154,6 +154,8 @@ async handleGetUsers(socket: Socket, userdata: {id: string, name: string}) {
 
 @SubscribeMessage('join server')
 async handleJoinServer(socket: Socket, userdata: {id: string, username: string}) {
+  if (userdata.id == '' || userdata.username == '')
+    return;
   const userIndex = this.users.findIndex((u) => u.id === userdata.id);
   if (userIndex >= 0) {
     this.users[userIndex].sockets.push(socket.id);
