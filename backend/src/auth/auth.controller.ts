@@ -91,7 +91,7 @@ export class AuthController {
 
 
   @Get('2fa/is-enabled')
-  @UseGuards(FortyTwoAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async is2fa(@Request() req) {
     return req.user.is2fa;
   }
