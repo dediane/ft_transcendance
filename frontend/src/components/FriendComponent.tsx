@@ -69,7 +69,7 @@ export const Friends = () => {
     <div>
       {/* Friends List */}
       <h2 className={styles.h1}>My friends</h2>
-      {friends.length ? friends.map((current: any, key: any) => {
+      {friends && friends.length > 0 ? friends.map((current: any, key: any) => {
         const { username, id } = current;
         // console.log("FRIEND CURRENT", current)
         return (
