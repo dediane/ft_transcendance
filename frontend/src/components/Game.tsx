@@ -36,7 +36,7 @@ export default function Game() {
           router.push('/login')
     fetch_profile();
   }, [router]);
-// id={userdata.id} username={userdata.username} 
+
   return (
     <div id="canvas_size">
       <ReactP5Wrapper sketch={sketch} socket={socket} id={userdata.id} username={userdata.username} />

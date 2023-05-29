@@ -36,7 +36,7 @@ export default function Game() {
   }, [router]);
   return (
     <div id="canvas_size">
-      <ReactP5Wrapper sketch={sketch} socket={socket} />
+      <ReactP5Wrapper sketch={sketch} socket={socket} id={userdata.id} username={userdata.username}/>
     </div>
   )
 }
