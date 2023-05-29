@@ -575,8 +575,8 @@ else {
     const filteredUsers = UserListPublic(props.currentChat.chatName);
     const filteredUsersUsernames = filteredUsers?.map((user: { username: any; }) => user.username);
     
-  function seeProfile(username: string): void {
-    window.location.href = `/public?username=${username}`;
+  function seeProfile(id: number): void {
+    window.location.href = `/public?username=${id}`;
   }
 
   function playPong(): void {
@@ -701,7 +701,7 @@ else {
         <div>
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Users</h3>
 <ul>
-  {props.users?.map((user: { username: string} , i: number) => (
+  {props.users?.map((user: any , i: number) => (
     user.username !== props.currentUser.username && (
       <li key={i}>
         <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>
@@ -719,8 +719,7 @@ else {
                   Block
                 </Button4>
               )}
-              </div>
-               <Button3 onClick={() => seeProfile(user.username)}>
+               <Button3 onClick={() => seeProfile(user.id)}>
                     Profile
                   </Button3>
             </>

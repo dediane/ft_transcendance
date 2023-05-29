@@ -45,7 +45,7 @@ function Auth() {
     }
 
     get_code()
-  }) 
+  }, []) 
   return (
     <div>
       {otp && <ConnectOTP/>}
