@@ -5,7 +5,50 @@ import { useRouter } from "next/router";
 import { Asset, Asset2, Asset3, Asset4, Asset5, Asset6 } from "./Stats";
 import { ContextGame } from "@/game/GameContext";
 import { Socket } from "socket.io-client";
+
 type DefaultEventsMap = /*unresolved*/ any;
+
+
+// const OnlineStatusButton = () => {
+//     const [isOnline, setIsOnline] = useState(false);
+  
+//     useEffect(() => {
+//         const handleOnlineStatusChange = () => {
+//         console.log("here in handle change status")
+//           setIsOnline(window.navigator.onLine);
+//         };
+    
+//         if (typeof window !== 'undefined' && window.navigator) {
+//           setIsOnline(window.navigator.onLine);
+    
+//           window.addEventListener('online', handleOnlineStatusChange);
+//           window.addEventListener('offline', handleOnlineStatusChange);
+    
+//           return () => {
+//             window.removeEventListener('online', handleOnlineStatusChange);
+//             window.removeEventListener('offline', handleOnlineStatusChange);
+//           };
+//         }
+//       }, []);
+
+//     // const handleOnlineStatusChange = () => {
+//     //   setIsOnline(window.navigator.onLine);
+//     // };
+  
+//     // useEffect(() => {
+//     //   window.addEventListener('online', handleOnlineStatusChange);
+//     //   window.addEventListener('offline', handleOnlineStatusChange);
+  
+//     //   return () => {
+//     //     window.removeEventListener('online', handleOnlineStatusChange);
+//     //     window.removeEventListener('offline', handleOnlineStatusChange);
+//     //   };
+//     // }, []);
+//     return (
+//         <button>{isOnline ? 'Online' : 'Offline'}</button>
+//       );
+// }
+
 
 export default function Homepage() {
     return (
@@ -46,10 +89,9 @@ export const InGame = () => {
 
 export const PublicProfil = () => {
     const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
-    const[userStatus, setUserStatus] = useState("offline") // ["online", "offline", "ingame"
     const router = useRouter();
-    //socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> 
     const {socket} = useContext(ContextGame);
+    const {UserStatus, setUserStatus} = useContext(ContextGame);
 
     // public?username={username}
     useEffect(()=>{
@@ -104,7 +146,8 @@ export const PublicProfil = () => {
                     {!user.avatar && <picture><img src="/default.png" alt="user avatar" className={styles.profilepicture}/></picture>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
-                    {userStatus === "ingame" ? <InGame /> : userStatus === "online" ? <Online /> : <Offline />}
+                    {UserStatus === "ingame" ? <InGame /> : UserStatus === "online" ? <Online /> : <Offline />}
+                    {/* <OnlineStatusButton></OnlineStatusButton> */}
                     <Asset title={'username'} value={user.username} />
                     </div>
                 </div>
