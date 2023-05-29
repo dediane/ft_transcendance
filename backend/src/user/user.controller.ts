@@ -52,7 +52,7 @@ export class UserController {
   async findByUsername(@Body() req: any) {
     if (!req.username)
       return { error: 'Username not provided' };
-    return await this.userService.findByUsername(req.username);
+    return await this.userService.findOnebyId2(req.username);
   }
 
   @UseGuards(Jwt2faAuthGuard)
@@ -73,7 +73,7 @@ export class UserController {
   async updateUsername(@Body() req: any) {
     if (!req.newusername)
       return {  status: false, error: 'No username provided' };
-    const res = await this.userService.findAndUpdateUserByUsername(req.username, req.newusername)
+    const res = await this.userService.findAndUpdateUserByUsername(req.username, req.newusername, req.id)
     if (res == false)
       return { status: false, error: 'Username already taken' };
     else 
