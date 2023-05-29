@@ -45,13 +45,9 @@ function MemberList({ isAdmin , accessType, members, kickFunction, banFunction, 
           <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
             {member}
           </span>
-            {/* Display kick button only if the channel is private and the user is an admin */}
-            {isAdmin && accessType === 'private' && (
-              <Button onClick={() => handleKickClick(member)}>Kick</Button>
-            )}
-            {/* Display ban and mute buttons for all admins */}
             {isAdmin && (
               <div>
+              <Button onClick={() => handleKickClick(member)}>Kick</Button>
                 <Button onClick={() => handleBanClick(member)}>Ban</Button>
                 <Button onClick={() => handleMuteClick(member)}>Mute</Button>
               </div>

@@ -27,7 +27,6 @@ function Messenger2() {
     }
   }, [router]);
 
-console.log(userdata)
   
   const [connected, setConnected] = useState(false);
   const [channels, setChannels] = useState({});
@@ -550,7 +549,6 @@ function joinRoom(room: string) {
 
   let body;
   if (connected) {
-    console.log("connected", userdata.username)
     body = (
       <Chat
         message={message}

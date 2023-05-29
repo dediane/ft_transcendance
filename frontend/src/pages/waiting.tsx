@@ -17,16 +17,39 @@ const WelcomeText = styled.h1`
   justify-content: center;
 `;
 
-// export default function Wait() {
+export default function Wait() {
     
-//     const {socket} = useContext(ContextGame);
-//     const [userdata, setUserData] = useState({username: "", id: ""});
-//     const router = useRouter();
-    
-//     // useEffect(() => {
-        
-//     // }, [join, router])
-    
+  const {socket} = useContext(ContextGame);                           // i need socket to communicate with backend
+  const [userdata, setUserData] = useState({username: "", id: ""});   // user's data
+  const router = useRouter();                                         // router to redirect to login page
+  
+  // check the socket exist
+  if (!socket)
+  return ;
+  const join = async () => {
+    const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
+  }
+  
+  // use effect to call join function
+  useEffect(() => {
+    join();
+  }, [router]);
+  
+  // catch the user profile
+  const fetchProfile = async () => {
+    const result = await userService.profile();
+    setUserData({ ...result });
+  };
+
+  // use effect to redirect if someone is not log + set user's data
+  useEffect(() => {
+      if (!authenticationService.getToken()) {
+        router.push('/login');
+      } else {
+        fetchProfile();
+      }
+    }, [router]);
+
 //     useEffect(() => {
 //     const join = useCallback(async () => {
 //         const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
@@ -40,60 +63,11 @@ const WelcomeText = styled.h1`
 //         fetch_profile();
 //         join();
 //     }, [router, join]);
-    
-//     if (!socket)
-//         return null;
 
-//     return (
-//         <div>
-//             <WelcomeText style={{fontWeight: 'bold', fontSize: "2rem"}}>
-//                 Wait your mate come to play </WelcomeText> 
-//         </div>
-//     )
-// }
-
-
-
-
-
-export default function Wait() {
-
-
-  const [userdata, setUserData] = useState({id: "",  username: ""});
-  const router = useRouter();
-
-  const fetchProfile = async () => {
-    const result = await userService.profile();
-    setUserData({ ...result });
-  };
-
-  useEffect(() => {
-    if (!authenticationService.getToken()) {
-      router.push('/login');
-    } else {
-      fetchProfile();
-    }
-  }, [router]);
-
-
-    
-    const {socket} :any = useContext(ContextGame);
-    useEffect(() => {
-        const join = async () => {
-          if (userdata !== null) {
-            await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
-          }
-        };
-        join();
-      }, [userdata, socket]);
-    
-    if (!socket)
-        return null;
-
-    return (
-        <div>
-            <WelcomeText style={{fontWeight: 'bold', fontSize: "2rem"}}>
-                Wait your mate come to play </WelcomeText> 
-        </div>
-    )
+  return (
+      <div>
+          <WelcomeText style={{fontWeight: 'bold', fontSize: "2rem"}}>
+              Wait your mate come to play </WelcomeText> 
+      </div>
+  )
 }
