@@ -64,6 +64,56 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private sock = new Map<number, Socket>(); // userid, socket
   private sockE = new Map<number, Socket>();// userid, socket
   private sockC = new Map<number, Socket>();// userid, socket
+  private allUsers = new Map<string, boolean>();
+  private  first = false;
+
+ 
+  @SubscribeMessage('online')
+async handleOnline(socket: Socket, username: string) {
+  if (this.first == false)
+  {
+    const allUsers = await this.userService.findAll();
+
+    for (const user of allUsers) {
+      this.allUsers.set(user.username, false);
+    }
+    // console.log("this all users in online susc", this.allUsers)
+    this.first = true;
+  }
+  this.allUsers.set(username, true);
+  console.log("username " , username, true)
+  console.log("this all users in offline susc", this.allUsers)
+
+
+}
+
+@SubscribeMessage('offline')
+async handleOffline(socket: Socket, username: string) {
+  if (this.first == false)
+  {
+    const allUsers = await this.userService.findAll();
+
+    for (const user of allUsers) {
+      this.allUsers.set(user.username, false);
+    }
+
+    this.first = true;
+  }
+  console.log("username " , username, false)
+
+    this.allUsers.set(username, false);
+    console.log("this all users in offline susc", this.allUsers)
+
+}
+
+@SubscribeMessage('isConnected')
+async handleIsConnected(socket: Socket, username: string)
+{
+  const bool = this.allUsers.get(username);
+  console.log("user " + username + " is in isconnected " + bool)
+  this.server.emit('isConnected', bool);
+
+}
 
   async handleConnection(socket: Socket) {
     const users = await this.messageService.findAll();
@@ -151,6 +201,9 @@ async handleGetUsers(socket: Socket, userdata: {id: string, name: string}) {
   this.server.to(socket.id).emit('all users', payload);
 
 }
+
+
+
 
 @SubscribeMessage('join server')
 async handleJoinServer(socket: Socket, userdata: {id: string, username: string}) {

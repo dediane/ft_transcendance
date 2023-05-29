@@ -8,48 +8,6 @@ import { Socket } from "socket.io-client";
 
 type DefaultEventsMap = /*unresolved*/ any;
 
-
-// const OnlineStatusButton = () => {
-//     const [isOnline, setIsOnline] = useState(false);
-  
-//     useEffect(() => {
-//         const handleOnlineStatusChange = () => {
-//         console.log("here in handle change status")
-//           setIsOnline(window.navigator.onLine);
-//         };
-    
-//         if (typeof window !== 'undefined' && window.navigator) {
-//           setIsOnline(window.navigator.onLine);
-    
-//           window.addEventListener('online', handleOnlineStatusChange);
-//           window.addEventListener('offline', handleOnlineStatusChange);
-    
-//           return () => {
-//             window.removeEventListener('online', handleOnlineStatusChange);
-//             window.removeEventListener('offline', handleOnlineStatusChange);
-//           };
-//         }
-//       }, []);
-
-//     // const handleOnlineStatusChange = () => {
-//     //   setIsOnline(window.navigator.onLine);
-//     // };
-  
-//     // useEffect(() => {
-//     //   window.addEventListener('online', handleOnlineStatusChange);
-//     //   window.addEventListener('offline', handleOnlineStatusChange);
-  
-//     //   return () => {
-//     //     window.removeEventListener('online', handleOnlineStatusChange);
-//     //     window.removeEventListener('offline', handleOnlineStatusChange);
-//     //   };
-//     // }, []);
-//     return (
-//         <button>{isOnline ? 'Online' : 'Offline'}</button>
-//       );
-// }
-
-
 export default function Homepage() {
     return (
         <>
@@ -105,8 +63,73 @@ export const PublicProfil = () => {
         }
         fetch_profile()
     }, [router])
+    const handleOnlineStatus = () => {
+        console.log("navigator.onLine", navigator.onLine)
+        if (user.username)
+        {
 
+            if (navigator.onLine == true && user.username)
+            {
+                console.log("here with online ", user.username);
+                // setUserStatus("online");
+                socket?.current?.emit("online", user.username);
+                
+            }
+            else
+            {
+                console.log("here with Offline ", user.username);
+                // setUserStatus("offline");
+                socket?.current?.emit("offline", user.username);
+                
+            }
+        }
+
+      };
+    
+      const [allusers, setAllUsers] = useState();
     useEffect(() => {
+        console.log("Initial online status", navigator.onLine); // Log the initial online status
+
+
+        //socket?.current?.emit("get users");
+        //socket?.current?.on("get users", allusers)
+
+        handleOnlineStatus();
+       
+          console.log(UserStatus);
+          console.log("22 online status", navigator.onLine); // Log the initial online status
+
+      
+          window.addEventListener('online', handleOnlineStatus);
+          window.addEventListener('offline', handleOnlineStatus);
+      
+        const handlestatus = () => {
+            // const payload = {username: user.username}
+            if (user.username)
+            {
+
+                socket?.current?.emit("isConnected", user.username)
+                
+                socket?.current?.on("isConnected", (data: boolean) => {
+                    if (data == true)
+                    {
+                        console.log("isconnected true")
+                        setUserStatus("online")
+
+                    }
+                    else if (data == false)
+                    {
+                        console.log("isconnected false")
+
+                        setUserStatus("offline")            
+
+                    }
+                });
+            }
+        }
+
+            
+
         const handleSocket = async () => {
         if (socket && socket.current) {
             socket.current.on("user_status", (data: {status: boolean, username1: string, username2: string}) => {
@@ -134,6 +157,12 @@ export const PublicProfil = () => {
         }
     }
     handleSocket()
+    handlestatus()
+  
+    return () => {
+        window.removeEventListener('online', handleOnlineStatus);
+        window.removeEventListener('offline', handleOnlineStatus);
+      };
     }, [socket, user, setUserStatus])
 
     return (

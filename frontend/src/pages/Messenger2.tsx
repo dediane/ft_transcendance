@@ -297,14 +297,17 @@ function Messenger2() {
       UserWhoCantAnymore: userdata.id,
       usernameToBlock : usertoBlock,
     };
+ 
     setBlockedUsers((prevBlockedUsers) => ({
       ...prevBlockedUsers,
       [userdataname]: usertoBlock,
     }));
+
     
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
     socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
+    console.log("for username", userdataname, "after adding", usertoBlock, "block users in messenger2", blockedUsers[userdataname]);
 
   }
 
@@ -317,6 +320,7 @@ function Messenger2() {
       UserWhoCantAnymore: userdata.id,
       usernameToBlock : usertoUnblock,
     };
+
     const updatedBlockedUsers = [userdataname]?.filter(
       (blockeduser) => blockeduser !== usertoUnblock);
     setBlockedUsers((prevBlockedUsers) => ({
@@ -324,8 +328,11 @@ function Messenger2() {
       [userdataname]: updatedBlockedUsers,
     }));
 
+
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
     socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
+ 
+    console.log("unblock users messenger2", blockedUsers[userdataname]);
 
   }
   
@@ -571,8 +578,8 @@ function joinRoom(room: string) {
         removeMember={removeMember}
         banMember={banMember}
         muteMember={muteMember}
-        blockUser={blockUser}
         unblockUser={unblockUser}
+        blockUser={blockUser}
         joinRoom={joinRoom}
         rooms={rooms}
         inviteToPlay={inviteToPlay}
@@ -591,6 +598,7 @@ function joinRoom(room: string) {
         inviteReceived={inviteReceived}
         inviteReceivedMap={inviteReceivedMap}
         setInviteReceivedMap={setInviteReceivedMap}
+        setBlockedUsers={setBlockedUsers}
 
       />
     );
