@@ -154,7 +154,6 @@ function Chat
   
   };
   const isAdmin = isUserAdmin(props.currentChat.chatName);
-
   const isUserBanned= (channelName : string) => {
     if (props.bannedmembers && props.bannedmembers[channelName]) {
       return props.bannedmembers[channelName].includes(props.yourId);
@@ -364,6 +363,8 @@ active={props.currentChat.chatName === room.name}
 </Row>
   )
 }
+const [errorMessage, setErrorMessage] = useState('');
+
 
 const handleJoinChannel = () => {
   const channels = props.userChannels[props.yourId];
@@ -377,8 +378,7 @@ const handleJoinChannel = () => {
           props.addMember(props.yourId);
         }
       } else {
-        // Passwords don't match
-    <span style={{color: 'red'}}>Try again.</span>
+        setErrorMessage('Try again.');
       }
     })
     .catch(error => {
@@ -467,6 +467,8 @@ else {
           
       <input type="password" placeholder="Enter password" onChange={(e) => setUserPassword(e.target.value)} />
       <Button3 onClick={handleJoinChannel}>Join {props.currentChat.chatName}</Button3>
+      {errorMessage && <span style={{ color: 'red' }}>{errorMessage}</span>}
+
     </Pass> 
     </>
   );
@@ -819,7 +821,6 @@ else {
         buttonText="Add User"
       />
        {isOwner && 
-      //  (props.accessType !== 'public') && 
        (
       <div>
 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Members except owner and yourself</h3>

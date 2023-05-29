@@ -23,6 +23,7 @@ import { subscribeOn } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Jwt2faAuthGuard } from 'src/auth/guards/jwt-2fa.guard';
 
 type GameProps = {
   id: number;
@@ -140,8 +141,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 }
 
 @SubscribeMessage('all users')
-async handleGetUsers(socket: Socket, userdata: {id: number, name: string}) {
-  const currentuser = await this.userService.findOnebyId(userdata.id);
+async handleGetUsers(socket: Socket, userdata: {id: string, name: string}) {
+  const currentuser = await this.userService.findOnebyId(Number(userdata.id));
   const allusers = await this.userService.findAll();
   const payload = {
     currentuser,
@@ -152,19 +153,19 @@ async handleGetUsers(socket: Socket, userdata: {id: number, name: string}) {
 }
 
 @SubscribeMessage('join server')
-async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
+async handleJoinServer(socket: Socket, userdata: {id: string, username: string}) {
   const userIndex = this.users.findIndex((u) => u.id === userdata.id);
   if (userIndex >= 0) {
     this.users[userIndex].sockets.push(socket.id);
   } else {
     const user = {
-      username: userdata.name,
+      username: userdata.username,
       id: userdata.id,
       sockets: [socket.id],
     };
     this.users.push(user);
   }
-  const channels = await this.channelService.getChannelsforUser(userdata.id); //petits bugs a checker quand deux users differents se log et refresh la page
+  const channels = await this.channelService.getChannelsforUser(Number(userdata.id)); //petits bugs a checker quand deux users differents se log et refresh la page
 
   if (channels) {
   const channelNames = channels.map(channel => channel.name);
@@ -178,7 +179,7 @@ async handleJoinServer(socket: Socket, userdata: {id: number, name: string}) {
 
       const channelName = channel.name;
       const accessType = channel.accessType;
-      const blockedUsers =  await this.userService.getBlockedUsers(userdata.id);
+      const blockedUsers =  await this.userService.getBlockedUsers(Number(userdata.id));
       const blockedusernames = blockedUsers?.map(user => user.username);
       const channelMessages = await this.channelService.findMessagesByChatname(channelName, blockedUsers);
       const members = channel.members?.map(user => user.username);
@@ -339,7 +340,6 @@ async handleBanMember(socket: Socket, payload: any) {
   this.server.emit('new chan', channels );
 }
 
-@UseGuards (JwtAuthGuard)
 @SubscribeMessage('mute member')
 async handleMuteMember(socket: Socket, payload: any) {
   const { channelName, AdminId, username } = payload;
@@ -414,6 +414,7 @@ async handleMuteMember(socket: Socket, payload: any) {
 const excludedSocketIds = [];
 
 for (const user of this.users) {
+
   const blockedUsers = await this.userService.getBlockedUsers(user.id);
   const excludedUserIds = blockedUsers.map(user => user.id);
 
@@ -940,7 +941,10 @@ for (const user of this.users) {
         socket: Socket,
         data : any) 
     {
-      const {userid, username} = data;
+      // const {userid, username} = data;
+      const userid = Number(data.userid);
+      const username = data.username;
+      console.log("user to come is ", userid, username)
       if (!this.room_idC || this.room_idC == "")
       {
         const gameDto: CreateGameDto = {
@@ -986,6 +990,8 @@ for (const user of this.users) {
         // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size === 2) 
         { // we have 2 people so start game
+          console.log("player1", this.player1C.id, this.player1C.username)
+          console.log("player2", this.player2C.id, this.player2C.username)
           this.queueC.delete(this.player1C.id);
           this.queueC.delete(this.player2C.id);
           this.server.to(this.room_idC).emit("start_game chat", {});

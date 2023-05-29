@@ -127,7 +127,6 @@ async update(id: number, updateChannelDto: UpdateChannelDto): Promise<Channel> {
 
 async getChannelsforUser(userId: number): Promise<Channel[]> {
   const allChannels = await this.findAll();
-// console.log("GET CHANNELS FOR USER", allChannels)
   const privateChannels = allChannels.filter(channel =>
     channel.accessType === 'private' && channel.members.find(member => member.id === userId)
   );
@@ -242,7 +241,6 @@ async addAdmin(channelName: string, adminId: number, username: string) : Promise
 
 async removeMember(channelName: string, adminId: number, username: string){
 
-  console.log("REMOVE MEMBER CALLED SERVICE ADMINDID IS", adminId)
   const channel = await this.findOneByName(channelName);
   const isOwner = channel.owner.id === adminId;
 
@@ -272,15 +270,12 @@ async removeMember(channelName: string, adminId: number, username: string){
   // const channel = await this.findOneByName(channelName);
   let newOwner;
   if (isOwner) {
-  console.log("TRYING TO KICK OWNER")
 
     if (channel.admins.length === 0) {
-  console.log("NO ADMIN SO CHOOSING A MEMBER AS NEW OWNER")
 
       // If the owner is the only admin, make the first member the new owner
       newOwner = channel.members[0];
     } else {
-  console.log("THERE IS AN ADMIN SO CHOOSING AN ADMIN AS NEW OWNER")
 
       // Otherwise, the first remaining admin becomes the new owner
       newOwner = channel.admins[0];
@@ -294,7 +289,6 @@ async removeMember(channelName: string, adminId: number, username: string){
 
 async banMember(channelName: string, adminId: number, username: string){
 
-  console.log("BAN MEMBER CALLED SERVICE")
   const channel = await this.findOneByName(channelName);
 
   const user = await this.userService.findOneByName(username);
@@ -308,7 +302,6 @@ async banMember(channelName: string, adminId: number, username: string){
 }
 
 async muteMember(channelName: string, adminId: number, username: string){
-  console.log("MUTE MEMBER CALLED SERVICE");
   const channel = await this.findOneByName(channelName);
   const user = await this.userService.findOneByName(username);
   
@@ -326,11 +319,9 @@ async muteMember(channelName: string, adminId: number, username: string){
   }
 
   const mutedUntil = new Date(Date.now() + 60 * 1000); // 1 minute, change to 120000 for 2 minutes
-  console.log(user.username, "mutedUntil", mutedUntil);
 
   if (!channel.mutedMembers) {
     channel.mutedMembers = [];
-    console.log("no muted members yet");
   }
 
   channel.mutedMembers.push(user);
@@ -361,10 +352,8 @@ async createDm(username1: string, username2: string) {
   // async createDmChat(user1: number, user2: number) {
   const dm = await this.findOneDm(user1.id, user2.id);
   if (dm){
-  console.log("dm was found")
   return dm;
   }
-    console.log("after dm found")
   const channelDto: CreateChannelDto = {
     name: `${user1.username}_${user2.username}`,
     dm: true,
