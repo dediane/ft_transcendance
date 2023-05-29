@@ -39,7 +39,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
       password: generatedpwd,
       avatar: image.link,
       wins: 0,
-      losses: 0
+      losses: 0,
+      is2fa: false,
     }
     const lala = await this.userService.create(newuser);
     console.log(lala);

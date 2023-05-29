@@ -3,6 +3,11 @@ import React, {useEffect} from 'react';
 import { useRouter } from 'next/router';
 import userService from '@/services/user-service';
 
+const is2faEnabled = async () => {
+  const result = await userService.is2fa()
+  return result;
+}
+
 function Auth() {
   const router = useRouter()
   useEffect(() =>{
@@ -11,8 +16,10 @@ function Auth() {
     if (fortyTwoApiCode != null)
     {
       authenticationService.saveToken(fortyTwoApiCode)
-      const user = userService.profile();
-      router.push('/profile')
+      if (!is2faEnabled())
+        router.push('/profile')
+      else
+        router.push('/2fa')
     }
   }) 
   return (

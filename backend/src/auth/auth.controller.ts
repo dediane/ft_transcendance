@@ -33,12 +33,7 @@ export class AuthController {
   async callback42(@Request() req :any) {
     const {status, access_token} = this.authService.login42(req);
     if(!status)
-    return { url: 'http://localhost:3000/login' };
-    const user = await this.userService.findOnebyEmail(req.user.email);
-    console.log("35" + {user});
-    console.log("36" + user['2fa']);
-    // if (user)
-    //   return { url: 'http://localhost:3000/otp'};
+      return { url: 'http://localhost:3000/login' };
     return { url: 'http://localhost:3000/auth?code=' + access_token };
     //Send tokent to front end
   }
@@ -92,6 +87,13 @@ export class AuthController {
     await this.userService.turnOffTwoFactorAuthentication(req.user.id);
     return ({status: true, message: "2FA is disabled"})
 
+  }
+
+
+  @Get('2fa/is-enabled')
+  @UseGuards(FortyTwoAuthGuard)
+  async is2fa(@Request() req) {
+    return req.user.is2fa;
   }
 
 
