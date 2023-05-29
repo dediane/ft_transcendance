@@ -5,20 +5,23 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { FortyTwoAuthGuard } from './guards/fortytwo_auth.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Jwt2faAuthGuard } from './guards/jwt-2fa.guard';
+
+const baseURL = "http://localhost:3000";
+
 @Controller('auth')
 export class AuthController {
 
-constructor(
+  constructor(
     private readonly authService: AuthService,
-    private userService: UserService
-  ) {}
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@Request() req :any) {
-    if (!req.user.status){
-      return (req.user)}
-    return await this.authService.login(req.user.user);
-  }
+    private userService: UserService,
+    ) {}
+    @UseGuards(LocalAuthGuard)
+    @Post('login')
+    async login(@Request() req :any) {
+      if (!req.user.status){
+        return (req.user)}
+        return await this.authService.login(req.user.user);
+      }
 
   @Get('42')
   @UseGuards(FortyTwoAuthGuard)
@@ -27,10 +30,15 @@ constructor(
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   @Redirect("http://localhost:3000", 302)
-  callback42(@Request() req :any) {
+  async callback42(@Request() req :any) {
     const {status, access_token} = this.authService.login42(req);
     if(!status)
-      return { url: 'http://localhost:3000/login' };
+    return { url: 'http://localhost:3000/login' };
+    const user = await this.userService.findOnebyEmail(req.user.email);
+    console.log("35" + {user});
+    console.log("36" + user['2fa']);
+    // if (user)
+    //   return { url: 'http://localhost:3000/otp'};
     return { url: 'http://localhost:3000/auth?code=' + access_token };
     //Send tokent to front end
   }
@@ -39,9 +47,10 @@ constructor(
   @UseGuards(JwtAuthGuard)
   @UseGuards(Jwt2faAuthGuard)
   async register(@Response() res, @Request() req) {
+    const user = await this.userService.findOnebyEmail(req.user.email);
     const { otpAuthUrl } =
       await this.authService.generateTwoFactorAuthenticationSecret(
-        req.user,
+        user,
       );
 
     return res.json(
