@@ -1010,7 +1010,7 @@ for (const user of this.users) {
           this.puckC = new Puck(this.widthC, this.heightC, false);
           if (!this.paddle_leftC)
           {
-            this.paddle_leftC = new Paddle(this.widthC, this.heightC, true, false, this.player1C.id, this.player1C.username)
+            this.paddle_leftC = new Paddle(this.widthC, this.heightC, true, false, Number(this.player1C.id), this.player1C.username)
             this.sockC.set(this.player1C.id, socket);
             const socketArray = this.socknC.get(gamedata.id);
             
