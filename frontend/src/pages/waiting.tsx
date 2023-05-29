@@ -26,14 +26,7 @@ export default function Wait() {
   // check the socket exist
   if (!socket)
   return ;
-  const join = async () => {
-    const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
-  }
-  
-  // use effect to call join function
-  useEffect(() => {
-    join();
-  }, [router]);
+
   
   // catch the user profile
   const fetchProfile = async () => {
@@ -50,6 +43,22 @@ export default function Wait() {
       }
     }, [router]);
 
+
+    const join = async () => {
+      console.log("userdata to join ", userdata.id, userdata.username)
+      const payload = {id : userdata.id, username: userdata.username }
+      const joinned = ConnectService.Connect(socket, payload);
+      // const joinned = ConnectService.Connect(socket, Number(userdata.id), userdata.username);
+    }
+    
+    // use effect to call join function
+    useEffect(() => {
+      if (userdata != null)
+      {
+        join();
+  
+      }
+    }, [userdata]);
 //     useEffect(() => {
 //     const join = useCallback(async () => {
 //         const joinned = await ConnectService.Connect(socket, Number(userdata.id), userdata.username);
