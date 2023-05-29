@@ -243,7 +243,6 @@ async update(id: number, updateUserDto: UpdateUserDto) {
   }
   
   async unblockUser(blockerUserId: number, blockeeUsername: string): Promise<void> {
-    console.log("unblock user SERVICE")
     const blocker = await this.userRepository.findOne({
       where: { id: blockerUserId },
       relations: ['blockedUsers'],
