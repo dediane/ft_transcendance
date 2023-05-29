@@ -39,7 +39,7 @@ export default function Wait() {
     if (!userData) return;
 
     const join = async () => {
-      console.log('userdata to join ', userData.id, userData.username);
+      // console.log('userdata to join ', userData.id, userData.username);
       const payload = { id: userData.id, username: userData.username };
       ConnectService.Connect(socket, payload);
     };
