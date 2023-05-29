@@ -8,10 +8,15 @@ import userService from '@/services/user-service';
 type DefaultEventsMap = /*unresolved*/ any;
 class ConnectService {
 
-    public async Connect(socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null, id: number, username: string) {        
-        if (!socket)
+    // public Connect(socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null, id: number, username: string) {        
+        public Connect(socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null, data : any) { 
+           //const {id, username} = data;       
+        console.log("data in  connect ", data)
+        const id = data.id;
+        const username = data.username;
+        if (!socket || id == '' || username == '' || Number.isNaN(id))
             return ;
-        const payload = {userid: id, username: username}
+        const payload = {userid: Number(id), username: username}
         console.log("payload ", payload)
         socket.current?.emit("join_game chat", payload);
         

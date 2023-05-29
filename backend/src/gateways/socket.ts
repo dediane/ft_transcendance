@@ -941,7 +941,10 @@ for (const user of this.users) {
         socket: Socket,
         data : any) 
     {
-      const {userid, username} = data;
+      // const {userid, username} = data;
+      const userid = Number(data.userid);
+      const username = data.username;
+      console.log("user to come is ", userid, username)
       if (!this.room_idC || this.room_idC == "")
       {
         const gameDto: CreateGameDto = {
@@ -987,6 +990,8 @@ for (const user of this.users) {
         // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size === 2) 
         { // we have 2 people so start game
+          console.log("player1", this.player1C.id, this.player1C.username)
+          console.log("player2", this.player2C.id, this.player2C.username)
           this.queueC.delete(this.player1C.id);
           this.queueC.delete(this.player2C.id);
           this.server.to(this.room_idC).emit("start_game chat", {});
