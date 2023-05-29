@@ -8,6 +8,7 @@ import { useRef } from 'react';
 import  AuthService from "../services/authentication-service"
 import { Socket } from 'socket.io-client';
 import { MySketchProps } from '@/components/Game';
+import { Color } from 'p5';
 
 export default function sketch(p5: P5CanvasInstance<MySketchProps>) {
 
@@ -143,22 +144,29 @@ p5.updateWithProps = props => {
 
   }
 
-
+  
   p5.draw = () => {
-    p5.background(p5.color('#dad6ff'));
-
+    p5.background(0);
+    
+    var color1 = p5.color(231, 192, 255);
+    var color2 = p5.color(197, 237, 255);
+    setGradient(0, 0, width, height, color1, color2);
     if (left_score == score || right_score == score || left == true) {
       if (left_score == score) {
+        p5.fill(200,143,204,255);
+        p5.noStroke();
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_left.name + " win !!"
-        p5.fill(0, 102, 153);
+        p5.fill(200,143,204,255);
         p5.text(str, width / 2 - 225, height / 2 + 50)
         return ;
       }
       if (right_score == score) {
+        p5.fill(200,143,204,255);
+        p5.noStroke();
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "Player " + paddle_right.name + " win !!"
-        p5.fill(0, 102, 153);
+        p5.fill(200,143,204,255);
         p5.text(str, width / 2 - 225, height / 2 + 50)
         return;
       }
@@ -166,23 +174,24 @@ p5.updateWithProps = props => {
       {
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "User left the game, You win !!"
-        p5.fill(0, 102, 153);
+        p5.fill(200,143,204,255);
+        p5.noStroke();
         p5.text(str, width / 2 - 225, height / 2 + 50)
         return ;
       }
     }
     else {
       center_bar();
-
-
+      
+      
       // show and update the paddles
-
+      
       paddle_left.show(true, padl_x, padl_y, padl_w, padl_h, padl_n);
       paddle_right.show(true, padr_x, padr_y, padr_w, padr_h, padr_n);
-
+      
       // show and update the puck
       puck.show(puckx, pucky);
-
+      
       // show scores
       p5.fill(255);
       p5.textSize(45);
@@ -192,15 +201,17 @@ p5.updateWithProps = props => {
       p5.text(paddle_right.name, width - 100, 40)
     }
   };
-
-
+  
+  
   const center_bar = () => {
     for (let i: number = 0; i < height; i += 10) {
+      p5.fill(255);
+      p5.noStroke();
       p5.rect(width / 2 + 8, i, 10, 15);
       i += 10;
     }
   }
-
+  
   function windowResized() {
     var element = document.getElementById("canvas_size");
     if (element == null)
@@ -214,11 +225,11 @@ p5.updateWithProps = props => {
       cheight = element.clientHeight;
     }
     // send to back new width and height to upfate whith puck paddle
-
+    
     // new winratio
     
     const winratio = cwidth / cheight;
-
+    
     if (winratio > canvasratio) {
       height = cheight;
       width = height * winratio;
@@ -232,5 +243,14 @@ p5.updateWithProps = props => {
     paddle_left.update_resize(width, height, true);
     paddle_right.update_resize(width, height, false);
     puck.update_resize(width, height);
+  }
+  function setGradient(x: number, y: number, w: number, h: number, c1: Color, c2: Color) {
+    p5.noFill();
+    for (let i = y; i <= y + h; i++) {
+      var inter = p5.map(i, y, y + h, 0, 1);
+      var c = p5.lerpColor(c1, c2, inter);
+      p5.stroke(c);
+      p5.line(x, i, x + w, i);
+    }
   }
 }
