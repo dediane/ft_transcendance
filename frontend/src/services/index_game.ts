@@ -11,7 +11,6 @@ class GameService {
     {
 
         const payload = {message: roomId, userid: id, username: username}
-        console.log(payload);
         return new Promise((rs, rj) => {
             if (mode == "Classic")
             {

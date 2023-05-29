@@ -6,8 +6,8 @@ import AuthService from "../services/authentication-service"
 import { createContext } from "react";
 
 export interface IGameContextProps { // type des variable set
-        InRoom: boolean;
-        setInRoom: (inRoom: boolean) => void ;
+        UserStatus: string;
+        setUserStatus: (userStatus: string) => void ;
         socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null
         //socket : typeof useRef<Socket | null> | null;
 }
@@ -22,25 +22,23 @@ function Create() : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEvent
         })
       }, []);
       
-      
-      
       return (socketRef);
 }
 
 const ContextGame = createContext<IGameContextProps>({
-  InRoom: false,
-  setInRoom: (inRoom: boolean) => {},
+  UserStatus: "offline",
+  setUserStatus: (inRoom: string) => {},
   socket: null,
 });
 
 const ContextProviderGame = ({children} : {children : React.ReactNode}) => {
-  const [InRoom, setInRoom] = useState(false);
+  const[UserStatus, setUserStatus] = useState("offline") // ["online", "offline", "ingame"
   // const socket = create();
   //let socket :  React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> 
   let socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null 
   socket = Create();
   return (
-    <ContextGame.Provider value={{InRoom, setInRoom, socket}}>
+    <ContextGame.Provider value={{UserStatus, setUserStatus, socket}}>
       {children}
     </ContextGame.Provider>
   );

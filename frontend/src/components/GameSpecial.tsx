@@ -15,7 +15,6 @@ const ReactP5Wrapper = dynamic(
 ) as React.NamedExoticComponent<P5WrapperProps>;
 
 export interface MySketchProps extends SketchProps {
-  //socket: React.MutableRefObject<undefined>;
   socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null>
   id: number
   username: string
