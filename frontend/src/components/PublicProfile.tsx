@@ -134,7 +134,7 @@ export const PublicProfil = () => {
         }
     }
     handleSocket()
-    }, [socket, user])
+    }, [socket, user, setUserStatus])
 
     return (
         <>
