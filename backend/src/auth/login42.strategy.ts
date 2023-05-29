@@ -22,11 +22,11 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     done: any,
   ): Promise<any> {
     // console.log(profile._json);
-    const {first_name, last_name, email, img_url, id, login } = profile._json;
+    const {first_name, last_name, email, image, id, login } = profile._json;
     const generatedpwd = Math.random().toString(36).substring(2);
-    const user = { first_name, last_name, email, img_url, id, username:login}
+    const user = { first_name, last_name, email, img_url: image.link, id, username:login}
     const existingUser = await this.userService.findOnebyEmail(email)
-    delete existingUser.secret2fa
+    //delete existingUser.secret2fa
     console.log("existingUser", existingUser)
     if (existingUser){
       return done(null, {...existingUser})
@@ -37,7 +37,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
       login42: login,
       email: email,
       password: generatedpwd,
-      avatar: img_url,
+      avatar: image.link,
       wins: 0,
       losses: 0
     }
