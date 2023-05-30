@@ -102,16 +102,6 @@ export const PublicProfil = () => {
                         setUserStatus("ingame")
                     }
                 }
-                else if (data.status == false)
-                {
-                    if (data.username1 === user.username) {
-                        setUserStatus("online")
-                    }
-                    else if (data.username2 === user.username)
-                    {
-                        setUserStatus("online")
-                    }
-                }
             })
         }
     }
@@ -119,7 +109,7 @@ export const PublicProfil = () => {
     handleStatus()
     return () => {
     };
-}, [socket, user, setUserStatus, UserStatus])
+}, [socket, user, setUserStatus, UserStatus, allUsers])
 
     return (
         <>

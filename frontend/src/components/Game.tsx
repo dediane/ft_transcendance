@@ -52,7 +52,7 @@ export default function Game() {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [userdata]);
+  }, [userdata, router.events, socket]);
 
   return (
     <div id="canvas_size">

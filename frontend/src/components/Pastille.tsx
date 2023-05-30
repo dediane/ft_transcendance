@@ -27,7 +27,8 @@ export default function Pastille() {
       }
     }, [router, socket]);
 
-
+    
+    useEffect(() => {
     const handleheartbeat = () => {
     // console.log("navigator.onLine", navigator.onLine)
     // console.log("userdata ", userData.username)
@@ -46,10 +47,9 @@ export default function Pastille() {
   };
 
   
-    useEffect(() => {
       if (!userData) return;
       handleheartbeat();
-    }, [userData, socket]);
+    }, [userData, socket, allUsers, setAllUsers]);
     return (<div>
 
     </div>);

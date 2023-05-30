@@ -11,6 +11,7 @@ export interface IGameContextProps { // type des variable set
         socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null
         allUsers: any[]
         setAllUsers: (userStatus: any[]) => void ;
+        // setAllUsers: React.Dispatch<React.SetStateAction<any[]>>; 
         
         //socket : typeof useRef<Socket | null> | null;
 }
@@ -34,6 +35,7 @@ const ContextGame = createContext<IGameContextProps>({
   socket: null,
   allUsers: [],
   setAllUsers: (allUsers: any[]) => {},
+  // setAllUsers: () => {} 
 });
 
 const ContextProviderGame = ({children} : {children : React.ReactNode}) => {
