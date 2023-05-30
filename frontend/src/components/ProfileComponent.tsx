@@ -159,7 +159,9 @@ export const Profil = () => {
                     <img src={`${user.avatar}`} alt="user avatar" className={styles.profilepicture}/>
                 </picture> }
                 {
-                    isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>}
+                   user.login42 !== "" && ( isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>
+                   )
+                }
                 {isAvatar && <AvatarUploader handleUpload={handleAvatarUpload}/>}
                 </div>
                     
