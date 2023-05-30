@@ -59,6 +59,7 @@ export function JoinRoom(props: IJoinRoomProps)
   const [isJoining, setJoining] = useState(false);
   const [userdata, setUserData] = useState({username: "", id: ""});
   const router = useRouter();
+  const {socket} = useContext(ContextGame);
 
   useEffect(() => {
     const fetch_profile = async () => {
@@ -68,22 +69,25 @@ export function JoinRoom(props: IJoinRoomProps)
     if(!authenticationService.getToken()) 
           router.push('/login')
     fetch_profile();
+
+  
   }, [router]);
 
-
-  const {socket} = useContext(ContextGame);
-
-  const handleRoomName = (e: React.ChangeEvent<any>) => {
-    const value = e.target.value;
-    setRoomName(value);
-  }
-  
+  useEffect(() => {
+      if (userdata != null)
+      {
+        if (performance.navigation.type === 1) {
+          if (!socket) return;
+          socket?.current?.emit("refresh", userdata.id);
+          ;}
+      }
+  }, [socket, userdata]);
   const joinRoom = async (e: React.FormEvent) => {
     if (!socket)
       return ;
     setJoining(true);
     
-    const joined = await gameService
+    await gameService
     .joinGameRoom(socket.current, roomName, props.mode, Number(userdata.id), userdata.username).catch((err) => {
       alert(err);
     });

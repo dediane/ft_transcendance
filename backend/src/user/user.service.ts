@@ -38,7 +38,7 @@ export class UserService {
       .leftJoinAndSelect('user.ownedChannels', 'ownerOfChannel')
       .leftJoinAndSelect('user.adminChannels', 'adminOfChannel')
       .leftJoinAndSelect('user.blockedUsers', 'blockedUser')
-        .select(['user.username', 'user.is2fa', 'user.secret2fa', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username', 'user.wins','user.losses'])
+        .select(['user.username', 'user.id', 'user.is2fa', 'user.secret2fa', 'memberOfChannel.name', 'adminOfChannel.name', 'ownerOfChannel.name', 'blockedUser.username', 'user.wins','user.losses'])
       .getMany();
   
     return users;
