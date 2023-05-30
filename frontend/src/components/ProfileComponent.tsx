@@ -47,6 +47,7 @@ export const Profil = () => {
     const [isDynamic, setIsDynanic] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
     const [isGaming, setIsGaming] = useState(false);
+    const [noedit, setnoedit] = useState(false);
 
 
 
@@ -80,7 +81,14 @@ export const Profil = () => {
             setIsOnline(true);
         }
         );
-    }, [isOnline])
+
+        if (user != null)
+        {
+            if (user.login42 == null)
+                setnoedit(true);
+        }
+
+    }, [user, noedit, isOnline])
 
 
  
@@ -159,13 +167,17 @@ export const Profil = () => {
                     <img src={`${user.avatar}`} alt="user avatar" className={styles.profilepicture}/>
                 </picture> }
                 {
-                   user.login42 !== "" && ( isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>
+                   noedit == true && ( isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>
                    )
                 }
                 {isAvatar && <AvatarUploader handleUpload={handleAvatarUpload}/>}
                 </div>
                     
-                <h4 className={styles.subtitle}>My infos <FaEdit className={styles.icon} onClick={handleDynamic}/></h4>
+                <h4 className={styles.subtitle}>My infos
+                 {
+                    noedit == true && (<FaEdit className={styles.icon} onClick={handleDynamic}/>)
+                 }
+                 </h4>
                 <div className={styles.stats}>
                     
                     { isDynamic ?
