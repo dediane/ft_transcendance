@@ -384,7 +384,7 @@ const handleJoinChannel = () => {
     })
     .catch(error => {
       // Handle error
-      console.log('Error comparing passwords', error);
+      // console.log('Error comparing passwords', error);
     });
 };
   
