@@ -11,17 +11,20 @@ import { ContextProviderGame } from '../game/GameContext'
 
 
 function App({ Component, pageProps }: AppProps) {
+
+
   return (
     <div>
       <BackgroundAnimation />
+      <ContextProviderGame>
       <Layout {...pageProps}>
 
-      <ContextProviderGame>
+
         <Component {...pageProps} />
+      </Layout>
       </ContextProviderGame>
 
       {/* pour mettre home_game et pong dans un componement pour pouvoir partager la data (pour pas perdre mes sockets) */}
-      </Layout>
     </div>
   );
 }

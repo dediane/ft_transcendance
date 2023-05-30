@@ -598,7 +598,6 @@ function joinRoom(room: string) {
         inviteReceived={inviteReceived}
         inviteReceivedMap={inviteReceivedMap}
         setInviteReceivedMap={setInviteReceivedMap}
-        setBlockedUsers={setBlockedUsers}
 
       />
     );
