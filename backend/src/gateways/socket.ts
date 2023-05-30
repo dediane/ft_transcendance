@@ -118,6 +118,7 @@ async handleIsConnected(socket: Socket, username: string)
 
   async handleConnection(socket: Socket) {
     const users = await this.messageService.findAll();
+    // this.gameService.deleteall();
   }
 
  async handleDisconnect(socket: Socket) {

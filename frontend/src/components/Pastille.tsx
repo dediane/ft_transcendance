@@ -51,14 +51,9 @@ export default function Pastille() {
   
     useEffect(() => {
       if (!userData) return;
-  
-      const setstatus = async () => {
-        console.log('userdata to join ', userData.id, userData.username);
-        const payload = { id: userData.id, username: userData.username };
-        // ConnectService.Connect(socket, payload);
-      };
-  
-      setstatus();
+      handleOnlineStatus();
     }, [userData, socket]);
-    return (<></>)
+    return (<div>
+
+    </div>);
 }
