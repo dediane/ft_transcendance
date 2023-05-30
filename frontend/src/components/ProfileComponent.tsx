@@ -37,7 +37,7 @@ const EditUsername = ({value} : {value :any}) => {
 
 
 export const Profil = () => {
-    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: ""})
+    const [user, setUser] = useState({username: "", email: "", wins: 0, losses: 0, is2fa: false, avatar: "", login42: ""})
     const [qrcode, setQrcode] = useState('');
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
@@ -47,6 +47,9 @@ export const Profil = () => {
     const [isDynamic, setIsDynanic] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
     const [isGaming, setIsGaming] = useState(false);
+
+
+
 
     const logout = () => {
         authenticationService.deleteToken()
@@ -140,7 +143,9 @@ export const Profil = () => {
 ;
     }
 
+
     return (
+        
         <>
             <div className={styles.mainbox}>
                 <h3 className={styles.h1}>My profile</h3>
@@ -153,7 +158,8 @@ export const Profil = () => {
                 <picture>
                     <img src={`${user.avatar}`} alt="user avatar" className={styles.profilepicture}/>
                 </picture> }
-                {isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>}
+                {
+                    isAvatar ? <button onClick={handleIsAvatar} className={styles.editbutton}>close</button> : <button onClick={handleIsAvatar} className={styles.editbutton}>edit</button>}
                 {isAvatar && <AvatarUploader handleUpload={handleAvatarUpload}/>}
                 </div>
                     
