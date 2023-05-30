@@ -52,22 +52,22 @@ export const Games = () => {
             return (
         <tbody key={current.id}>
             <tr>
-                <td className={styles.bold2}>👑 <br></br>{score1 < score2 ? player2.username : player1.username}</td>
+                <td className={styles.bold2}>👑 <br></br>{score1 < score2 ? player2?.username : player1?.username}</td>
                 <td className={styles.bold}>
                     <div className={styles.avatarContainer}>
-                        {player1.avatar && <picture><img src={`${player1.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
-                        {!player1.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
-                        <Link href={`/public?username=${player1.username}`}>
-                            {player1.username}
+                        {player1?.avatar && <picture><img src={`${player1?.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
+                        {!player1?.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
+                        <Link href={`/public?username=${player1?.username}`}>
+                            {player1?.username}
                         </Link>
                     </div>
                 </td>
                 <td className={styles.bold}>
                     <div className={styles.avatarContainer}>
-                        {player2.avatar && <picture><img src={`${player2.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
-                         {!player2.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
-                        <Link href={`/public?username=${player2.username}`}>
-                            {player2.username}
+                        {player2?.avatar && <picture><img src={`${player2?.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
+                         {!player2?.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
+                        <Link href={`/public?username=${player2?.username}`}>
+                            {player2?.username}
                         </Link>
                     </div>
                 </td>
