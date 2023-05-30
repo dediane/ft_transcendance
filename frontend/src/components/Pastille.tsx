@@ -8,8 +8,9 @@ export default function Pastille() {
     const {socket} = useContext(ContextGame);
     const {UserStatus, setUserStatus} = useContext(ContextGame);
     const [userData, setUserData] = useState({ username: '', id: '' });
-    const router = useRouter();
-  
+    const router = useRouter();    
+    const { allUsers, setAllUsers } = useContext(ContextGame);
+
     useEffect(() => {
 
       if (!socket)
@@ -27,31 +28,27 @@ export default function Pastille() {
     }, [router, socket]);
 
 
-    const handleOnlineStatus = () => {
-    console.log("navigator.onLine", navigator.onLine)
+    const handleheartbeat = () => {
+    // console.log("navigator.onLine", navigator.onLine)
+    // console.log("userdata ", userData.username)
     if (userData.username)
     {
+        console.log("my user")
+        console.log("my user is ", userData.id, userData.username)
 
-        if (navigator.onLine == true && userData.username)
-        {
-            console.log("here navigator with online ", userData.username);
-            // setUserStatus("online");
-            socket?.current?.emit("online", userData.username);
-            
-        }
-        else
-        {
-            console.log("here navigator with Offline ", userData.username);
-            // setUserStatus("offline");
-            socket?.current?.emit("offline", userData.username);
-            
-        }
+        socket?.current?.emit("join server all", {id: userData.id, username: userData.username});
+          
+        socket?.current?.on("connected all users", (users: any) => {
+        setAllUsers(users);
+        });
+        console.log(allUsers);
     }
   };
+
   
     useEffect(() => {
       if (!userData) return;
-      handleOnlineStatus();
+      handleheartbeat();
     }, [userData, socket]);
     return (<div>
 

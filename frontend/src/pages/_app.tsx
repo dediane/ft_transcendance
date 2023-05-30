@@ -18,9 +18,8 @@ function App({ Component, pageProps }: AppProps) {
     <div>
       <BackgroundAnimation />
       <ContextProviderGame>
-
+      <Pastille />
       <Layout {...pageProps}>
-        {/* <Pastille /> */}
           <Component {...pageProps} />
       </Layout>
       </ContextProviderGame>
