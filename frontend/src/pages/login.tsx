@@ -90,9 +90,19 @@ export const LoginForm = ({setRegister} : {setRegister: any}) => {
   const router = useRouter()
 
   useEffect(() => {
+    const checkAuth = async () => {
+      if(!authenticationService.isAuthentificated())
+        return
+      try {
+        await userService.profile()
+      } catch (err) {
+        authenticationService.deleteToken()
+      }
     if(authenticationService.isAuthentificated()) {
       router.push("/profile");
     }
+  }
+    checkAuth()
   }, [router])
   return (
   <div>

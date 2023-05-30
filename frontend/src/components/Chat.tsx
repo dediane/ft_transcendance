@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent} from 'react';
+import React, { useState, useEffect, ChangeEvent, SetStateAction} from 'react';
 import PopupModal from "./PopUpModal"
 import MemberList from './MemberList';
 import Message from '@/components/Message';
@@ -17,7 +17,8 @@ function Chat
   inviteReceivedMap: { [key: string]: any };
   setInviteReceivedMap: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
   currentUser: { blockedUsers: any; adminUsers: any; username: string }; 
- blockedUsers: { [x: string]: string | string[]; }; yourId: string; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType?: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | null | undefined; }) => void; accessType: string; messages: any[]; /*checkChatPassword: (arg0: string) => void; */passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; userChannels: { [x: string]: any[]; }; allUsers: { username: string }[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void; }
+ blockedUsers: { [x: string]: string | string[]; }; yourId: string; blockUser: (arg0: any) => void; unblockUser: (arg0: any) => void; admins: { [x: string]: string | any[]; }; currentChat: { chatName: string }; addAdmin: (arg0: any) => void; removeAdmin: (arg0: any) => void; bannedmembers: { [x: string]: string | any[]; }; mutedMembers: { [x: string]: string | any[]; }; owner: { [x: string]: any; }; removeMember: (arg0: string) => void; banMember: (arg0: any) => void; muteMember: (arg0: any) => void; createNewChannel: (arg0: { chatName: string; accessType?: string; password: string | null; }) => void; toggleChat: (arg0: { chatName: any; isChannel: boolean; receiverId: boolean | React.Key | React.ReactElement<any, string | React.JSXElementConstructor<any>> | null | undefined; }) => void; accessType: string; messages: any[]; /*checkChatPassword: (arg0: string) => void; */passwordError: any; sendMessage: () => void; userchans: any[]; members: any[]; userChannels: { [x: string]: any[]; }; allUsers: { username: string }[]; removeChatPassword: (arg0: any) => void; removeChannel: (arg0: any) => void; message: string | number | readonly string[] | undefined; handleMessageChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+}
   ) 
   {
   // const [InviteAcceptedMap, setInviteAcceptedMap] = useState([]);
@@ -104,10 +105,9 @@ function Chat
     closeAddUserModal();
   };
   
-  const [blockedUsers, setBlockedUsers] = useState(props.currentUser?.blockedUsers || []);
+  // const [blockedUsers, setBlockedUsers] = useState(props.currentUser?.blockedUsers || []);
 
   const isUserBlocked = (username : string) => {
-
     if (props.blockedUsers && props.blockedUsers[props.yourId]) {
       return props.blockedUsers[props.yourId].includes(username);
      }
@@ -575,8 +575,8 @@ else {
     const filteredUsers = UserListPublic(props.currentChat.chatName);
     const filteredUsersUsernames = filteredUsers?.map((user: { username: any; }) => user.username);
     
-  function seeProfile(username: string): void {
-    window.location.href = `/public?username=${username}`;
+  function seeProfile(id: number): void {
+    window.location.href = `/public?username=${id}`;
   }
 
   function playPong(): void {
@@ -701,7 +701,7 @@ else {
         <div>
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Users</h3>
 <ul>
-  {props.users?.map((user: { username: string} , i: number) => (
+  {props.users?.map((user: any , i: number) => (
     user.username !== props.currentUser.username && (
       <li key={i}>
         <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>
@@ -709,6 +709,7 @@ else {
             {user.username}
           </span>
             <>
+            <div>
               {isUserBlocked(user.username) ? (
                 <Button5 onClick={() => unblockUser2(user.username)}>
                   Unblock
@@ -718,7 +719,7 @@ else {
                   Block
                 </Button4>
               )}
-               <Button3 onClick={() => seeProfile(user.username)}>
+               <Button3 onClick={() => seeProfile(user.id)}>
                     Profile
                   </Button3>
             </>

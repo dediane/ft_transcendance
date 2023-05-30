@@ -8,48 +8,6 @@ import { Socket } from "socket.io-client";
 
 type DefaultEventsMap = /*unresolved*/ any;
 
-
-// const OnlineStatusButton = () => {
-//     const [isOnline, setIsOnline] = useState(false);
-  
-//     useEffect(() => {
-//         const handleOnlineStatusChange = () => {
-//         console.log("here in handle change status")
-//           setIsOnline(window.navigator.onLine);
-//         };
-    
-//         if (typeof window !== 'undefined' && window.navigator) {
-//           setIsOnline(window.navigator.onLine);
-    
-//           window.addEventListener('online', handleOnlineStatusChange);
-//           window.addEventListener('offline', handleOnlineStatusChange);
-    
-//           return () => {
-//             window.removeEventListener('online', handleOnlineStatusChange);
-//             window.removeEventListener('offline', handleOnlineStatusChange);
-//           };
-//         }
-//       }, []);
-
-//     // const handleOnlineStatusChange = () => {
-//     //   setIsOnline(window.navigator.onLine);
-//     // };
-  
-//     // useEffect(() => {
-//     //   window.addEventListener('online', handleOnlineStatusChange);
-//     //   window.addEventListener('offline', handleOnlineStatusChange);
-  
-//     //   return () => {
-//     //     window.removeEventListener('online', handleOnlineStatusChange);
-//     //     window.removeEventListener('offline', handleOnlineStatusChange);
-//     //   };
-//     // }, []);
-//     return (
-//         <button>{isOnline ? 'Online' : 'Offline'}</button>
-//       );
-// }
-
-
 export default function Homepage() {
     return (
         <>
@@ -105,8 +63,67 @@ export const PublicProfil = () => {
         }
         fetch_profile()
     }, [router])
-
+    
     useEffect(() => {
+        console.log("Initial online status", navigator.onLine); // Log the initial online status
+        const handleOnlineStatus = () => {
+            console.log("navigator.onLine", navigator.onLine)
+            if (user.username)
+            {
+    
+                if (navigator.onLine == true && user.username)
+                {
+                    console.log("here navigator with online ", user.username);
+                    // setUserStatus("online");
+                    socket?.current?.emit("online", user.username);
+                    
+                }
+                else
+                {
+                    console.log("here navigator with Offline ", user.username);
+                    // setUserStatus("offline");
+                    socket?.current?.emit("offline", user.username);
+                    
+                }
+            }
+    
+          };
+
+
+
+        handleOnlineStatus();
+       
+          console.log(UserStatus);
+          console.log("22 online status", navigator.onLine); // Log the initial online status
+
+      
+          window.addEventListener('online', handleOnlineStatus);
+          window.addEventListener('offline', handleOnlineStatus);
+      
+        const handlestatus = () => {
+            // const payload = {username: user.username}
+            if (user.username)
+            {
+
+                socket?.current?.emit("isConnected", user.username)
+                
+                socket?.current?.on("isConnected", (data: boolean) => {
+                    if (data == true)
+                    {
+                        console.log("isconnected true")
+                        setUserStatus("online")
+                    }
+                    else
+                    {
+                        console.log("isconnected false")
+                        setUserStatus("offline") 
+                    }
+                });
+            }
+        }
+
+            
+
         const handleSocket = async () => {
         if (socket && socket.current) {
             socket.current.on("user_status", (data: {status: boolean, username1: string, username2: string}) => {
@@ -134,7 +151,13 @@ export const PublicProfil = () => {
         }
     }
     handleSocket()
-    }, [socket, user, setUserStatus])
+    handlestatus()
+  console.log("Userstatus is ", UserStatus);
+    return () => {
+        window.removeEventListener('online', handleOnlineStatus);
+        window.removeEventListener('offline', handleOnlineStatus);
+      };
+    }, [socket, user, setUserStatus, UserStatus])
 
     return (
         <>
@@ -146,8 +169,12 @@ export const PublicProfil = () => {
                     {!user.avatar && <picture><img src="/default.png" alt="user avatar" className={styles.profilepicture}/></picture>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
-                    {UserStatus === "ingame" ? <InGame /> : UserStatus === "online" ? <Online /> : <Offline />}
-                    {/* <OnlineStatusButton></OnlineStatusButton> */}
+                    {/* {UserStatus === "ingame" ? <InGame /> : UserStatus === "online" ? <Online /> : <Offline />} */}
+                    {{
+                    ingame: <InGame />,
+                    online: <Online />,
+                    offline: <Offline />
+                    }[UserStatus]}
                     <Asset title={'username'} value={user.username} />
                     </div>
                 </div>

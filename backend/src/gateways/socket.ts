@@ -64,6 +64,57 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private sock = new Map<number, Socket>(); // userid, socket
   private sockE = new Map<number, Socket>();// userid, socket
   private sockC = new Map<number, Socket>();// userid, socket
+  private allUsers = new Map<string, boolean>();
+  private  first = false;
+
+ 
+  @SubscribeMessage('online')
+async handleOnline(socket: Socket, username: string) {
+  if (this.first == false)
+  {
+    const allUsers = await this.userService.findAll();
+
+    for (const user of allUsers) {
+      this.allUsers.set(user.username, false);
+    }
+    // console.log("this all users in online susc", this.allUsers)
+    this.first = true;
+  }
+  this.allUsers.set(username, true);
+  console.log("username in online back" , username, true)
+  console.log("this all users in offline susc ->", this.allUsers)
+  console.log("OOONNLLIIINNEEE BACK")
+}
+
+@SubscribeMessage('offline')
+async handleOffline(socket: Socket, username: string) {
+  if (this.first == false)
+  {
+    const allUsers = await this.userService.findAll();
+
+    for (const user of allUsers) {
+      this.allUsers.set(user.username, false);
+    }
+
+    this.first = true;
+  }
+  this.allUsers.set(username, false);
+  console.log("username in offline back" , username, false)
+  console.log("this all users in offline susc ->", this.allUsers)
+  console.log("OOOOFFFFLINNNEEEE BACKKKKK")
+
+}
+
+@SubscribeMessage('isConnected')
+async handleIsConnected(socket: Socket, username: string)
+{
+  const bool = this.allUsers.get(username);
+  console.log(this.allUsers);
+  console.log("user " + username + " is in isconnected " + bool)
+  console.log("IS IT CONNECTED?? ->> ", bool)
+  this.server.emit('isConnected', bool);
+
+}
 
   async handleConnection(socket: Socket) {
     const users = await this.messageService.findAll();
@@ -151,6 +202,13 @@ async handleGetUsers(socket: Socket, userdata: {id: string, name: string}) {
   this.server.to(socket.id).emit('all users', payload);
 
 }
+
+// @SubscribeMessage('refresh')
+// async handleRefresh(socket: Socket, userdataid: string}) {
+// {
+// await ;
+// }
+
 
 @SubscribeMessage('join server')
 async handleJoinServer(socket: Socket, userdata: {id: string, username: string}) {
@@ -661,7 +719,28 @@ for (const user of this.users) {
           this.gameService.deleteempty();
           this.server.to(id_room).emit("end game");
         }
-
+        @SubscribeMessage('refresh')
+        handlerefresh(socket: Socket, id : string){
+          const userid = Number(id);
+          if (this.queue)
+          {
+            const usr = this.queue.get(userid);
+            if (usr)
+              this.queue.delete(userid);
+          }
+          if (this.queueE)
+          {
+            const usr = this.queueE.get(userid);
+            if (usr)
+              this.queueE.delete(userid);
+          }
+          if (this.queueC) // haha
+          {
+            const usr = this.queueC.get(userid);
+            if (usr)
+              this.queueC.delete(userid);
+          }
+        }
         // function helper to game position
     updateBall() {
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {

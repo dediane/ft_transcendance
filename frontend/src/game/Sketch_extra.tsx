@@ -172,6 +172,8 @@ p5.updateWithProps = props => {
       }
       if (left == true)
       {
+        p5.fill(200,143,204,255);
+        p5.noStroke();
         p5.text("End Game", width / 2 - 100, height / 2 - 50);
         let str = "User left the game, You win !!"
         p5.fill(200,143,204,255);

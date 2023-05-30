@@ -54,7 +54,7 @@ export class UserService {
     return user?.avatar;
   }
 
-  async findAndUpdateUserByUsername(username: string, newusername: string): Promise<boolean> {
+  async findAndUpdateUserByUsername(username: string, newusername: string, id: number): Promise<boolean> {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.username = :username', { username: newusername })
@@ -65,7 +65,7 @@ export class UserService {
     }
     const myuser = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username = :username', { username })
+      .where('user.id = :id', { id })
       .getOne();
 
     await this.userRepository.update( myuser.id, {username: newusername});

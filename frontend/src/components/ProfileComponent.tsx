@@ -48,6 +48,11 @@ export const Profil = () => {
     const [isOnline, setIsOnline] = useState(false);
     const [isGaming, setIsGaming] = useState(false);
 
+    const logout = () => {
+        authenticationService.deleteToken()
+        router.push('/login')
+    }
+
     useEffect(()=>{
         const fetch_profile = async() => {
 
@@ -61,7 +66,8 @@ export const Profil = () => {
         fetch_profile()
         } catch (error) {
             console.log(error)
-            logout();
+            authenticationService.deleteToken()
+            router.push('/login')
         }
     }, [isDynamic, router])
 
@@ -74,10 +80,7 @@ export const Profil = () => {
     }, [isOnline])
 
 
-    const logout = () => {
-        authenticationService.deleteToken()
-        router.push('/login')
-    }
+ 
 
     const active2fa = async() => {
         const  qrcode = await userService.generate2fa()
