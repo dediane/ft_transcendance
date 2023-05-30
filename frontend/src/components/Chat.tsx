@@ -703,7 +703,7 @@ else {
         <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All Users</h3>
 <ul>
   {props.users?.map((user: any , i: number) => (
-    user.username !== props.currentUser.username && (
+    user.username !== props.currentUser?.username && (
       <li key={i}>
         <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center'}}>
           <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
