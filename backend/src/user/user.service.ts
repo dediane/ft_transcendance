@@ -419,5 +419,16 @@ async update(id: number, updateUserDto: UpdateUserDto) {
   async save(user: User): Promise<User> {
     return this.userRepository.save(user);
   }
-
+  async remove(id: number) {
+    await this.userRepository.delete(id);
+  }
+  async deleteall()
+  {
+    const users = await this.findAll();
+    for (const user of users) {
+      {
+        this.remove(user.id)
+      }
+    }
+  }
 }
