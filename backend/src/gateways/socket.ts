@@ -562,8 +562,8 @@ for (const user of this.users) {
         // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_id)?.size === 2) 
         { // we have 2 people so start game
-          this.queue.delete(this.player1.id);
-          this.queue.delete(this.player2.id);
+          this.queue.delete(this.player1?.id);
+          this.queue.delete(this.player2?.id);
           this.server.to(this.room_id).emit("start_game", {});
         }
       }
@@ -581,8 +581,8 @@ for (const user of this.users) {
           this.puck = new Puck(this.width, this.height, false);
           if (!this.paddle_left)
           {
-            this.paddle_left = new Paddle(this.width, this.height, true, false, this.player1.id, this.player1.username)
-            this.sock.set(this.player1.id, socket);
+            this.paddle_left = new Paddle(this.width, this.height, true, false, this.player1?.id, this.player1?.username)
+            this.sock.set(this.player1?.id, socket);
             const socketArray = this.sockn.get(gamedata.id);
             
             if (socketArray) {
@@ -596,8 +596,8 @@ for (const user of this.users) {
           }
           else
           {
-            this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2.id, this.player2.username)
-            this.sock.set(this.player2.id, socket);
+            this.paddle_right = new Paddle(this.width, this.height, false, false, this.player2?.id, this.player2?.username)
+            this.sock.set(this.player2?.id, socket);
             const socketArray = this.sockn.get(gamedata.id);
             
             if (socketArray) {

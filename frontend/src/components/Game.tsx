@@ -40,6 +40,7 @@ export default function Game() {
   useEffect(() => {
     const handleRouteChange = (url: any) => {
       // Perform actions when the route changes
+      console.log("");
       const payload = {id : userdata.id, game: "classic"}
       socket?.current?.emit("change page",payload)
     };
