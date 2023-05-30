@@ -17,6 +17,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db_transcendance
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
