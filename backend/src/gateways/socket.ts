@@ -742,6 +742,60 @@ for (const user of this.users) {
               this.queueC.delete(userid);
           }
         }
+
+        @SubscribeMessage('change page')
+        handlechange(socket: Socket, payload: any){
+          const userid = Number(payload.id);
+          if (payload.game == "classic")
+          {
+            this.isGameStart = false;
+            if (userid == this.paddle_left.id)
+            {
+              this.puck.left_score = 0;
+              this.puck.right_score = this.fscore
+              this.user_left = true;
+            }
+            else if (userid == this.paddle_right.id)
+            {
+              this.puck.right_score = 0;
+              this.puck.left_score = this.fscore
+              this.user_left = true;
+            }
+          }
+          if (payload.game == "extra")
+          {
+            const usr = this.queueE.get(userid);
+            this.isGameStartE = false;
+            if (userid == this.paddle_leftE.id)
+            {
+              this.puckE.left_score = 0;
+              this.puckE.right_score = this.fscoreE
+              this.user_leftE = true;
+            }
+            else if (userid == this.paddle_rightE.id)
+            {
+              this.puckE.right_score = 0;
+              this.puckE.left_score = this.fscoreE
+              this.user_leftE = true;
+            }
+          }
+          if (payload.game == "chat") // haha
+          {
+            this.isGameStartC= false;
+            if (userid == this.paddle_leftC.id)
+            {
+              this.puckC.left_score = 0;
+              this.puckC.right_score = this.fscoreE
+              this.user_leftC = true;
+            }
+            else if (userid == this.paddle_rightC.id)
+            {
+              this.puckC.right_score = 0;
+              this.puckC.left_score = this.fscoreE
+              this.user_leftC = true;
+            }
+          }
+        }
         // function helper to game position
     updateBall() {
       if (!this.isGameStart || this.puck.left_score == this.fscore || this.puck.right_score == this.fscore) {

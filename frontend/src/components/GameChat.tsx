@@ -35,6 +35,22 @@ export default function Game() {
           router.push('/login')
     fetch_profile();
   }, [router]);
+
+  useEffect(() => {
+    const handleRouteChange = (url: any) => {
+      // Perform actions when the route changes
+      const payload = {id : userdata.id, game: "chat"}
+      socket?.current?.emit("change page",payload)
+    };
+  
+    // Subscribe to the router events
+    router.events.on('routeChangeComplete', handleRouteChange);
+  
+    // Clean up the event listener on component unmount
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [userdata]);
   return (
     <div id="canvas_size">
       <ReactP5Wrapper sketch={sketch} socket={socket} id={userdata.id} username={userdata.username}/>
