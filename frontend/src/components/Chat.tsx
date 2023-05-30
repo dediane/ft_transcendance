@@ -404,7 +404,7 @@ function renderUser(user: { username: string; }){
           receiverId: user.username,
       };
       return(
-            <div>
+            <div key={user.username}>
               {user.username}
           </div>
       )

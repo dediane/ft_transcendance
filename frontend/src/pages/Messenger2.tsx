@@ -411,11 +411,11 @@ function joinRoom(room: string) {
 
   useEffect(() => {
     if (userdata !== null) {
-    const token =  AuthService.getToken();
+    // const token =  AuthService.getToken();
 
-    if (!token) {
-      window.location.href = "/login";
-    }
+    // if (!token) {
+    //   window.location.href = "/login";
+    // }
 
 
     // const userdata = {
@@ -428,8 +428,8 @@ function joinRoom(room: string) {
     // }
 
  socketRef.current  = io("http://localhost:8000", {
-  reconnection: true, 
-  query: { token },
+  reconnection: true,
+  // query: { token },
 });
     socketRef?.current?.on("connect", () => {
       setConnected(true);
