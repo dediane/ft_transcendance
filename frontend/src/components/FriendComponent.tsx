@@ -20,6 +20,9 @@ export const Friends = () => {
   const handleInputChange = _.debounce(async (value) => {
     const result = await userService.search(value);
     const updatedUserList = result.map((user: any) => {
+      if(!friends || friends.length === 0) {
+        return user
+      }
       const tmp = friends.find((curr: any) => curr.id === user.id);
       if (tmp) {
         user.isFriend = true;
@@ -75,7 +78,7 @@ export const Friends = () => {
         return (
           <div key={key} className="">
             <div className={styles.listelement}>
-              <Link href={`/public?username=${username}`} className="hover:underline hover:font-medium hover:text-violet-600">
+              <Link href={`/public?username=${id}`} className="hover:underline hover:font-medium hover:text-violet-600">
                   {username}
               </Link>
               <button
@@ -105,8 +108,8 @@ export const Friends = () => {
             return (
               <div key={key} className="">
                 <div className={styles.listelement}>
-                  <Link href={`/public?username=${username}`} className="hover:underline hover:font-medium hover:text-violet-600">
-                  {username}
+                  <Link href={`/public?username=${id}`} className="hover:underline hover:font-medium hover:text-violet-600">
+                  {username} # {id}
                   </Link>
                   {!isFriend && (
                     <button
