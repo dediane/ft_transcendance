@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, SetStateAction} from 'react';
+import React, { useState, useEffect, ChangeEvent} from 'react';
 import PopupModal from "./PopUpModal"
 import MemberList from './MemberList';
 import Message from '@/components/Message';
@@ -105,9 +105,10 @@ function Chat
     closeAddUserModal();
   };
   
-  // const [blockedUsers, setBlockedUsers] = useState(props.currentUser?.blockedUsers || []);
+  const [blockedUsers, setBlockedUsers] = useState(props.currentUser?.blockedUsers || []);
 
   const isUserBlocked = (username : string) => {
+
     if (props.blockedUsers && props.blockedUsers[props.yourId]) {
       return props.blockedUsers[props.yourId].includes(username);
      }
@@ -709,7 +710,6 @@ else {
             {user.username}
           </span>
             <>
-            <div>
               {isUserBlocked(user.username) ? (
                 <Button5 onClick={() => unblockUser2(user.username)}>
                   Unblock
