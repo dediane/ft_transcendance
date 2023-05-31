@@ -115,10 +115,15 @@ function Chat
   };
   const blockUser2 = (username: any) => {
     props.blockUser(username);
+    window.location.href = "/Messenger2";
+    alert(`you just blocked ${username}`)
   };
 
   const unblockUser2 = (username: any) => {
     props.unblockUser(username);
+    window.location.href = "/Messenger2";
+    alert(`you just blocked ${username}`)
+
   };
 
   const [adminUsers, setAdminUsers] = useState(props.currentUser?.adminUsers || []);
