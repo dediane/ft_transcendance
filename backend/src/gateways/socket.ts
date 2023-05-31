@@ -48,13 +48,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private users: any[] = [];
+  private allusers: any[] = [];
   private messages = {
     general: [],
     random: [],
     jokes: [],
     javascript: [],
   };
-  private games = new Map<number, GameProps>(); // gameid, gameprops
   private queue = new Map<number, User>();  // userid, user
   private queueC = new Map<number, User>();  // userid, user
   private queueE = new Map<number, User>(); // userid, user
@@ -64,57 +64,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private sock = new Map<number, Socket>(); // userid, socket
   private sockE = new Map<number, Socket>();// userid, socket
   private sockC = new Map<number, Socket>();// userid, socket
-  private allUsers = new Map<string, boolean>();
-  private  first = false;
-
- 
-  @SubscribeMessage('online')
-async handleOnline(socket: Socket, username: string) {
-  if (this.first == false)
-  {
-    const allUsers = await this.userService.findAll();
-
-    for (const user of allUsers) {
-      this.allUsers.set(user.username, false);
-    }
-    // console.log("this all users in online susc", this.allUsers)
-    this.first = true;
-  }
-  this.allUsers.set(username, true);
-  console.log("username in online back" , username, true)
-  console.log("this all users in offline susc ->", this.allUsers)
-  console.log("OOONNLLIIINNEEE BACK")
-}
-
-@SubscribeMessage('offline')
-async handleOffline(socket: Socket, username: string) {
-  if (this.first == false)
-  {
-    const allUsers = await this.userService.findAll();
-
-    for (const user of allUsers) {
-      this.allUsers.set(user.username, false);
-    }
-
-    this.first = true;
-  }
-  this.allUsers.set(username, false);
-  console.log("username in offline back" , username, false)
-  console.log("this all users in offline susc ->", this.allUsers)
-  console.log("OOOOFFFFLINNNEEEE BACKKKKK")
-
-}
-
-@SubscribeMessage('isConnected')
-async handleIsConnected(socket: Socket, username: string)
-{
-  const bool = this.allUsers.get(username);
-  console.log(this.allUsers);
-  console.log("user " + username + " is in isconnected " + bool)
-  console.log("IS IT CONNECTED?? ->> ", bool)
-  this.server.emit('isConnected', bool);
-
-}
 
   async handleConnection(socket: Socket) {
     const users = await this.messageService.findAll();
@@ -191,6 +140,14 @@ async handleIsConnected(socket: Socket, username: string)
     }
   }
   this.server.emit('connected users', this.users);
+  const userrIndex = this.allusers.findIndex((u) => u.sockets.includes(socket.id));
+  if (userrIndex >= 0) {
+    this.allusers[userrIndex].sockets = this.allusers[userrIndex].sockets.filter((s) => s !== socket.id);
+    if (this.allusers[userrIndex].sockets.length === 0) {
+      const disconnectedUser = this.allusers.splice(userrIndex, 1)[0];
+    }
+  }
+  this.server.emit('connected all users', this.allusers);
 }
 
 @SubscribeMessage('all users')
@@ -236,6 +193,8 @@ async handleJoinServer(socket: Socket, userdata: {id: string, username: string})
   }
    this.server.to(socket.id).emit('all chans',channelNames);
    this.server.emit('connected users', this.users);
+   const payload = {users : this.users}
+   this.server.emit('connected userss', payload);
 
     for (const channel of channels) {
 
@@ -1270,5 +1229,24 @@ for (const user of this.users) {
           this.server.to(id_room).emit("user left chat");
           setTimeout(this.end_game.bind(this, id_room),  5 * 1000)
         }
-        
+
+        @SubscribeMessage('join server all')
+  async handleJoinServerAll(socket: Socket, userdata: {id: string, username: string}) {
+  if (userdata.id == '' || userdata.username == '')
+    return;
+  const userIndex = this.allusers.findIndex((u) => u.id === userdata.id);
+  if (userIndex >= 0) {
+    this.allusers[userIndex].sockets.push(socket.id);
+  } else {
+    const user = {
+      username: userdata.username,
+      id: userdata.id,
+      sockets: [socket.id],
+    };
+    this.allusers.push(user);
+  }
+
+  this.server.emit('connected all users', this.allusers);
+  
+}       
 }

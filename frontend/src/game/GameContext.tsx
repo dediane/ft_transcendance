@@ -5,13 +5,15 @@ import { io } from "socket.io-client";
 import AuthService from "../services/authentication-service"
 import { createContext } from "react";
 
+
+type DefaultEventsMap = /*unresolved*/ any;
 export interface IGameContextProps { // type des variable set
         UserStatus: string;
         setUserStatus: (userStatus: string) => void ;
         socket: React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null
-        //socket : typeof useRef<Socket | null> | null;
+        allUsers: any[]
+        setAllUsers: (allUsers: []) => void ;
 }
-type DefaultEventsMap = /*unresolved*/ any;
 
 function Create() : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null>  {
   const socketRef = useRef<Socket | null>(null);
@@ -29,16 +31,17 @@ const ContextGame = createContext<IGameContextProps>({
   UserStatus: "offline",
   setUserStatus: (inRoom: string) => {},
   socket: null,
+  allUsers: [],
+  setAllUsers: (allUsers: any[]) => {},
 });
 
 const ContextProviderGame = ({children} : {children : React.ReactNode}) => {
   const[UserStatus, setUserStatus] = useState("offline") // ["online", "offline", "ingame"
-  // const socket = create();
-  //let socket :  React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> 
+  const[allUsers, setAllUsers] = useState([]); // all my user connected or not 
   let socket : React.MutableRefObject<Socket<DefaultEventsMap, DefaultEventsMap> | null> | null 
   socket = Create();
   return (
-    <ContextGame.Provider value={{UserStatus, setUserStatus, socket}}>
+    <ContextGame.Provider value={{UserStatus, setUserStatus, socket, allUsers, setAllUsers}}>
       {children}
     </ContextGame.Provider>
   );

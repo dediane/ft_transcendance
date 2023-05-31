@@ -8,19 +8,24 @@ import Pong from './pong';
 import { Context } from 'react';
 import { ContextProviderGame } from '../game/GameContext'
 import Pastille from '@/components/Pastille';
+import { useRouter } from 'next/router';
 
 
 
 function App({ Component, pageProps }: AppProps) {
+  
+  const router = useRouter();
+  const { pathname } = router;
+  const excludedPages = ['home_game', 'pong', 'pong_extra', 'pong_chat'];
 
-
+  const shouldRenderPastille = !excludedPages.includes(Component.displayName || Component.name);
   return (
     <div>
       <BackgroundAnimation />
       <ContextProviderGame>
-
+      {pathname !== '/home_game' && pathname !== '/pong' && pathname !== '/pong_chat' && pathname !== '/pong_extra' && <Pastille />}
+      {/* {shouldRenderPastille && <Pastille />} */}
       <Layout {...pageProps}>
-        {/* <Pastille /> */}
           <Component {...pageProps} />
       </Layout>
       </ContextProviderGame>
