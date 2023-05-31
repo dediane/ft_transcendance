@@ -47,7 +47,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
 
 
     const lala = await this.userService.create(newuser);
-    console.log(lala);
+    // console.log(lala);
     done(null, user);
   }
 }

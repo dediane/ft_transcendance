@@ -78,13 +78,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (user)
     {
       this.isGameStart = false;
-      if (user == this.paddle_left.id)
+      if (user == this.paddle_left?.id)
       {
         this.puck.left_score = 0;
         this.puck.right_score = this.fscore
         this.user_left = true;
       }
-      else if (user == this.paddle_right.id)
+      else if (user == this.paddle_right?.id)
       {
         this.puck.right_score = 0;
         this.puck.left_score = this.fscore
@@ -98,13 +98,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (user)
     {
       this.isGameStartE = false;
-      if (user == this.paddle_leftE.id)
+      if (user == this.paddle_leftE?.id)
       {
         this.puckE.left_score = 0;
         this.puckE.right_score = this.fscoreE
         this.user_leftE = true;
       }
-      else if (user == this.paddle_rightE.id)
+      else if (user == this.paddle_rightE?.id)
       {
         this.puckE.right_score = 0;
         this.puckE.left_score = this.fscoreE
@@ -583,10 +583,10 @@ for (const user of this.users) {
           this.paddle_left.move(0);
           this.paddle_right.move(0);
         }
-
+   
         @SubscribeMessage('KeyPressed')
         async KeyPressedr(socket: Socket, gamedata : any) { 
-          if (gamedata.id == this.paddle_left.id)
+          if (gamedata.id == this.paddle_left?.id)
           {
             if (gamedata.key == 'w')
             {
@@ -597,7 +597,7 @@ for (const user of this.users) {
               this.paddle_left.move(20);
             }
           }
-          else if (gamedata.id == this.paddle_right.id)
+          else if (gamedata.id == this.paddle_right?.id)
           {
             if (gamedata.key == 'w')
             {
@@ -612,12 +612,12 @@ for (const user of this.users) {
 
         async addscore(id_room: string) {
           this.isGameStart = false;
-          this.sock.delete(this.paddle_left.id);
-          this.sock.delete(this.paddle_right.id);
-          this.sockn.delete(this.paddle_left.id);
-          this.sockn.delete(this.paddle_right.id);
-          const luser = await this.userService.findOnebyId2(this.paddle_left.id)
-          const ruser = await this.userService.findOnebyId2(this.paddle_right.id)
+          this.sock.delete(this.paddle_left?.id);
+          this.sock.delete(this.paddle_right?.id);
+          this.sockn.delete(this.paddle_left?.id);
+          this.sockn.delete(this.paddle_right?.id);
+          const luser = await this.userService.findOnebyId2(this.paddle_left?.id)
+          const ruser = await this.userService.findOnebyId2(this.paddle_right?.id)
           if (this.puck.left_score == this.fscore)
           {
             luser.wins += 1;
@@ -628,8 +628,8 @@ for (const user of this.users) {
             luser.losses += 1;
             ruser.wins += 1;
           }
-          await this.userService.update(this.paddle_left.id, luser);
-          await this.userService.update(this.paddle_right.id, ruser);
+          await this.userService.update(this.paddle_left?.id, luser);
+          await this.userService.update(this.paddle_right?.id, ruser);
 
           const upgame = await this.gameService.findOne(Number(id_room))
           upgame.player1 = luser;
@@ -647,7 +647,7 @@ for (const user of this.users) {
           this.room_id = "";
           if (this.paddle_left && this.paddle_right)
           {
-            payload = {status: false, username1 : this.paddle_left.name, username2: this.paddle_right.name}
+            payload = {status: false, username1 : this.paddle_left?.name, username2: this.paddle_right?.name}
             this.server.emit("user_status", payload);
             this.paddle_left.cleanup();
             this.paddle_right.cleanup();
@@ -658,7 +658,7 @@ for (const user of this.users) {
           this.room_idE = "";
           if (this.paddle_leftE && this.paddle_rightE)
           {
-            payload = {status: false, username1 : this.paddle_leftE.name, username2: this.paddle_rightE.name}
+            payload = {status: false, username1 : this.paddle_leftE?.name, username2: this.paddle_rightE?.name}
             this.server.emit("user_status", payload);
             this.paddle_leftE.cleanup();
             this.paddle_rightE.cleanup();
@@ -680,7 +680,7 @@ for (const user of this.users) {
           this.gameService.deleteempty();
           this.server.to(id_room).emit("end game");
         }
-        @SubscribeMessage('refresh')
+          @SubscribeMessage('refresh')
         handlerefresh(socket: Socket, id : string){
           const userid = Number(id);
           if (this.queue)
@@ -703,19 +703,19 @@ for (const user of this.users) {
           }
         }
 
-        @SubscribeMessage('change page')
+          @SubscribeMessage('change page')
         handlechange(socket: Socket, payload: any){
           const userid = Number(payload.id);
           if (payload.game == "classic")
           {
             this.isGameStart = false;
-            if (userid == this.paddle_left.id)
+            if (userid == this.paddle_left?.id)
             {
               this.puck.left_score = 0;
               this.puck.right_score = this.fscore
               this.user_left = true;
             }
-            else if (userid == this.paddle_right.id)
+            else if (userid == this.paddle_right?.id)
             {
               this.puck.right_score = 0;
               this.puck.left_score = this.fscore
@@ -726,13 +726,13 @@ for (const user of this.users) {
           {
             const usr = this.queueE.get(userid);
             this.isGameStartE = false;
-            if (userid == this.paddle_leftE.id)
+            if (userid == this.paddle_leftE?.id)
             {
               this.puckE.left_score = 0;
               this.puckE.right_score = this.fscoreE
               this.user_leftE = true;
             }
-            else if (userid == this.paddle_rightE.id)
+            else if (userid == this.paddle_rightE?.id)
             {
               this.puckE.right_score = 0;
               this.puckE.left_score = this.fscoreE
@@ -771,11 +771,11 @@ for (const user of this.users) {
           const payload = {x : this.puck.x, y : this.puck.y, lscore: this.puck.left_score, rscore: this.puck.right_score}
           if (this.paddle_left && this.paddle_right)
           {
-            const payload = {status: true, username1 : this.paddle_left.name, username2: this.paddle_right.name}
+            const payload = {status: true, username1 : this.paddle_left?.name, username2: this.paddle_right?.name}
             this.server.emit("user_status", payload);
             this.paddle_left.update();
             this.paddle_right.update()
-            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right.name}
+            const payloadp = {prx: this.paddle_right.x, pry: this.paddle_right.y, prw: this.paddle_right.w, prh: this.paddle_right.h, pln: this.paddle_left?.name, plx: this.paddle_left.x, ply: this.paddle_left.y, plw: this.paddle_left.w, plh: this.paddle_left.h, prn: this.paddle_right?.name}
             this.server.to(this.room_id).emit("paddle update", (payloadp));
           };
           this.server.to(this.room_id).emit("puck update", (payload));
@@ -875,8 +875,8 @@ for (const user of this.users) {
         
         if (this.server.sockets.adapter.rooms.get(this.room_idE)?.size === 2) 
         { // we have 2 people to play
-          this.queueE.delete(this.player1E.id);
-          this.queueE.delete(this.player2E.id);
+          this.queueE.delete(this.player1E?.id);
+          this.queueE.delete(this.player2E?.id);
           this.server.to(this.room_idE).emit("start_game_extra", {});
         }
       }
@@ -891,8 +891,8 @@ for (const user of this.users) {
       this.puckE = new Puck(this.widthE, this.heightE, true);
       if (!this.paddle_leftE)
       {
-        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, true, this.player1E.id, this.player1E.username)
-        this.sockE.set(this.player1E.id, socket);
+        this.paddle_leftE = new Paddle(this.widthE, this.heightE, true, true, this.player1E?.id, this.player1E?.username)
+        this.sockE.set(this.player1E?.id, socket);
         const socketArray = this.socknE.get(gamedata.id);
         
         if (socketArray) {
@@ -906,8 +906,8 @@ for (const user of this.users) {
       }
       else
       {
-        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, true, this.player2E.id, this.player2E.username)
-        this.sockE.set(this.player2E.id, socket);
+        this.paddle_rightE = new Paddle(this.widthE, this.heightE, false, true, this.player2E?.id, this.player2E?.username)
+        this.sockE.set(this.player2E?.id, socket);
         const socketArray = this.socknE.get(gamedata.id);
         
         if (socketArray) {
@@ -942,11 +942,11 @@ for (const user of this.users) {
           const payload = {x : this.puckE.x, y : this.puckE.y, lscore: this.puckE.left_score, rscore: this.puckE.right_score}
           if (this.paddle_leftE && this.paddle_rightE)
           {
-            const payload = {status: true, username1 : this.paddle_leftE.name, username2: this.paddle_rightE.name}
+            const payload = {status: true, username1 : this.paddle_leftE?.name, username2: this.paddle_rightE?.name}
             this.server.emit("user_status", payload);
             this.paddle_leftE.update();
             this.paddle_rightE.update();
-            const payloadp = {prx: this.paddle_rightE.x, pry: this.paddle_rightE.y, prw: this.paddle_rightE.w, prh: this.paddle_rightE.h, pln: this.paddle_leftE.name, plx: this.paddle_leftE.x, ply: this.paddle_leftE.y, plw: this.paddle_leftE.w, plh: this.paddle_leftE.h, prn: this.paddle_rightE.name}
+            const payloadp = {prx: this.paddle_rightE.x, pry: this.paddle_rightE.y, prw: this.paddle_rightE.w, prh: this.paddle_rightE.h, pln: this.paddle_leftE?.name, plx: this.paddle_leftE.x, ply: this.paddle_leftE.y, plw: this.paddle_leftE.w, plh: this.paddle_leftE.h, prn: this.paddle_rightE?.name}
             this.server.to(this.room_idE).emit("paddle update", (payloadp));
           };
           this.server.to(this.room_idE).emit("puck update", (payload));
@@ -957,7 +957,7 @@ for (const user of this.users) {
 
     @SubscribeMessage('KeyPressed extra')
     async KeyPressed(socket: Socket, gamedata : any) { 
-      if (gamedata.id == this.paddle_leftE.id)
+      if (gamedata.id == this.paddle_leftE?.id)
       {
         if (gamedata.key == 'w')
         {
@@ -968,7 +968,7 @@ for (const user of this.users) {
           this.paddle_leftE.move(20 * this.speedE);
         }
       }
-      else if (gamedata.id == this.paddle_rightE.id)
+      else if (gamedata.id == this.paddle_rightE?.id)
       {
         if (gamedata.key == 'w')
         {
@@ -987,12 +987,12 @@ for (const user of this.users) {
     }
     async addscoreE(id_room: string) {
       this.isGameStartE = false;
-      this.sockE.delete(this.paddle_leftE.id);
-      this.sockE.delete(this.paddle_rightE.id);
-      this.socknE.delete(this.paddle_leftE.id);
-      this.socknE.delete(this.paddle_rightE.id);
-      const luser = await this.userService.findOnebyId2(this.paddle_leftE.id)
-      const ruser = await this.userService.findOnebyId2(this.paddle_rightE.id)
+      this.sockE.delete(this.paddle_leftE?.id);
+      this.sockE.delete(this.paddle_rightE?.id);
+      this.socknE.delete(this.paddle_leftE?.id);
+      this.socknE.delete(this.paddle_rightE?.id);
+      const luser = await this.userService.findOnebyId2(this.paddle_leftE?.id)
+      const ruser = await this.userService.findOnebyId2(this.paddle_rightE?.id)
       if (this.puckE.left_score == this.fscoreE)
       {              
         luser.wins += 1;
@@ -1003,8 +1003,8 @@ for (const user of this.users) {
         luser.losses += 1;
         ruser.wins += 1;
       }
-      await this.userService.update(this.paddle_leftE.id, luser);
-      await this.userService.update(this.paddle_rightE.id, ruser);
+      await this.userService.update(this.paddle_leftE?.id, luser);
+      await this.userService.update(this.paddle_rightE?.id, ruser);
 
       const upgame = await this.gameService.findOne(Number(id_room))
       upgame.player1 = luser;
@@ -1085,8 +1085,8 @@ for (const user of this.users) {
         // send that a person join the room
         if (this.server.sockets.adapter.rooms.get(this.room_idC)?.size === 2) 
         { // we have 2 people so start game
-          this.queueC.delete(this.player1C.id);
-          this.queueC.delete(this.player2C.id);
+          this.queueC.delete(this.player1C?.id);
+          this.queueC.delete(this.player2C?.id);
           this.server.to(this.room_idC).emit("start_game chat", {});
         }
       }
@@ -1101,8 +1101,8 @@ for (const user of this.users) {
           this.puckC = new Puck(this.widthC, this.heightC, false);
           if (!this.paddle_leftC)
           {
-            this.paddle_leftC = new Paddle(this.widthC, this.heightC, true, false, Number(this.player1C.id), this.player1C.username)
-            this.sockC.set(this.player1C.id, socket);
+            this.paddle_leftC = new Paddle(this.widthC, this.heightC, true, false, Number(this.player1C?.id), this.player1C?.username)
+            this.sockC.set(this.player1C?.id, socket);
             const socketArray = this.socknC.get(gamedata.id);
             
             if (socketArray) {
@@ -1116,8 +1116,8 @@ for (const user of this.users) {
           }
           else
           {
-            this.paddle_rightC = new Paddle(this.widthC, this.heightC, false, false, this.player2C.id, this.player2C.username)
-            this.sock.set(this.player2C.id, socket);
+            this.paddle_rightC = new Paddle(this.widthC, this.heightC, false, false, this.player2C?.id, this.player2C?.username)
+            this.sock.set(this.player2C?.id, socket);
             const socketArray = this.socknC.get(gamedata.id);
             
             if (socketArray) {
@@ -1165,14 +1165,14 @@ for (const user of this.users) {
       }
     }
   
-
-        @SubscribeMessage('KeyReleased chat')
+   
+    @SubscribeMessage('KeyReleased chat')
         async KeyRealaesedChat(socket: Socket) {
           this.paddle_leftC.move(0);
           this.paddle_rightC.move(0);
         }
 
-        @SubscribeMessage('KeyPressed chat')
+           @SubscribeMessage('KeyPressed chat')
         async KeyPressedC(socket: Socket, gamedata : any) { 
           if (gamedata.id == this.paddle_leftC.id)
           {
