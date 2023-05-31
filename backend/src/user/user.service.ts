@@ -139,7 +139,7 @@ export class UserService {
     .select('user')
     .where('user.id = :id', {id})
     .getOne();
-    if (user.password) {
+    if (user?.password) {
       delete user.password
     }
     return user;
@@ -387,14 +387,22 @@ async update(id: number, updateUserDto: UpdateUserDto) {
 
   async turnOnTwoFactorAuthentication(userId: number) {
     const user = await this.findOnebyId2(userId);
-    user.is2fa = true;
-    await this.userRepository.update(userId, user);
+    if (user)
+    {
+      user.is2fa = true;
+      await this.userRepository.update(userId, user);
+    }
+   
   }
 
   async turnOffTwoFactorAuthentication(userId: number) {
     const user = await this.findOnebyId2(userId);
-    user.is2fa = false;
-    await this.userRepository.update(userId, user);
+    if (user)
+    {
+      user.is2fa = false;
+      await this.userRepository.update(userId, user);
+    }
+    
   }
 
 

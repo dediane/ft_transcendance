@@ -12,13 +12,9 @@ services:
       - 3000:3000
   postgres:
     image: postgres:13
-    env_file: ./backend/.env
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db_transcendance
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
-
