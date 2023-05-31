@@ -16,9 +16,7 @@ function App({ Component, pageProps }: AppProps) {
   
   const router = useRouter();
   const { pathname } = router;
-  const excludedPages = ['home_game', 'pong', 'pong_extra', 'pong_chat'];
 
-  const shouldRenderPastille = !excludedPages.includes(Component.displayName || Component.name);
   return (
     <div>
       <BackgroundAnimation />

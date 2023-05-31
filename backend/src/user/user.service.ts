@@ -409,10 +409,10 @@ async update(id: number, updateUserDto: UpdateUserDto) {
 
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-    console.log("THIS USERID", userId)
+    // console.log("THIS USERID", userId)
     const user = await this.findOnebyId2(userId);
     user.secret2fa = secret;
-    console.log("THIS USER IN DATABASE", user)
+    // console.log("THIS USER IN DATABASE", user)
 
     const result = await this.userRepository.update(userId, user);
     // console.log("reSULT", result)

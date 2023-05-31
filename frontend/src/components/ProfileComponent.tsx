@@ -69,7 +69,7 @@ export const Profil = () => {
         try {
         fetch_profile()
         } catch (error) {
-            console.log(error)
+            // console.log(error)
             authenticationService.deleteToken()
             router.push('/login')
         }

@@ -12,7 +12,7 @@ const ConnectOTP = () => {
         authenticationService.saveToken(res.access_token)
         router.push("/profile")
       }).catch((err: any) => {
-        console.log(err)
+        // console.log(err)
       })
     }
   }
@@ -39,13 +39,13 @@ function Auth() {
           router.push('/profile')
         if(result) {
           setOtp(true)
-          console.log("2fa enabled")
+          // console.log("2fa enabled")
         }
       }
     }
 
     get_code()
-  }, [router]) 
+  }, []) 
   return (
     <div>
       {otp && <ConnectOTP/>}

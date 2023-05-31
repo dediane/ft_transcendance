@@ -307,7 +307,7 @@ function Messenger2() {
     socketRef?.current?.emit("block user", payload);  //member to remove a envoyer a la database pour modif
     socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
 
-    console.log("for username", userdataname, "after adding", usertoBlock, "block users in messenger2", blockedUsers[userdataname]);
+    // console.log("for username", userdataname, "after adding", usertoBlock, "block users in messenger2", blockedUsers[userdataname]);
 
   }
 
@@ -332,7 +332,7 @@ function Messenger2() {
     socketRef?.current?.emit("unblock user", payload);  //member to remove a envoyer a la database pour modif
     socketRef?.current?.emit("join server", {id: userdata.id, username: userdata.username});
  
-    console.log("unblock users messenger2", blockedUsers[userdataname]);
+    // console.log("unblock users messenger2", blockedUsers[userdataname]);
 
   }
   

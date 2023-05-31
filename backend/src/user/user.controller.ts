@@ -62,7 +62,7 @@ export class UserController {
     // Handle image upload logic here
     if(!body.img_base64)
       return { status: false, error: 'Image not provided' };
-    console.log(req.user.id)
+    // console.log(req.user.id)
     await this.userService.updateAvatar(req.user.id, body.img_base64);
     return { status: true };
   }

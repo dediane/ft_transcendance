@@ -101,7 +101,7 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   async authenticate(@Request() request, @Body() body) {
-    console.log("OTP attemps")
+    // console.log("OTP attemps")
     if(!body.twoFactorAuthenticationCode)
       return ({status: false, message: "2FA code is invalid"})
     const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(

@@ -11,11 +11,11 @@ export class FriendController {
     async addFriend(@Request() req) {
         const user_id = req.user.id
         const friend_id = req.body.friend_id
-        console.log(user_id, friend_id)
+        // console.log(user_id, friend_id)
         try {
             return await this.userService.addFriend(user_id, friend_id)
         } catch(err) {
-            console.log(err)
+            // console.log(err)
             return {status: false, message: "Friend already added"}
         }
     }
@@ -25,7 +25,7 @@ export class FriendController {
     accept(@Request() req) {
         const user_id = req.user.id
         const friend_id = req.body.friend_id
-        console.log(user_id, friend_id)
+        // console.log(user_id, friend_id)
         return this.userService.addFriend(user_id, friend_id)
     }
 
@@ -34,7 +34,7 @@ export class FriendController {
     removeFriend(@Request() req) {
         const user_id = req.user.id
         const friend_id = req.body.friend_id
-        console.log(user_id, friend_id)
+        // console.log(user_id, friend_id)
         return this.userService.removeFriend(user_id, friend_id)
     }
 

@@ -34,7 +34,7 @@ export const Games = () => {
         fetchGames();
     },[])
 
-console.log("games in history", games)
+// console.log("games in history", games)
     return (
         <>
         <div className={styles.container}>

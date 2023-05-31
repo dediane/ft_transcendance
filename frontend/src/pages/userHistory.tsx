@@ -27,7 +27,7 @@ export const UserGames = () => {
             const res = await gameService.get_games_by_username(result.username);
             if (res) {
               setGames(res);
-              console.log(res);
+            //   console.log(res);
             }
           }
         };

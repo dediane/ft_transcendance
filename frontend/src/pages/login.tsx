@@ -16,7 +16,7 @@ export const ConnectOTP = () => {
         authenticationService.saveToken(res.access_token)
         router.push("/profile")
       }).catch((err: any) => {
-        console.log(err)
+        // console.log(err)
       })
     }
   }
@@ -62,7 +62,7 @@ const handleLogin = async ({email, password, setError, setRequireOtp, router} : 
   
   
   const result = await userService.login(email, password)
-  console.log(result);
+  // console.log(result);
   if (!result.status) {
     setError(result.error)
   }
@@ -70,7 +70,7 @@ const handleLogin = async ({email, password, setError, setRequireOtp, router} : 
   if(result.access_token) {
     authenticationService.saveToken(result.access_token)
     if(result.otp_active) {
-      console.log("QUERY CODE")
+      // console.log("QUERY CODE")
       setRequireOtp(true)
       return
     }
@@ -217,7 +217,7 @@ export const Modal2fa = () => {
   }
   
   const login2fa = async() => {
-    console.log("Code = ", inputValues.twoFactorAuthenticationCode)
+    // console.log("Code = ", inputValues.twoFactorAuthenticationCode)
     const result = await userService.authenticate2fa(inputValues.twoFactorAuthenticationCode);
   }
 
@@ -228,7 +228,7 @@ export const Modal2fa = () => {
        <>
         <h1 className={styles.title2}>2FA</h1>
         <p>Scan the QR code with your 2FA app</p> 
-        {console.log(qrcode)}
+        {/* {console.log(qrcode)} */}
         <picture><img src={qrcode} alt="qrcode" className={styles.qrcode}/></picture>
         <input 
         onChange={(e) => setInputValues({...inputValues, twoFactorAuthenticationCode: e.target.value})}
@@ -236,7 +236,7 @@ export const Modal2fa = () => {
         placeholder="Enter your 2FA code" 
         className={styles.inputbox}
         />
-        {console.log("INPUT VALUES: ", inputValues)}
+        {/* {console.log("INPUT VALUES: ", inputValues)} */}
         <button className={styles.button} onClick={() => login2fa()}>Login</button>
         </>
     </div>

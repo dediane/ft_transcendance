@@ -34,8 +34,8 @@ export default function Pastille() {
     // console.log("userdata ", userData.username)
     if (userData.username)
     {
-        console.log("my user")
-        console.log("my user is ", userData.id, userData.username)
+        // console.log("my user")
+        // console.log("my user is ", userData.id, userData.username)
 
         socket?.current?.emit("join server all", {id: userData.id, username: userData.username});
           

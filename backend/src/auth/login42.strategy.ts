@@ -27,8 +27,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     const user = { first_name, last_name, email, img_url: image.link, id, username:login}
     const existingUser = await this.userService.findOnebyEmail(user.email)
     //delete existingUser.secret2fa
-    console.log("existingUser", existingUser)
-    console.log("user", user)
+    // console.log("existingUser", existingUser)
+    // console.log("user", user)
     
     if (existingUser){
       return done(null, {...existingUser})

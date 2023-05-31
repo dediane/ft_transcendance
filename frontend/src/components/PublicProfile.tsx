@@ -63,7 +63,7 @@ export const PublicProfil = () => {
             if (!username) router.push('profile');
             const result = await userService.findPublicUser(username as string)
             setUser({...result})
-            console.log(result)
+            // console.log(result)
         }
         fetch_profile()
     }, [router])
@@ -74,7 +74,7 @@ export const PublicProfil = () => {
         {
             if (user.username)
             {
-                console.log(allUsers);
+                // console.log(allUsers);
                 const userIndex = allUsers.findIndex((u) => u.username === user.username);
                 if (userIndex >= 0) {
                     if (UserStatus != "ingame")
