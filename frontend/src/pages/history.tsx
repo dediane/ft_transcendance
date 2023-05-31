@@ -33,6 +33,8 @@ export const Games = () => {
         }
         fetchGames();
     },[])
+
+console.log("games in history", games)
     return (
         <>
         <div className={styles.container}>
@@ -57,7 +59,7 @@ export const Games = () => {
                     <div className={styles.avatarContainer}>
                         {player1?.avatar && <picture><img src={`${player1?.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
                         {!player1?.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
-                        <Link href={`/public?username=${player1?.username}`}>
+                        <Link href={`/public?username=${player1?.id}`}>
                             {player1?.username}
                         </Link>
                     </div>
@@ -66,7 +68,7 @@ export const Games = () => {
                     <div className={styles.avatarContainer}>
                         {player2?.avatar && <picture><img src={`${player2?.avatar}`} alt="avatar user" className={styles.profilepicture}/></picture>}
                          {!player2?.avatar && <picture><img src="/default.png" alt="avatar user" className={styles.profilepicture}></img></picture>}
-                        <Link href={`/public?username=${player2?.username}`}>
+                        <Link href={`/public?username=${player2?.id}`}>
                             {player2?.username}
                         </Link>
                     </div>
