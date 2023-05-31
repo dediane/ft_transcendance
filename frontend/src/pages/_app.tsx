@@ -5,23 +5,22 @@ import Home from '.';
 import { BackgroundAnimation } from '@/components/BackgroundAnimation';
 import HomeGame from './home_game';
 import Pong from './pong';
-import { Context } from 'react';
+import { Context, useEffect, useMemo, useState } from 'react';
 import { ContextProviderGame } from '../game/GameContext'
 import Pastille from '@/components/Pastille';
 import { useRouter } from 'next/router';
+import authenticationService from '@/services/authentication-service';
 
 
 
-function App({ Component, pageProps }: AppProps) {
-  
+function App({ Component, pageProps }: AppProps) {  
   const router = useRouter();
   const { pathname } = router;
-
   return (
     <div>
       <BackgroundAnimation />
       <ContextProviderGame>
-      {pathname !== '/home_game' && pathname !== '/pong' && pathname !== '/pong_chat' && pathname !== '/pong_extra' && <Pastille />}
+      {pathname !== '/home_game' && pathname !== '/pong' && pathname !== '/pong_chat' && pathname !== '/pong_extra' && pathname !== "/login" && <Pastille />}
       {/* {shouldRenderPastille && <Pastille />} */}
       <Layout {...pageProps}>
           <Component {...pageProps} />
