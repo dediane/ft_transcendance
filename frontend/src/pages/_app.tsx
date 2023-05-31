@@ -13,12 +13,14 @@ import Pastille from '@/components/Pastille';
 
 function App({ Component, pageProps }: AppProps) {
 
+  const excludedPages = ['home_game', 'pong', 'pong_extra', 'pong_chat'];
 
+  const shouldRenderPastille = !excludedPages.includes(Component.displayName || Component.name);
   return (
     <div>
       <BackgroundAnimation />
       <ContextProviderGame>
-      <Pastille />
+      {shouldRenderPastille && <Pastille />}
       <Layout {...pageProps}>
           <Component {...pageProps} />
       </Layout>
