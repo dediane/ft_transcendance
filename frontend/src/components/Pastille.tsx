@@ -42,14 +42,14 @@ export default function Pastille() {
         socket?.current?.on("connected all users", (users: any) => {
         setAllUsers(users);
         });
-        console.log(allUsers);
+        // console.log(allUsers);
     }
   };
-
   
       if (!userData) return;
       handleheartbeat();
-    }, [userData, socket, allUsers, setAllUsers]);
+
+    }, [userData, socket, setAllUsers]);
     return (<div>
 
     </div>);
