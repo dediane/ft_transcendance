@@ -35,11 +35,13 @@ function Auth() {
       {
         await authenticationService.saveToken(fortyTwoApiCode)
         const result = await userService.is2fa()
-        if (!result)
+        if (result.status == false) {
+          console.log("2fa not enabled")
           router.push('/profile')
-        if(result) {
+        }
+        if(result.status == true) {
           setOtp(true)
-          // console.log("2fa enabled")
+          console.log("2fa enabled")
         }
       }
     }
