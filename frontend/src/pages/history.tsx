@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react"
+import {useEffect, useMemo, useState} from "react"
 import gameService from "@/services/game-service"
 import styles from "@/styles/History.module.css"
 import Link from "next/link"
@@ -7,11 +7,10 @@ import AuthService from "../services/authentication-service"
 
 export default function History () {
     useEffect(() => {
-
-        const token =  AuthService.getToken();
+        const token =  AuthService.isAuthentificated();
     
         if (!token) {
-          window.location.href = "/login";
+        //   window.location.href = "/login";
         }
       }, []);
     return (

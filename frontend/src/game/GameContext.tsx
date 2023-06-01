@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import React from "react";
 import { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
-import AuthService from "../services/authentication-service"
 import { createContext } from "react";
 
 

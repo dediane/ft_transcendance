@@ -113,8 +113,8 @@ export const Stats = () => {
            const result = await userService.profile()
             setUser({...result})
         }
-        if(!authenticationService.getToken()) 
-            router.push('/login')
+        // if(!authenticationService.isAuthentificated()) 
+        //     router.push('/login')
         fetch_profile()
     }, [router])
     return (

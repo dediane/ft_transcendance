@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import moment from 'moment';
 import axiosService from './axios-service';
+import Cookies from 'js-cookie';
 
 type JwtPayload = /*unresolved*/ any
 class AuthService {
@@ -23,10 +24,12 @@ class AuthService {
     }
 
     saveToken(token : string) {
+        Cookies.set("isLogged", "true")
         return localStorage.setItem(this.key, token);
     }
 
     deleteToken(){
+        Cookies.remove("isLogged")
         return localStorage.removeItem(this.key);
     }
 

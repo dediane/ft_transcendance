@@ -32,8 +32,8 @@ export default function Game() {
       const result = await userService.profile()
       setUserData({...result})
     }
-    if(!authenticationService.getToken()) 
-          router.push('/login')
+    // if(!authenticationService.isAuthentificated()) 
+    //   router.push('/login')
     fetch_profile();
   }, [router]);
 

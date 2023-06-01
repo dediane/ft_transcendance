@@ -1,4 +1,4 @@
-import { Body, Get, Controller, NotFoundException, Response, Post, Request, UseGuards, Redirect, UnauthorizedException, HttpCode } from '@nestjs/common';
+import { Body, Get, Controller, Res, NotFoundException, Response, Post, Request, UseGuards, Redirect, UnauthorizedException, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -29,12 +29,13 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  @Redirect("http://localhost:3000", 302)
-  async callback42(@Request() req :any) {
-    const {status, access_token} = this.authService.login42(req);
-    if(!status)
-      return { url: 'http://localhost:3000/login' };
-    return { url: 'http://localhost:3000/auth?code=' + access_token };
+  // @Redirect("http://localhost:3000", 302)
+  async callback42(@Response() res, @Request() req :any) {
+    if (req.query.error) {
+      return ;{ url: 'http://localhost:3000/login' };
+    }
+    const { access_token } = this.authService.login42(req);
+    return res.redirect('http://localhost:3000/auth?code=' + access_token)
     //Send tokent to front end
   }
 
@@ -93,7 +94,7 @@ export class AuthController {
   @Get('2fa/is-enabled')
   @UseGuards(JwtAuthGuard)
   async is2fa(@Request() req) {
-    return req.user.is2fa;
+    return{ status: req.user.is2fa};
   }
 
 

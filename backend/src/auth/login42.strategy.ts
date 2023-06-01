@@ -21,6 +21,9 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<any> {
+    if (profile._json.error) {
+      throw new UnauthorizedException(profile._json.error_description);
+    }
     // console.log(profile._json);
     const {first_name, last_name, email, image, id, login } = profile._json;
     const generatedpwd = Math.random().toString(36).substring(2);

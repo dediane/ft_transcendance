@@ -196,9 +196,11 @@ const InputBox = ({setData, title ,label, placeholder} : {setData: any, title: s
 }
 
 export const Connect42 = () => {
+  
+  const [publickey] = useState("https://api.intra.42.fr/oauth/authorize?client_id=" + process.env.NEXT_PUBLIC_API_42 + "&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fcallback&response_type=code")
   return (
     <div>
-    <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-5753bb274e59271c67234cf035d516277439caa594f17226ed3e6d40266050cc&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fcallback&response_type=code">
+    <a href={"https://api.intra.42.fr/oauth/authorize?client_id=" + process.env.NEXT_PUBLIC_API_42 + "&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fcallback&response_type=code"}>
     <button className={styles.button}>
     Connect with 42</button>
     </a>

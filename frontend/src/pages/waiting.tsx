@@ -28,12 +28,12 @@ export default function Wait() {
       setUserData({ ...result });
     };
 
-    if (!authenticationService.getToken()) {
-      router.push('/login');
+    if (!authenticationService.isAuthentificated()) {
+      // router.push('/login');
     } else {
       fetchProfile();
     }
-  }, [router, socket]);
+  }, [socket]);
 
   useEffect(() => {
     if (!userData) return;
