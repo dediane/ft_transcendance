@@ -15,19 +15,19 @@ export default function Homepage() {
     const [loading, setLoading] = useState(true)
     const router = useRouter()
     useEffect(()=> {
-        const test_auth = async() => {    
+        const checkAuth = async () => {
+            if(!authServiceInstance.isAuthentificated())
+              router.push("/login")
             try {
-                await userService.profile()
-                setLoading(false)
-            }catch(e){
-                authServiceInstance.deleteToken()
-                router.push('/login')
+              await userService.profile()
+              setLoading(false)
+            } catch (err) {
+              authServiceInstance.deleteToken()
             }
         }
+          checkAuth()
 
-        test_auth()
-
-    }, [])
+    }, [loading])
 
     return (
         <>
