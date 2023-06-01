@@ -18,7 +18,7 @@ function App({ Component, pageProps }: AppProps) {
     <div>
       <BackgroundAnimation />
       <ContextProviderGame>
-        {pathname !== "/home_game" &&
+        {
           pathname !== "/pong" &&
           pathname !== "/pong_chat" &&
           pathname !== "/pong_extra" &&

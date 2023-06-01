@@ -82,34 +82,40 @@ export const PublicProfil = () => {
                 }
                 else
                 {
-                   setUserStatus("offline")
+                    setUserStatus("offline")
                 }
+            }
         }
-    }
-    
-    const handleSocket = async () => 
-    {
-        if (socket && socket.current)
+        
+        const handleSocket = async () => 
         {
-            socket.current.on("user_status", (data: {status: boolean, username1: string, username2: string}) => {
-                if (data.status == true)
-                {
-                    if (data.username1 === user.username) {
-                        setUserStatus("ingame")
-                    }
-                    else if (data.username2 === user.username)
+            if (socket && socket.current)
+            {
+                socket.current.on("user_status", (data: {status: boolean, username1: string, username2: string}) => {
+                    if (data.status == true)
                     {
-                        setUserStatus("ingame")
+                        if (data.username1 === user.username) {
+                        {
+                            setUserStatus("ingame")
+                        }
+                        }
+                        else if (data.username2 === user.username)
+                        {
+                            setUserStatus("ingame")
+                        }
                     }
-                }
-            })
-        }
+                    else
+                    {
+                        setUserStatus("online");
+                    }
+                })
+            }
     }
-    handleSocket()
     handleStatus()
+    handleSocket()
     return () => {
     };
-}, [socket, user, setUserStatus, UserStatus, allUsers])
+}, [socket, user, UserStatus, allUsers])
 
     return (
         <>
@@ -121,7 +127,11 @@ export const PublicProfil = () => {
                     {!user.avatar && <picture><img src="/default.png" alt="user avatar" className={styles.profilepicture}/></picture>}
                     <h4 className={styles.subtitle}>Profil infos</h4>
                     <div className={styles.stats}>
-                    {UserStatus === "ingame" ? <InGame/> : UserStatus === "online" ?  <Online /> : <Offline />}
+
+                    {UserStatus === "online" && <Online />}
+                    {UserStatus === "ingame" && <InGame/>}
+                    {UserStatus === "offline" && <Offline />}
+                    <p>{UserStatus}</p>
                     <Asset title={'username'} value={user.username} />
                     </div>
                 </div>
