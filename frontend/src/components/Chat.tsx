@@ -697,11 +697,11 @@ else {
                 <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>My Dms</h3>
                 {props.userChannels[props.yourId]?.map(renderDMS)}
 
-        <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All connected Users</h3>
+        {/* <h3 style={{ fontWeight: 500, fontSize: 'medium', color: '#8d2bd2' }}>All connected Users</h3>
         <span style={{ fontWeight: 500, fontSize: '0.875rem', marginRight: 'auto' }}>
 
         {props.allUsers?.map(renderUser)}
-        </span>
+        </span> */}
         <div>
 
         <div>

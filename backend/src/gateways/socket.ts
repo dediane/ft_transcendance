@@ -118,13 +118,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (user)
     {
       this.isGameStartC = false;
-      if (user == this.paddle_leftC.id)
+      if (user == this.paddle_leftC?.id)
       {
         this.puckC.left_score = 0;
         this.puckC.right_score = this.fscoreC
         this.user_leftC = true;
       }
-      else if (user == this.paddle_rightC.id)
+      else if (user == this.paddle_rightC?.id)
       {
         this.puckC.right_score = 0;
         this.puckC.left_score = this.fscore
@@ -152,7 +152,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 @SubscribeMessage('all users')
 async handleGetUsers(socket: Socket, userdata: {id: string, name: string}) {
-  const currentuser = await this.userService.findOnebyId(Number(userdata.id));
+  const currentuser = await this.userService.findOnebyId(Number(userdata?.id));
   const allusers = await this.userService.findAll();
   const payload = {
     currentuser,
@@ -171,20 +171,20 @@ async handleGetUsers(socket: Socket, userdata: {id: string, name: string}) {
 
 @SubscribeMessage('join server')
 async handleJoinServer(socket: Socket, userdata: {id: string, username: string}) {
-  if (userdata.id == '' || userdata.username == '')
+  if (userdata?.id == '' || userdata?.username == '')
     return;
-  const userIndex = this.users.findIndex((u) => u.id === userdata.id);
+  const userIndex = this.users.findIndex((u) => u.id === userdata?.id);
   if (userIndex >= 0) {
     this.users[userIndex].sockets.push(socket.id);
   } else {
     const user = {
-      username: userdata.username,
-      id: userdata.id,
+      username: userdata?.username,
+      id: userdata?.id,
       sockets: [socket.id],
     };
     this.users.push(user);
   }
-  const channels = await this.channelService.getChannelsforUser(Number(userdata.id)); //petits bugs a checker quand deux users differents se log et refresh la page
+  const channels = await this.channelService.getChannelsforUser(Number(userdata?.id)); //petits bugs a checker quand deux users differents se log et refresh la page
 
   if (channels) {
   const channelNames = channels.map(channel => channel.name);
@@ -200,7 +200,7 @@ async handleJoinServer(socket: Socket, userdata: {id: string, username: string})
 
       const channelName = channel.name;
       const accessType = channel.accessType;
-      const blockedUsers =  await this.userService.getBlockedUsers(Number(userdata.id));
+      const blockedUsers =  await this.userService.getBlockedUsers(Number(userdata?.id));
       const blockedusernames = blockedUsers?.map(user => user.username);
       const channelMessages = await this.channelService.findMessagesByChatname(channelName, blockedUsers);
       const members = channel.members?.map(user => user.username);
@@ -1232,15 +1232,15 @@ for (const user of this.users) {
 
         @SubscribeMessage('join server all')
   async handleJoinServerAll(socket: Socket, userdata: {id: string, username: string}) {
-  if (userdata.id == '' || userdata.username == '')
+  if (userdata?.id == '' || userdata?.username == '')
     return;
-  const userIndex = this.allusers.findIndex((u) => u.id === userdata.id);
+  const userIndex = this.allusers.findIndex((u) => u.id === userdata?.id);
   if (userIndex >= 0) {
     this.allusers[userIndex].sockets.push(socket.id);
   } else {
     const user = {
-      username: userdata.username,
-      id: userdata.id,
+      username: userdata?.username,
+      id: userdata?.id,
       sockets: [socket.id],
     };
     this.allusers.push(user);
