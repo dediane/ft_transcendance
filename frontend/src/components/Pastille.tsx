@@ -25,7 +25,7 @@ export default function Pastille() {
       } else {
         fetchProfile();
       }
-    }, [router, socket]);
+    }, [socket]);
 
     
     useEffect(() => {

@@ -9,25 +9,48 @@ import { AvatarUploader } from "@/components/Avatar";
 import { Friends } from "@/components/FriendComponent";
 import { Profil } from "@/components/ProfileComponent";
 import { Stats } from "@/components/Stats";
-
+import authServiceInstance from "@/services/authentication-service";
 export default function Homepage() {
+
+    const [loading, setLoading] = useState(true)
+    const router = useRouter()
+    useEffect(()=> {
+        const test_auth = async() => {    
+            try {
+                await userService.profile()
+                setLoading(false)
+            }catch(e){
+                authServiceInstance.deleteToken()
+                router.push('/login')
+            }
+        }
+
+        test_auth()
+
+    }, [])
+
     return (
         <>
-        <div className={styles.container}>
+       {!loading && <div className={styles.container}>
             <FriendModule />
             <StatsModule />
             <ProfileModule />
-        </div>
+        </div>}
         </>
     )
 }
 const Buttons = () => {
     const [user, setUser] = useState(false)
-
+    const router = useRouter()
     useEffect(()=>{
         const fetch_profile = async() => {
-           const result = await userService.profile()
-            setUser({...result})
+            try {
+                const result = await userService.profile()
+                authServiceInstance.deleteToken()
+                setUser({...result})
+            }catch(e){
+                router.push('/login')
+            }
         }
         fetch_profile()
     }, [])

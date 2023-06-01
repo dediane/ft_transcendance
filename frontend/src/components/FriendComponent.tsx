@@ -5,6 +5,7 @@ import _, { remove } from "lodash";
 import Link from "next/link";
 
 export const Friends = () => {
+  const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [users, setUsers] = useState<any>([]);
   const [friends, setFriends] = useState<any>([]);
@@ -12,7 +13,10 @@ export const Friends = () => {
   useEffect(() => {
     const fetchFriends = async () => {
       const result = await userService.find_friend();
-      setFriends(result.friends);
+      if(result && result.friends.length > 0) {
+        setFriends(result.friends);
+        setLoading(false)
+      }
     };
     fetchFriends();
   }, []);
@@ -67,7 +71,9 @@ export const Friends = () => {
     });
     setUsers(updatedUsers);
   };
-
+  if(!loading) (
+    <div>Loading...</div>
+  )
   return (
     <div>
       {/* Friends List */}
@@ -109,7 +115,7 @@ export const Friends = () => {
               <div key={key} className="">
                 <div className={styles.listelement}>
                   <Link href={`/public?username=${id}`} className="hover:underline hover:font-medium hover:text-violet-600">
-                  {username} # {id}
+                  {username} #{id}
                   </Link>
                   {!isFriend && (
                     <button
