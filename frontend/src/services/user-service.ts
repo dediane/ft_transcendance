@@ -8,8 +8,13 @@ const userService = {
 	  return axiosInstance.post("/auth/login", { email, password }).then((res: { data: any }) => res.data)
   },
     
-  register (username :string, email :string ,password :string) {
-	  return axiosInstance.post("/user", { username, email, password }).then((res: { data: any }) => res.data)
+  async register (username :string, email :string ,password :string) {
+    try {
+      return await axiosInstance.post("/user", { username, email, password })
+    } catch(err: any) {
+      const parsed = err.response.data
+      return {status: false, error: parsed.message[0]}
+    }
   },
 
   activate2fa(twoFactorAuthenticationCode :string) {
@@ -40,8 +45,13 @@ const userService = {
 	  return axiosInstance.post("/user/username/", {username}).then((res: { data: any }) => res.data)
    },
 
-  profile () {
-	  return axiosInstance.get("/user/profile", {}).then((res: { data: any }) => res.data)
+  async profile () {
+	  try {
+      const res = (await axiosInstance.get("/user/profile", {})).data
+      return res
+    } catch(err) {
+      console.log("401 Not auth")
+    }
   },
   
   login42 () {

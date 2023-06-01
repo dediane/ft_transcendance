@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request,  UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,6 +14,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe())
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
@@ -70,10 +71,10 @@ export class UserController {
   @UseGuards ( Jwt2faAuthGuard )
   @UseGuards ( JwtAuthGuard )
   @Post('updateusername')
-  async updateUsername(@Body() req: any) {
-    if (!req.newusername)
+  async updateUsername(@Body() body: any, @Request() req: any) {
+    if (!body.newusername)
       return {  status: false, error: 'No username provided' };
-    const res = await this.userService.findAndUpdateUserByUsername(req.username, req.newusername, req.id)
+    const res = await this.userService.findAndUpdateUserByUsername(body.username, body.newusername, req.user.id)
     if (res == false)
       return { status: false, error: 'Username already taken' };
     else 
