@@ -6,10 +6,10 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()   
   let isLogged = request.cookies.get("isLogged")
   if (url.pathname !== "/login" && !isLogged) {
-    console.log("redirect to login")
+    // console.log("redirect to login")
     return NextResponse.redirect(new URL('/login', request.url));
   } else if (url.pathname == "/login" && isLogged) {
-    console.log("redirect to profile")
+    // console.log("redirect to profile")
     return NextResponse.redirect(new URL('/profile', request.url));
   } else {
     return NextResponse.next()
