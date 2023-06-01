@@ -33,7 +33,7 @@ export default function Wait() {
     } else {
       fetchProfile();
     }
-  }, [router, socket]);
+  }, [socket]);
 
   useEffect(() => {
     if (!userData) return;

@@ -34,7 +34,7 @@ export default function Game() {
     if(!authenticationService.getToken()) 
           router.push('/login')
     fetch_profile();
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const handleRouteChange = (url: any) => {
