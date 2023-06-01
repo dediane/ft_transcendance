@@ -20,8 +20,8 @@ function Messenger2() {
   };
 
   useEffect(() => {
-    if (!authenticationService.getToken()) {
-      router.push('/login');
+    if (!authenticationService.isAuthentificated()) {
+      // router.push('/login');
     } else {
       fetchProfile();
     }

@@ -64,8 +64,8 @@ export const Profil = () => {
            const result = await userService.profile()
             setUser({...result})
         }
-        if(!authenticationService.getToken()) 
-            router.push('/login')
+        if(!authenticationService.isAuthentificated()) 
+            // router.push('/login')
         try {
         fetch_profile()
         } catch (error) {

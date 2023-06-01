@@ -40,7 +40,7 @@ function HomeGame() {
     const token =  AuthService.getToken();
 
     if (!token) {
-      window.location.href = "/login";
+      // window.location.href = "/login";
     }
   }, []);
 

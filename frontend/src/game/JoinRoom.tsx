@@ -66,9 +66,11 @@ export function JoinRoom(props: IJoinRoomProps)
       const result = await userService.profile()
       setUserData({...result})
     }
-    if(!authenticationService.getToken()) 
-          router.push('/login')
-    fetch_profile();
+    if(!authenticationService.isAuthentificated()) {
+      // router.push('/login')
+    } else {
+      fetch_profile();
+    }
 
   
   }, [router]);

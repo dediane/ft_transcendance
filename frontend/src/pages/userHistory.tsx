@@ -39,7 +39,7 @@ export const UserGames = () => {
         return () => {
           isMounted = false; // Cleanup function to handle component unmounting
         };
-      }, [games, user]);
+      }, []);
 
 // console.log("user in userhistory", user)
 // console.log("games in userhistory", games)
