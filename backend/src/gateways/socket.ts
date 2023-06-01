@@ -229,7 +229,7 @@ async handleJoinServer(socket: Socket, userdata: {id: string, username: string})
       socket.emit('error', 'Room name cannot be null or undefined.');
       return;
     }
-    const usr = await this.userService.findOnebyId(datachan.creator);
+    const usr = await this.userService.findOnebyId(datachan?.creator);
     const existingChannel = await this.channelService.findOneByName(roomName);
     
     if (!existingChannel) {
